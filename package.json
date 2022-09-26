@@ -18,12 +18,19 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/geojson": "^7946.0.10",
     "clsx": "^1.2.1",
+    "d3": "^7.6.1",
+    "geojson": "^0.5.0",
+    "mapbox-gl": "^2.10.0",
     "next": "^12.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
-    "tailwind-merge": "^1.6.0"
+    "react-map-gl": "^7.0.19",
+    "tailwind-merge": "^1.6.0",
+    "victory": "^36.6.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",
