@@ -30,21 +30,33 @@ import {
 } from '@/api/layers';
 import { RoutePoint } from '@/api/types';
 
+// initialize variables that control animation
 let frameStartTime: number;
 let animation: number;
 const FPS = 60;
 const fpsInterval = 1000 % FPS;
 
-export default function Playground() {
+export default function Dashboard() {
+  // current animation frame
   const [currentFrame, setCurrentFrame] = useState(1);
+
+  // current Mapbox ViewState, initialized to first point of strava route
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
+
+  // current point on route, point marker on Map
   const [currentPoint, setCurrentPoint] = useState<Position>(
     stravaPath.latlng[0]
   );
+
+  // current point of the line drawn on the map
   const [lineCoordinates, setLineCoordinates] = useState<Position[]>([
     stravaPath.latlng[0],
   ]);
+
+  // the actual line being drawn between two points
   const [interpolated, setInterpolated] = useState<Position[]>([]);
+
+  // holds performance metrics at current route point
   const [currentMetrics, setCurrentMetrics] = useState<RoutePoint>({
     heartRate: stravaPath.heartRate[0],
     distance: stravaPath.distance[0],
@@ -53,10 +65,12 @@ export default function Playground() {
 
   const mapRef = useRef<MapRef>(null);
 
+  // change viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
 
+  // effect controls the route animation
   useEffect(() => {
     const animateLine = (timestamp: number) => {
       if (!frameStartTime) {
@@ -104,6 +118,7 @@ export default function Playground() {
     return () => cancelAnimationFrame(animation);
   }, [interpolated]);
 
+  // initialize drawing of route
   const handleOnMapLoad = () => {
     const interpolated = drawStravaPath(stravaPath);
     setInterpolated(interpolated);
@@ -113,6 +128,7 @@ export default function Playground() {
   return (
     <main className='grid grid-cols-4'>
       <div className='col-span-3'>
+        {/* Mapbox parent component; each source renders a different layer onto the map */}
         <Map
           style={{ width: '70vw', height: '100vh' }}
           {...viewState}
@@ -124,15 +140,19 @@ export default function Playground() {
           onMove={handleMoveEvent}
           onLoad={handleOnMapLoad}
         >
+          {/* map sky layer  */}
           <Source {...skySource}>
             <Layer {...skyLayer} />
           </Source>
+          {/* render full path of route on map  */}
           <Source type='geojson' data={routeLineString}>
             <Layer {...lineLayerStyle} />
           </Source>
+          {/* render current point on route  */}
           <Source {...definePointSource(currentPoint)}>
             <Layer {...pointLayerStyle} />
           </Source>
+          {/* render animated line on route  */}
           <Source {...defineLineSource(lineCoordinates)}>
             <Layer {...animatedLineLayerStyle} />
           </Source>
