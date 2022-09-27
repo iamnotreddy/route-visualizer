@@ -12,7 +12,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import MetricsSidebar from '@/components/MetricsSidebar';
 
-import { handleMapLoad } from '@/api/helpers';
+import { drawStravaPath } from '@/api/helpers';
 import {
   initialViewState,
   routeLineString,
@@ -104,6 +104,12 @@ export default function Playground() {
     return () => cancelAnimationFrame(animation);
   }, [interpolated]);
 
+  const handleOnMapLoad = () => {
+    const interpolated = drawStravaPath(stravaPath);
+    setInterpolated(interpolated);
+    setLineCoordinates([interpolated[0]]);
+  };
+
   return (
     <main className='grid grid-cols-4'>
       <div className='col-span-3'>
@@ -116,9 +122,7 @@ export default function Playground() {
           terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
           fog={fogLayer}
           onMove={handleMoveEvent}
-          onLoad={() =>
-            handleMapLoad(stravaPath, setInterpolated, setLineCoordinates)
-          }
+          onLoad={handleOnMapLoad}
         >
           <Source {...skySource}>
             <Layer {...skyLayer} />

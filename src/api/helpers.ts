@@ -14,11 +14,7 @@ export const computePace = (point: RoutePoint) => {
   return minStr + ':' + secStr;
 };
 
-export const handleMapLoad = (
-  stravaPath: StravaRouteStream,
-  setInterpolated: Dispatch<SetStateAction<Position[]>>,
-  setLineCoordinates: Dispatch<SetStateAction<Position[]>>
-) => {
+export const drawStravaPath = (stravaPath: StravaRouteStream) => {
   let totalInterpolated: Position[] = [];
 
   for (let i = 0; i < stravaPath.latlng.length - 1; i++) {
@@ -40,8 +36,7 @@ export const handleMapLoad = (
     totalInterpolated = [...totalInterpolated, ..._interpolated];
   }
 
-  setInterpolated([...totalInterpolated]);
-  setLineCoordinates([totalInterpolated[0]]);
+  return [...totalInterpolated];
 };
 
 export const animateLine = (
