@@ -23,17 +23,17 @@ export default function MetricsSidebar({
 }: MetricsSidebarProps) {
   const renderMetrics: RenderMetrics[] = [
     {
-      metricTitle: 'Current Heart Rate',
+      metricTitle: 'Heart Rate',
       metricArray: stravaPath.heartRate,
       currentMetric: currentMetrics.heartRate.toString(),
     },
     {
-      metricTitle: 'Current Distance',
+      metricTitle: 'Total Distance',
       metricArray: stravaPath.distance,
       currentMetric: metersToMiles(currentMetrics.distance),
     },
     {
-      metricTitle: 'Current Time',
+      metricTitle: 'Elapsed Time',
       metricArray: stravaPath.heartRate,
       currentMetric: formatTime(currentMetrics.time),
     },
@@ -44,12 +44,14 @@ export default function MetricsSidebar({
       {renderMetrics.map((metric) => {
         return (
           <div key={metric.metricTitle}>
-            <p className='text-center font-semibold'>{metric.metricTitle}</p>
-            <div className='grid grid-cols-4 items-center'>
-              <p className='col-span-1 rounded-full border-2 p-4 text-4xl '>
-                {metric.currentMetric}
+            <div className='grid grid-cols-6 items-center pr-12 pt-2'>
+              {/* <p className='col-span-2 text-center text-xl'>
+                {metric.metricTitle}:
+              </p> */}
+              <p className='col-span-6 rounded-lg border-2 border-slate-800 bg-slate-100 p-2 text-center text-xl'>
+                {metric.metricTitle}: {metric.currentMetric}
               </p>
-              <div className='col-span-3'>
+              <div className='col-span-6'>
                 <VictoryMetricChart
                   metricArray={metric.metricArray}
                   displayFrame={displayFrame}
