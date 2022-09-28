@@ -1,4 +1,9 @@
-import { VictoryChart, VictoryLine, VictoryScatter } from 'victory';
+import {
+  VictoryAxis,
+  VictoryChart,
+  VictoryLine,
+  VictoryScatter,
+} from 'victory';
 
 const transformArray = (input: number[]) => {
   return input.map((pt, idx) => ({
@@ -20,6 +25,10 @@ export default function RouteMetricChart({
     <div>
       {metricArray && (
         <VictoryChart width={300} height={200}>
+          <VictoryAxis
+            dependentAxis={true}
+            style={{ axis: { stroke: 'none' } }}
+          />
           <VictoryLine
             data={transformArray(metricArray)}
             style={{
