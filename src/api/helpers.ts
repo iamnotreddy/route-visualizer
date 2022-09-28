@@ -37,3 +37,49 @@ export const drawStravaPath = (stravaPath: StravaRouteStream) => {
 
   return [...totalInterpolated];
 };
+
+export const sampleChartFrame = (
+  currentFrame: number,
+  lastValidFrame: number,
+  samplingRate?: number
+) => {
+  // if no sampling rate is provided, set default of 50
+  if (!samplingRate) {
+    samplingRate = 50;
+  }
+
+  // if current frame is greater than last sampling interval, return last frame of metric array
+  if (lastValidFrame * 2 - currentFrame < samplingRate) {
+    return lastValidFrame;
+  }
+
+  // only return if current frame hits sampling interval
+  if (currentFrame % samplingRate == 0) {
+    return Math.floor(currentFrame / 2);
+  }
+};
+
+// convert distance from meters to miles
+export const metersToMiles = (miles: number) => {
+  return (miles * 0.000621371).toFixed(2);
+};
+
+// convert time to hh:mm
+export const formatTime = (time: number) => {
+  const hours = Math.floor(time / 60 / 60);
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+
+  const displayMinutes = minutes < 10 ? '0' + minutes : minutes.toString();
+  const displaySeconds = seconds < 10 ? '0' + seconds : seconds.toString();
+
+  let displayTime: string;
+
+  if (hours < 1) {
+    displayTime = displayMinutes + ':' + displaySeconds;
+  } else {
+    displayTime =
+      hours.toString() + ':' + displayMinutes + ':' + displaySeconds;
+  }
+  return displayTime;
+};
