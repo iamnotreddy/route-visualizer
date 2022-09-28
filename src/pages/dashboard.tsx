@@ -12,7 +12,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import MetricsSidebar from '@/components/MetricsSidebar';
 
-import { drawStravaPath } from '@/api/helpers';
+import { drawStravaPath, sampleChartFrame } from '@/api/helpers';
 import {
   initialViewState,
   routeLineString,
@@ -37,8 +37,11 @@ const FPS = 60;
 const fpsInterval = 1000 % FPS;
 
 export default function Dashboard() {
-  // current animation frame
-  const [currentFrame, setCurrentFrame] = useState(1);
+  // current animation frame index
+  const [currentFrame, setCurrentFrame] = useState(0);
+
+  // array index to display the current metric and chart annotation in the animation
+  const [displayFrame, setDisplayFrame] = useState(0);
 
   // current Mapbox ViewState, initialized to first point of strava route
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
@@ -70,7 +73,7 @@ export default function Dashboard() {
     setViewState(e.viewState);
   };
 
-  // effect controls the route animation
+  // controls the route animation
   useEffect(() => {
     const animateLine = (timestamp: number) => {
       if (!frameStartTime) {
@@ -80,32 +83,31 @@ export default function Dashboard() {
       const elapsed = timestamp - frameStartTime;
       if (elapsed > fpsInterval) {
         frameStartTime = timestamp - (elapsed % fpsInterval);
+
         setCurrentFrame((currentFrame) => {
-          const newFrame = currentFrame + 1;
-          if (newFrame > interpolated.length - 1) {
+          // increment next frame
+          const nextFrame = currentFrame + 1;
+          if (nextFrame > interpolated.length - 1) {
             setInterpolated([]);
             cancelAnimationFrame(animation);
-            return newFrame;
           }
 
+          // set line coordinates to next frame
           setLineCoordinates((lineCoordinates: Position[]) => {
-            if (mapRef.current) {
+            if (mapRef.current && interpolated[nextFrame]) {
               mapRef.current.panTo([
-                interpolated[newFrame][0],
-                interpolated[newFrame][1],
+                interpolated[nextFrame][0],
+                interpolated[nextFrame][1],
               ]);
             }
-            return [...lineCoordinates, interpolated[newFrame]];
+            return [...lineCoordinates, interpolated[nextFrame]];
           });
 
-          setCurrentPoint(interpolated[newFrame]);
-          setCurrentMetrics({
-            heartRate: stravaPath.heartRate[Math.floor(currentFrame / 2)],
-            distance: stravaPath.distance[Math.floor(currentFrame / 2)],
-            time: stravaPath.time[Math.floor(currentFrame / 2)],
-          });
+          // set current point to next frame
+          setCurrentPoint(interpolated[nextFrame]);
 
-          return newFrame;
+          // return next frame to currentFrame state
+          return nextFrame;
         });
       }
       animation = requestAnimationFrame(animateLine);
@@ -117,6 +119,22 @@ export default function Dashboard() {
 
     return () => cancelAnimationFrame(animation);
   }, [interpolated]);
+
+  // samples frames sent to child components to reduce rendering rate
+  useEffect(() => {
+    const lastValidFrame = stravaPath.latlng.length - 1;
+    const tempFrame = sampleChartFrame(currentFrame, lastValidFrame);
+
+    // only set display frame and metrics if current frame hits valid sample interval
+    if (tempFrame) {
+      setDisplayFrame(tempFrame);
+      setCurrentMetrics({
+        heartRate: stravaPath.heartRate[tempFrame],
+        distance: stravaPath.distance[tempFrame],
+        time: stravaPath.time[tempFrame],
+      });
+    }
+  }, [currentFrame]);
 
   // initialize drawing of route
   const handleOnMapLoad = () => {
@@ -162,7 +180,7 @@ export default function Dashboard() {
       <MetricsSidebar
         currentMetrics={currentMetrics}
         stravaPath={stravaPath}
-        currentFrame={currentFrame}
+        displayFrame={displayFrame}
       />
     </main>
   );
