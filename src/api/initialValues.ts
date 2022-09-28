@@ -7,7 +7,7 @@ import {
 import { ViewState } from 'react-map-gl';
 
 import { sampleStravaPVRun } from '@/api/sampleData';
-import { StravaRouteStream } from '@/api/types';
+import { RoutePoint, StravaRouteStream } from '@/api/types';
 
 // manually select sample route here
 export const selectedRoute = sampleStravaPVRun;
@@ -54,4 +54,10 @@ export const initialViewState: ViewState = {
     left: 1,
     right: 1,
   },
+};
+
+export const initialPathPoint: RoutePoint = {
+  heartRate: stravaPath.heartRate[0],
+  distance: stravaPath.distance[0],
+  time: stravaPath.distance[0],
 };

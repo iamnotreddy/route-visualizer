@@ -14,6 +14,7 @@ import MetricsSidebar from '@/components/MetricsSidebar';
 
 import { drawStravaPath, sampleChartFrame } from '@/api/helpers';
 import {
+  initialPathPoint,
   initialViewState,
   routeLineString,
   stravaPath,
@@ -60,11 +61,8 @@ export default function Dashboard() {
   const [interpolated, setInterpolated] = useState<Position[]>([]);
 
   // holds performance metrics at current route point
-  const [currentMetrics, setCurrentMetrics] = useState<RoutePoint>({
-    heartRate: stravaPath.heartRate[0],
-    distance: stravaPath.distance[0],
-    time: stravaPath.time[0],
-  });
+  const [currentMetrics, setCurrentMetrics] =
+    useState<RoutePoint>(initialPathPoint);
 
   const mapRef = useRef<MapRef>(null);
 
