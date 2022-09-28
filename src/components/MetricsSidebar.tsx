@@ -34,7 +34,7 @@ export default function MetricsSidebar({
     },
     {
       metricTitle: 'Elapsed Time',
-      metricArray: stravaPath.heartRate,
+      metricArray: stravaPath.time,
       currentMetric: formatTime(currentMetrics.time),
     },
   ];
