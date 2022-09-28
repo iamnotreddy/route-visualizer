@@ -1,48 +1,64 @@
 import VictoryMetricChart from '@/components/VictoryMetricChart';
 
+import { formatTime, metersToMiles } from '@/api/helpers';
 import { RoutePoint, StravaRouteStream } from '@/api/types';
 
 type MetricsSidebarProps = {
   currentMetrics: RoutePoint;
   stravaPath: StravaRouteStream;
-  currentFrame: number;
+  displayFrame: number;
+};
+
+// type for rendering each metric on sidebar
+type RenderMetrics = {
+  metricTitle: string;
+  metricArray: number[];
+  currentMetric: string;
 };
 
 export default function MetricsSidebar({
   currentMetrics,
   stravaPath,
-  currentFrame,
+  displayFrame,
 }: MetricsSidebarProps) {
+  const renderMetrics: RenderMetrics[] = [
+    {
+      metricTitle: 'Current Heart Rate',
+      metricArray: stravaPath.heartRate,
+      currentMetric: currentMetrics.heartRate.toString(),
+    },
+    {
+      metricTitle: 'Current Distance',
+      metricArray: stravaPath.distance,
+      currentMetric: metersToMiles(currentMetrics.distance),
+    },
+    {
+      metricTitle: 'Current Time',
+      metricArray: stravaPath.heartRate,
+      currentMetric: formatTime(currentMetrics.time),
+    },
+  ];
+
   return (
-    <div className='col-span-1 p-4'>
-      <p>Current Heart Rate: {currentMetrics.heartRate}</p>
-      <VictoryMetricChart
-        metricArray={stravaPath.heartRate}
-        // currentFrame={Math.floor(currentFrame / 2)}
-      />
-      <p>
-        Total Distance: {(currentMetrics.distance * 0.000621371).toFixed(2)}{' '}
-        miles
-      </p>
-      <p>
-        Current Pace:{' '}
-        {(
-          currentMetrics.time /
-          60 /
-          (currentMetrics.distance * 0.000621371)
-        ).toFixed(2)}
-        min / mile
-      </p>
-      <VictoryMetricChart
-        metricArray={stravaPath.distance}
-        // currentFrame={Math.floor(currentFrame / 2)}
-      />
-      <p>Time Elapsed: {(currentMetrics.time / 60).toFixed(2)} minutes</p>
-      <VictoryMetricChart
-        metricArray={stravaPath.time}
-        // currentFrame={Math.floor(currentFrame / 2)}
-      />
-      <p>currentFrame: {currentFrame}</p>
+    <div className='col-span-1'>
+      {renderMetrics.map((metric) => {
+        return (
+          <div key={metric.metricTitle}>
+            <p className='text-center font-semibold'>{metric.metricTitle}</p>
+            <div className='grid grid-cols-4 items-center'>
+              <p className='col-span-1 rounded-full border-2 p-4 text-4xl '>
+                {metric.currentMetric}
+              </p>
+              <div className='col-span-3'>
+                <VictoryMetricChart
+                  metricArray={metric.metricArray}
+                  displayFrame={displayFrame}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

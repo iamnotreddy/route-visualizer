@@ -9,14 +9,13 @@ const transformArray = (input: number[]) => {
 
 type RouteMetricChartProps = {
   metricArray: number[];
-  // currentFrame: number;
+  displayFrame: number;
 };
 
 export default function RouteMetricChart({
   metricArray,
-}: // currentFrame,
-RouteMetricChartProps) {
-  // const displayFrame = currentFrame < 0 ? 1 : currentFrame;
+  displayFrame,
+}: RouteMetricChartProps) {
   return (
     <div>
       {metricArray && (
@@ -24,13 +23,14 @@ RouteMetricChartProps) {
           <VictoryLine
             data={transformArray(metricArray)}
             style={{
-              data: { stroke: '#005083', strokeWidth: '2' },
+              data: { stroke: '#005083', strokeWidth: '3' },
             }}
           />
           <VictoryScatter
-            data={[transformArray(metricArray)[2]]}
+            data={[transformArray(metricArray)[displayFrame]]}
+            size={5}
             style={{
-              data: { fill: '#ffb14e', stroke: 'black', strokeWidth: '1' },
+              data: { fill: '#ffb14e', stroke: 'black', strokeWidth: '2' },
             }}
           />
         </VictoryChart>
