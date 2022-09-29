@@ -45,9 +45,6 @@ export default function MetricsSidebar({
         return (
           <div key={metric.metricTitle}>
             <div className='grid grid-cols-6 items-center pr-12 pt-2'>
-              {/* <p className='col-span-2 text-center text-xl'>
-                {metric.metricTitle}:
-              </p> */}
               <p className='col-span-6 rounded-lg border-2 border-slate-800 bg-slate-100 p-2 text-center text-xl'>
                 {metric.metricTitle}: {metric.currentMetric}
               </p>

@@ -46,8 +46,8 @@ export const initialViewState: ViewState = {
   latitude: stravaPath.latlng[0][1],
   longitude: stravaPath.latlng[0][0],
   zoom: 14,
-  bearing: 86,
-  pitch: 60,
+  bearing: 105,
+  pitch: 85,
   padding: {
     top: 1,
     bottom: 1,

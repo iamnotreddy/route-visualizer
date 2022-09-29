@@ -38,7 +38,7 @@ export const drawStravaPath = (stravaPath: StravaRouteStream) => {
   return [...totalInterpolated];
 };
 
-export const sampleChartFrame = (
+export const returnSampledFrame = (
   currentFrame: number,
   lastValidFrame: number,
   samplingRate?: number

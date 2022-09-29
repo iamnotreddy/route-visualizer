@@ -12,7 +12,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import MetricsSidebar from '@/components/MetricsSidebar';
 
-import { drawStravaPath, sampleChartFrame } from '@/api/helpers';
+import { drawStravaPath, returnSampledFrame } from '@/api/helpers';
 import {
   initialPathPoint,
   initialViewState,
@@ -121,7 +121,7 @@ export default function Dashboard() {
   // samples frames sent to child components to reduce rendering rate
   useEffect(() => {
     const lastValidFrame = stravaPath.latlng.length - 1;
-    const tempFrame = sampleChartFrame(currentFrame, lastValidFrame);
+    const tempFrame = returnSampledFrame(currentFrame, lastValidFrame);
 
     // only set display frame and metrics if current frame hits valid sample interval
     if (tempFrame) {
@@ -151,7 +151,7 @@ export default function Dashboard() {
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
           ref={mapRef}
           mapStyle='mapbox://styles/mapbox/satellite-v9'
-          terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
+          terrain={{ source: 'mapbox-dem', exaggeration: 4 }}
           fog={fogLayer}
           onMove={handleMoveEvent}
           onLoad={handleOnMapLoad}
