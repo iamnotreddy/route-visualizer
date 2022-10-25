@@ -9,10 +9,10 @@ export default function Home() {
   };
 
   return (
-    <main className='m-10'>
-      <div className='flex flex-col space-y-4'>
-        <h1 className='text-2xl'>Connect to Strava</h1>
-        <Button className='mt-4 w-1/12' variant='dark' onClick={handleLogin}>
+    <main className='flex h-screen justify-center bg-slate-300'>
+      <div className='m-auto space-y-4'>
+        <h1 className='text-4xl'>Connect to Strava</h1>
+        <Button className='z-30' variant='dark' onClick={handleLogin}>
           Login
         </Button>
       </div>
