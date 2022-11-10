@@ -5,7 +5,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import { StravaAuth } from '@/pages/api/auth/tokenExchange';
+import { StravaAuth } from '@/archive/tokenExchange';
 
 export default function Home() {
   const router = useRouter();
