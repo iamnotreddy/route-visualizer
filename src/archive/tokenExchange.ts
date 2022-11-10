@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { getTokenResponse } from '@/helpers';
+import { getTokenResponse } from '@/archive/helpers';
 
 export type StravaAuth = {
   token_type: string;
