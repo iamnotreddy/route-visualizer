@@ -1,3 +1,5 @@
+// old code attempting to do auth before switching to NextAuth
+
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
