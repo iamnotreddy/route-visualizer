@@ -36,3 +36,23 @@ export type StravaRouteStream = {
   distance: number[];
   time: number[];
 };
+
+// Strava Endpoint Types
+
+export type StravaActivity = {
+  name: string;
+  athlete: StravaActivityAthlete;
+  distance: number;
+  moving_time: number;
+  elapsed_time: number;
+  type: string;
+  id: string;
+  start_date: string;
+  timezone: string;
+  start_latlng: Position[];
+  end_latlng: Position[];
+};
+
+export type StravaActivityAthlete = {
+  id: string;
+};
