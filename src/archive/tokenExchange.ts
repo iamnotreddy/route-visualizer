@@ -1,12 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { getTokenResponse } from '@/helpers';
+import { getTokenResponse } from '@/archive/helpers';
 
-type StravaAuth = {
-  message: StravaAuthMessage;
-};
-
-type StravaAuthMessage = {
+export type StravaAuth = {
   token_type: string;
   expires_at: number;
   expires_in: number;
@@ -15,7 +11,7 @@ type StravaAuthMessage = {
   athlete: StravaAthlete;
 };
 
-type StravaAthlete = {
+export type StravaAthlete = {
   id: number;
   firstname: string;
   lastname: string;
