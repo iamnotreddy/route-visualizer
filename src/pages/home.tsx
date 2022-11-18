@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 
+import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 
@@ -51,23 +52,29 @@ export default function Home() {
           Fetch Activities
         </Button>
 
-        <div className='grid grid-cols-4 divide-x-2 divide-slate-700 border-2 border-slate-700 text-center'>
+        <div className='grid grid-cols-5 divide-x-2 divide-slate-700 border-2 border-slate-700 text-center'>
           <p>Date</p>
           <p>Name</p>
           <p>Distance</p>
           <p>ID</p>
+          <p>.</p>
         </div>
         {activities &&
           activities.map((activity) => {
             return (
               <div
                 key={activity.id}
-                className='grid grid-cols-4 divide-x-2 divide-slate-700 border-2 border-slate-700 text-center'
+                className='grid grid-cols-5 divide-x-2 divide-slate-700 border-2 border-slate-700 text-center'
               >
                 <p>{activity.start_date}</p>
                 <p>{activity.name}</p>
                 <p>{(activity.distance * 0.000621371).toFixed(2)} miles</p>
                 <p>{activity.id}</p>
+                <Link href={`/activities/${activity.id}`}>
+                  <Button variant='light' className='p-2 text-center'>
+                    Visualize
+                  </Button>
+                </Link>
               </div>
             );
           })}
