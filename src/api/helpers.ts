@@ -1,7 +1,39 @@
 import { interpolateBasis, quantize, zip } from 'd3';
 import { Position } from 'geojson';
 
-import { RoutePoint, StravaRouteStream } from '@/api/types';
+import {
+  ActivityStreamResponse,
+  RoutePoint,
+  StravaRouteStream,
+} from '@/api/types';
+
+// returns [longitude, latitude] to account for mapbox quirk
+export const reverseLatLng = (coordinates: Position[]) => {
+  return coordinates.map((point: Position) => {
+    return [point[1], point[0]];
+  });
+};
+
+export const transformActivityStreamResponse = (
+  res: ActivityStreamResponse
+): StravaRouteStream => {
+  let transformed: StravaRouteStream;
+  if (res.data) {
+    transformed = {
+      latlng:
+        res.data[0][0].type == 'latlng'
+          ? reverseLatLng(res.data[0][0].data)
+          : [],
+      distance: res.data[0][1].type == 'distance' ? res.data[0][1].data : [],
+      heartRate: res.data[0][2].type == 'heartrate' ? res.data[0][2].data : [],
+      time: res.data[0][3].type == 'time' ? res.data[0][3].data : [],
+    };
+  } else {
+    transformed = {} as StravaRouteStream;
+  }
+
+  return transformed;
+};
 
 // convert pace from meters per second to miles per minute
 export const computePace = (point: RoutePoint) => {
@@ -33,6 +65,41 @@ export const drawStravaPath = (stravaPath: StravaRouteStream) => {
     const _interpolated = zip(quantize(lng, n), quantize(lat, n));
 
     totalInterpolated = [...totalInterpolated, ..._interpolated];
+  }
+
+  return [...totalInterpolated];
+};
+
+export const drawStravaPathRefactored = (
+  stravaData: ActivityStreamResponse
+) => {
+  let stravaPath;
+
+  if (stravaData.data[0][0].type == 'latlng') {
+    stravaPath = stravaData.data[0][0].data;
+  }
+
+  let totalInterpolated: Position[] = [];
+
+  if (stravaPath) {
+    for (let i = 0; i < stravaPath.length - 1; i++) {
+      const pairLocations = stravaPath.slice(i, i + 2);
+
+      const n =
+        Math.floor(
+          Math.max(
+            Math.abs(pairLocations[1][1] - pairLocations[0][1]),
+            Math.abs(pairLocations[1][0] - pairLocations[0][0])
+          )
+        ) + 2;
+
+      const lat = interpolateBasis(pairLocations.map((item) => item[1]));
+      const lng = interpolateBasis(pairLocations.map((item) => item[0]));
+
+      const _interpolated = zip(quantize(lng, n), quantize(lat, n));
+
+      totalInterpolated = [...totalInterpolated, ..._interpolated];
+    }
   }
 
   return [...totalInterpolated];

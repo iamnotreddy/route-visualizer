@@ -17,15 +17,15 @@ export const stravaPath: StravaRouteStream = {
     // return [longitude, latitude] due to mapbox quirk
     return [point[1], point[0]];
   }),
-  heartRate: selectedRoute.heartrate.data.map((point: number) => {
-    return point;
-  }),
-  distance: selectedRoute.distance.data.map((point: number) => {
-    return point;
-  }),
-  time: selectedRoute.time.data.map((point: number) => {
-    return point;
-  }),
+  heartRate:
+    selectedRoute.heartrate.type == 'heartrate'
+      ? selectedRoute.heartrate.data
+      : [],
+  distance:
+    selectedRoute.distance.type == 'distance'
+      ? selectedRoute.distance.data
+      : [],
+  time: selectedRoute.time.type == 'time' ? selectedRoute.time.data : [],
 };
 
 export const routeLineString: FeatureCollection<Geometry, GeoJsonProperties> = {
@@ -42,6 +42,22 @@ export const routeLineString: FeatureCollection<Geometry, GeoJsonProperties> = {
   ],
 };
 
+export const findRouteLineString = (path: StravaRouteStream) => {
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: path.latlng,
+        },
+        properties: {},
+      },
+    ],
+  } as FeatureCollection<Geometry, GeoJsonProperties>;
+};
+
 export const initialViewState: ViewState = {
   latitude: stravaPath.latlng[0][1],
   longitude: stravaPath.latlng[0][0],
@@ -56,8 +72,32 @@ export const initialViewState: ViewState = {
   },
 };
 
+export const findInitialViewState = (path: StravaRouteStream) => {
+  return {
+    latitude: path.latlng[0][1],
+    longitude: path.latlng[0][0],
+    zoom: 14,
+    bearing: 105,
+    pitch: 85,
+    padding: {
+      top: 1,
+      bottom: 1,
+      left: 1,
+      right: 1,
+    },
+  } as ViewState;
+};
+
 export const initialPathPoint: RoutePoint = {
   heartRate: stravaPath.heartRate[0],
   distance: stravaPath.distance[0],
   time: stravaPath.distance[0],
+};
+
+export const findInitialMetricPoint = (path: StravaRouteStream) => {
+  return {
+    heartRate: path.heartRate[0],
+    distance: path.distance[0],
+    time: path.time[0],
+  } as RoutePoint;
 };

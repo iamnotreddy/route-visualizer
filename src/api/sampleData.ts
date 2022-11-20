@@ -527,6 +527,7 @@ export const sampleStravaPVRun: StravaActivityStream = {
     resolution: 'high',
   },
   distance: {
+    type: 'distance',
     data: [
       0, 0.8, 9.4, 12.4, 20, 27.2, 44.7, 49, 53.3, 61.1, 68.8, 72.6, 76.5, 80.3,
       84.1, 88, 106.5, 113.5, 135, 145.7, 165, 182, 200.1, 207.3, 228.7, 232.1,
@@ -590,6 +591,7 @@ export const sampleStravaPVRun: StravaActivityStream = {
     resolution: 'high',
   },
   heartrate: {
+    type: 'heartrate',
     data: [
       70, 70, 71, 72, 73, 76, 79, 85, 88, 93, 96, 99, 102, 108, 111, 112, 115,
       115, 114, 115, 117, 120, 123, 127, 128, 129, 128, 127, 127, 131, 134, 137,
@@ -632,6 +634,7 @@ export const sampleStravaPVRun: StravaActivityStream = {
     resolution: 'high',
   },
   time: {
+    type: 'time',
     data: [
       0, 1, 5, 6, 8, 10, 14, 15, 16, 18, 20, 21, 22, 23, 24, 25, 30, 32, 38, 41,
       47, 52, 57, 59, 65, 66, 72, 75, 82, 86, 88, 93, 97, 103, 105, 111, 116,
