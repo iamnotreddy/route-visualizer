@@ -112,7 +112,7 @@ export const returnSampledFrame = (
 ) => {
   // if no sampling rate is provided, set default of 50
   if (!samplingRate) {
-    samplingRate = 50;
+    samplingRate = 25;
   }
 
   // if current frame is greater than last sampling interval, return last frame of metric array

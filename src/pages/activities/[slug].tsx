@@ -42,7 +42,6 @@ import {
 } from '@/api/types';
 
 // initialize variables that control animation
-// initialize variables that control animation
 let frameStartTime: number;
 let animation: number;
 const FPS = 60;
@@ -141,7 +140,6 @@ export default function Dashboard() {
           }
 
           // set line coordinates to next frame
-
           setLineCoordinates((lineCoordinates: Position[]) => {
             if (mapRef.current && interpolated[nextFrame]) {
               mapRef.current.panTo([
