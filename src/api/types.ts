@@ -12,6 +12,11 @@ export type ActivityStreamResponse = {
   data: Array<Array<GenericStream>>;
 };
 
+export type ActivityListResponse = {
+  status: string;
+  data: Array<Array<StravaActivity>>;
+};
+
 export type GenericStream =
   | {
       type: 'distance' | 'heartrate' | 'time';
