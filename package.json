@@ -25,6 +25,7 @@
     "clsx": "^1.2.1",
     "connected-react-router": "^6.9.3",
     "d3": "^7.6.1",
+    "date-fns": "^2.29.3",
     "geojson": "^0.5.0",
     "http-proxy": "^1.18.1",
     "jotai": "^1.8.6",
