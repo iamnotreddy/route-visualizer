@@ -1,15 +1,8 @@
 import { Position } from 'geojson';
 
-// export type ActivityStreamResponse = {
-//   0: LatLngStream,
-//   1: GenericStream,
-//   2: GenericStream,
-//   3: GenericStream
-// }
-
 export type ActivityStreamResponse = {
   status: string;
-  data: Array<Array<GenericStream>>;
+  data: Array<Array<ActivityStream>>;
 };
 
 export type ActivityListResponse = {
@@ -17,17 +10,31 @@ export type ActivityListResponse = {
   data: Array<Array<StravaActivity>>;
 };
 
-export type GenericStream =
+export type ActivityStream =
   | {
-      type: 'distance' | 'heartrate' | 'time';
+      type: 'latlng';
+      data: Position[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
+    }
+  | {
+      type: 'distance';
       data: number[];
       series_type: string;
       original_size: number;
       resolution: string;
     }
   | {
-      type: 'latlng';
-      data: Position[];
+      type: 'heartrate';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
+    }
+  | {
+      type: 'time';
+      data: number[];
       series_type: string;
       original_size: number;
       resolution: string;
@@ -41,13 +48,6 @@ export type RoutePoint = {
 };
 
 // strava data mappers
-
-export type StravaActivityStream = {
-  latlng: LatLngStream;
-  distance: GenericStream;
-  heartrate: GenericStream;
-  time: GenericStream;
-};
 
 export type LatLngStream = {
   data: Position[];

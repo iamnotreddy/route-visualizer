@@ -2,6 +2,7 @@ import { interpolateBasis, quantize, zip } from 'd3';
 import { Position } from 'geojson';
 
 import {
+  ActivityStream,
   ActivityStreamResponse,
   RoutePoint,
   StravaRouteStream,
@@ -15,22 +16,29 @@ export const reverseLatLng = (coordinates: Position[]) => {
 };
 
 export const transformActivityStreamResponse = (
-  res: ActivityStreamResponse
+  data: Array<ActivityStream>
 ): StravaRouteStream => {
-  let transformed: StravaRouteStream;
-  if (res.data) {
-    transformed = {
-      latlng:
-        res.data[0][0].type == 'latlng'
-          ? reverseLatLng(res.data[0][0].data)
-          : [],
-      distance: res.data[0][1].type == 'distance' ? res.data[0][1].data : [],
-      heartRate: res.data[0][2].type == 'heartrate' ? res.data[0][2].data : [],
-      time: res.data[0][3].type == 'time' ? res.data[0][3].data : [],
-    };
-  } else {
-    transformed = {} as StravaRouteStream;
-  }
+  const transformed: StravaRouteStream = {
+    latlng: [],
+    heartRate: [],
+    distance: [],
+    time: [],
+  };
+
+  data.map((activity) => {
+    if (activity.type == 'latlng') {
+      transformed.latlng = reverseLatLng(activity.data);
+    }
+    if (activity.type == 'heartrate') {
+      transformed.heartRate = activity.data;
+    }
+    if (activity.type == 'distance') {
+      transformed.distance = activity.data;
+    }
+    if (activity.type == 'time') {
+      transformed.time = activity.data;
+    }
+  });
 
   return transformed;
 };

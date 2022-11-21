@@ -40,6 +40,7 @@ import {
   RoutePoint,
   StravaRouteStream,
 } from '@/api/types';
+import activities from '@/pages/api/strava/activities';
 
 // initialize variables that control animation
 let frameStartTime: number;
@@ -68,9 +69,7 @@ export default function Dashboard() {
   const [currentPoint, setCurrentPoint] = useState<Position>();
 
   // current point of the line drawn on the map
-  const [lineCoordinates, setLineCoordinates] = useState<Position[]>(
-    [] as Position[]
-  );
+  const [lineCoordinates, setLineCoordinates] = useState<Position[]>([]);
 
   // the whole route line drawn on the map
   const [routeLineString, setRouteLineString] = useState(
@@ -100,9 +99,9 @@ export default function Dashboard() {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const data = (await response.json()) as ActivityStreamResponse;
+        const res = (await response.json()) as ActivityStreamResponse;
 
-        setStravaPath(transformActivityStreamResponse(data));
+        setStravaPath(transformActivityStreamResponse(res.data[0]));
       } finally {
         setLoading(false);
       }
@@ -202,6 +201,8 @@ export default function Dashboard() {
 
   return (
     <main className='grid grid-cols-4'>
+      {JSON.stringify(activities)}
+
       {currentPoint && routeLineString && lineCoordinates && (
         <div className='col-span-3'>
           {/* Mapbox parent component; each source renders a different layer onto the map */}
