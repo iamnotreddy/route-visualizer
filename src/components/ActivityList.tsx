@@ -8,7 +8,7 @@ type ActivityListProps = {
 
 export default function ActivityList({ activities }: ActivityListProps) {
   return (
-    <div className='overflow-auto'>
+    <div className='layout z-20 m-8 h-96 overflow-auto shadow-lg'>
       {activities.map((activity) => (
         <ActivityRow key={activity.id} activity={activity} />
       ))}

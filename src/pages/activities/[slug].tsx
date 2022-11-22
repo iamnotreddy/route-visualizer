@@ -29,7 +29,6 @@ import {
   animatedLineLayerStyle,
   defineLineSource,
   definePointSource,
-  fogLayer,
   lineLayerStyle,
   pointLayerStyle,
   skyLayer,
@@ -211,9 +210,8 @@ export default function Dashboard() {
             {...viewState}
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
             ref={mapRef}
-            mapStyle='mapbox://styles/mapbox/satellite-v9'
+            mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
             terrain={{ source: 'mapbox-dem', exaggeration: 4 }}
-            fog={fogLayer}
             onMove={handleMoveEvent}
             onLoad={handleOnMapLoad}
           >

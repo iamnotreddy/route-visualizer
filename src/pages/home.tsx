@@ -31,7 +31,7 @@ export default function Home() {
   };
 
   return (
-    <main className='flex h-screen justify-center bg-slate-300'>
+    <main className='flex h-screen justify-center bg-slate-800'>
       <div className='m-auto space-y-4'>
         <h1 className='text-4xl'>Connect to Strava</h1>
         <Button
