@@ -39,7 +39,6 @@ import {
   RoutePoint,
   StravaRouteStream,
 } from '@/api/types';
-import activities from '@/pages/api/strava/activities';
 
 // initialize variables that control animation
 let frameStartTime: number;
@@ -83,9 +82,44 @@ export default function Dashboard() {
 
   const mapRef = useRef<MapRef>(null);
 
+  const [rangeControl, setRangeControl] = useState(0);
+
   // change viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
+  };
+
+  const handleRouteControl = () => {
+    setCurrentFrame((currentFrame) => {
+      // increment next frame
+      const nextFrame = currentFrame + 1;
+      if (nextFrame > interpolated.length - 1) {
+        setInterpolated([]);
+        cancelAnimationFrame(animation);
+      }
+
+      // set line coordinates to next frame
+      setLineCoordinates((lineCoordinates: Position[]) => {
+        if (mapRef.current && interpolated[nextFrame]) {
+          mapRef.current.panTo(
+            [interpolated[nextFrame][0], interpolated[nextFrame][1]],
+            { duration: 500 }
+          );
+        }
+
+        if (!interpolated[nextFrame]) {
+          return [...lineCoordinates];
+        }
+
+        return [...lineCoordinates, interpolated[nextFrame]];
+      });
+
+      // set current point to next frame
+      setCurrentPoint(interpolated[nextFrame]);
+
+      // return next frame to currentFrame state
+      return nextFrame;
+    });
   };
 
   // load data from api
@@ -119,51 +153,57 @@ export default function Dashboard() {
   }, [stravaPath]);
 
   // controls the route animation
-  useEffect(() => {
-    const animateLine = (timestamp: number) => {
-      if (!frameStartTime) {
-        frameStartTime = timestamp;
-      }
+  // TODO: make a custom useRouteAnimation hook
+  // useEffect(() => {
+  //   const animateLine = (timestamp: number) => {
+  //     if (!frameStartTime) {
+  //       frameStartTime = timestamp;
+  //     }
 
-      const elapsed = timestamp - frameStartTime;
-      if (elapsed > fpsInterval) {
-        frameStartTime = timestamp - (elapsed % fpsInterval);
+  //     const elapsed = timestamp - frameStartTime;
+  //     if (elapsed > fpsInterval) {
+  //       frameStartTime = timestamp - (elapsed % fpsInterval);
 
-        setCurrentFrame((currentFrame) => {
-          // increment next frame
-          const nextFrame = currentFrame + 1;
-          if (nextFrame > interpolated.length - 1) {
-            setInterpolated([]);
-            cancelAnimationFrame(animation);
-          }
+  //       setCurrentFrame((currentFrame) => {
+  //         // increment next frame
+  //         const nextFrame = currentFrame + 1;
+  //         if (nextFrame > interpolated.length - 1) {
+  //           setInterpolated([]);
+  //           cancelAnimationFrame(animation);
+  //         }
 
-          // set line coordinates to next frame
-          setLineCoordinates((lineCoordinates: Position[]) => {
-            if (mapRef.current && interpolated[nextFrame]) {
-              mapRef.current.panTo([
-                interpolated[nextFrame][0],
-                interpolated[nextFrame][1],
-              ]);
-            }
-            return [...lineCoordinates, interpolated[nextFrame]];
-          });
+  //         // set line coordinates to next frame
+  //         setLineCoordinates((lineCoordinates: Position[]) => {
+  //           if (mapRef.current && interpolated[nextFrame]) {
+  //             mapRef.current.panTo(
+  //               [interpolated[nextFrame][0], interpolated[nextFrame][1]],
+  //               { duration: 500 }
+  //             );
+  //           }
 
-          // set current point to next frame
-          setCurrentPoint(interpolated[nextFrame]);
+  //           if (!interpolated[nextFrame]) {
+  //             return [...lineCoordinates];
+  //           }
 
-          // return next frame to currentFrame state
-          return nextFrame;
-        });
-      }
-      animation = requestAnimationFrame(animateLine);
-    };
+  //           return [...lineCoordinates, interpolated[nextFrame]];
+  //         });
 
-    if (interpolated.length > 0) {
-      animation = requestAnimationFrame(animateLine);
-    }
+  //         // set current point to next frame
+  //         setCurrentPoint(interpolated[nextFrame]);
 
-    return () => cancelAnimationFrame(animation);
-  }, [interpolated]);
+  //         // return next frame to currentFrame state
+  //         return nextFrame;
+  //       });
+  //     }
+  //     animation = requestAnimationFrame(animateLine);
+  //   };
+
+  //   if (interpolated.length > 0) {
+  //     animation = requestAnimationFrame(animateLine);
+  //   }
+
+  //   return () => cancelAnimationFrame(animation);
+  // }, [interpolated]);
 
   // samples frames sent to child components to reduce rendering rate
   useEffect(() => {
@@ -199,41 +239,58 @@ export default function Dashboard() {
   };
 
   return (
-    <main className='grid grid-cols-4'>
-      {JSON.stringify(activities)}
+    <main className='m-8 grid grid-cols-4 space-y-8'>
+      <div className='col-span-3'>
+        <label
+          id='default-range'
+          className='mb-2 block text-sm font-medium text-gray-900 dark:text-white'
+        >
+          Default range
+        </label>
+        <input
+          className='dark:bg-gray-700" h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200'
+          id='default-range'
+          type='range'
+          min={0}
+          max={stravaPath?.latlng.length}
+          value={Math.floor(currentFrame / 2)}
+          onChange={handleRouteControl}
+        />
+      </div>
 
-      {currentPoint && routeLineString && lineCoordinates && (
-        <div className='col-span-3'>
-          {/* Mapbox parent component; each source renders a different layer onto the map */}
-          <Map
-            style={{ width: '70vw', height: '100vh' }}
-            {...viewState}
-            mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
-            ref={mapRef}
-            mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
-            terrain={{ source: 'mapbox-dem', exaggeration: 4 }}
-            onMove={handleMoveEvent}
-            onLoad={handleOnMapLoad}
-          >
-            {/* map sky layer  */}
-            <Source {...skySource}>
-              <Layer {...skyLayer} />
-            </Source>
-            {/* render full path of route on map  */}
-            <Source type='geojson' data={routeLineString}>
-              <Layer {...lineLayerStyle} />
-            </Source>
-            {/* render current point on route  */}
+      <div className='col-span-3 col-start-1'>
+        {/* Mapbox parent component; each source renders a different layer onto the map */}
+        <Map
+          style={{ width: '70vw', height: '100vh' }}
+          {...viewState}
+          mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
+          ref={mapRef}
+          mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
+          terrain={{ source: 'mapbox-dem', exaggeration: 4 }}
+          onMove={handleMoveEvent}
+          onLoad={handleOnMapLoad}
+        >
+          {/* map sky layer  */}
+          <Source {...skySource}>
+            <Layer {...skyLayer} />
+          </Source>
+          {/* render full path of route on map  */}
+          <Source type='geojson' data={routeLineString}>
+            <Layer {...lineLayerStyle} />
+          </Source>
+          {/* render current point on route  */}
+          {currentPoint && (
             <Source {...definePointSource(currentPoint)}>
               <Layer {...pointLayerStyle} />
             </Source>
-            {/* render animated line on route  */}
-            <Source {...defineLineSource(lineCoordinates)}>
-              <Layer {...animatedLineLayerStyle} />
-            </Source>
-          </Map>
-        </div>
-      )}
+          )}
+
+          {/* render animated line on route  */}
+          <Source {...defineLineSource(lineCoordinates)}>
+            <Layer {...animatedLineLayerStyle} />
+          </Source>
+        </Map>
+      </div>
 
       {/* <MetricsSidebar
         currentMetrics={currentMetrics}
