@@ -1,3 +1,4 @@
+import { bearing } from '@turf/turf';
 import {
   FeatureCollection,
   GeoJsonProperties,
@@ -73,11 +74,14 @@ export const initialViewState: ViewState = {
 };
 
 export const findInitialViewState = (path: StravaRouteStream) => {
+  const initialPoint = path.latlng[0];
+  const finalPoint = path.latlng[path.latlng.length - 1];
+
   return {
-    latitude: path.latlng[0][1],
-    longitude: path.latlng[0][0],
+    latitude: initialPoint[1],
+    longitude: initialPoint[0],
     zoom: 14,
-    bearing: 105,
+    bearing: bearing(initialPoint, finalPoint),
     pitch: 85,
     padding: {
       top: 1,
