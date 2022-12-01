@@ -6,7 +6,7 @@ import { RoutePoint, StravaRouteStream } from '@/api/types';
 type MetricsSidebarProps = {
   currentMetrics: RoutePoint;
   stravaPath: StravaRouteStream;
-  displayFrame: number;
+  currentFrame: number;
 };
 
 // type for rendering each metric on sidebar
@@ -19,7 +19,7 @@ type RenderMetrics = {
 export default function MetricsSidebar({
   currentMetrics,
   stravaPath,
-  displayFrame,
+  currentFrame,
 }: MetricsSidebarProps) {
   const renderMetrics: RenderMetrics[] = [
     {
@@ -51,7 +51,7 @@ export default function MetricsSidebar({
               <div className='col-span-6'>
                 <VictoryMetricChart
                   metricArray={metric.metricArray}
-                  displayFrame={displayFrame}
+                  currentFrame={currentFrame}
                 />
               </div>
             </div>

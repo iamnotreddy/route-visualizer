@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable unused-imports/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   FeatureCollection,
   GeoJsonProperties,
@@ -18,6 +17,8 @@ import Map, {
 } from 'react-map-gl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+import MetricsSidebar from '@/components/MetricsSidebar';
 
 import {
   returnSampledFrame,
@@ -49,7 +50,6 @@ export default function Dashboard() {
   // current animation frame index
   const [currentFrame, setCurrentFrame] = useState(0);
 
-  // array index to display the current metric and chart annotation in the animation
   const [displayFrame, setDisplayFrame] = useState(0);
 
   // current Mapbox ViewState, initialized to first point of strava route
@@ -76,12 +76,20 @@ export default function Dashboard() {
     setViewState(e.viewState);
   };
 
+  //  handles route animation according to radio slider position
   const handleRouteControl = (e: ChangeEvent<HTMLInputElement>) => {
     const inputFrame = parseInt(e.target.value);
 
     if (mapRef.current && stravaPath) {
+      // pan camera towards next frame
+      mapRef.current.panTo([
+        stravaPath?.latlng[inputFrame][0],
+        stravaPath?.latlng[inputFrame][1],
+      ]);
+
       setCurrentFrame(inputFrame);
-      // set line coordinates to next frame
+
+      // add, remove point based on inputFrame
       setLineCoordinates((prev) => {
         if (stravaPath) {
           return stravaPath.latlng.slice(0, inputFrame + 1);
@@ -89,10 +97,7 @@ export default function Dashboard() {
           return prev;
         }
       });
-      mapRef.current.panTo([
-        stravaPath?.latlng[inputFrame][0],
-        stravaPath?.latlng[inputFrame][1],
-      ]);
+
       setCurrentPoint(stravaPath.latlng[inputFrame]);
     }
   };
@@ -126,7 +131,7 @@ export default function Dashboard() {
     }
   }, [stravaPath]);
 
-  // samples frames sent to child components to reduce rendering rate
+  // samples frames sent to child components to reduce chart rendering rate
   useEffect(() => {
     let tempFrame;
 
@@ -207,11 +212,13 @@ export default function Dashboard() {
         </Map>
       </div>
 
-      {/* <MetricsSidebar
-        currentMetrics={currentMetrics}
-        stravaPath={stravaPath}
-        displayFrame={displayFrame}
-      /> */}
+      {stravaPath && currentMetrics && (
+        <MetricsSidebar
+          currentMetrics={currentMetrics}
+          stravaPath={stravaPath}
+          currentFrame={displayFrame}
+        />
+      )}
     </main>
   );
 }
