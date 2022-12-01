@@ -1,12 +1,6 @@
-import { interpolateBasis, quantize, zip } from 'd3';
 import { Position } from 'geojson';
 
-import {
-  ActivityStream,
-  ActivityStreamResponse,
-  RoutePoint,
-  StravaRouteStream,
-} from '@/api/types';
+import { ActivityStream, RoutePoint, StravaRouteStream } from '@/api/types';
 
 // returns [longitude, latitude] to account for mapbox quirk
 export const reverseLatLng = (coordinates: Position[]) => {
@@ -52,85 +46,24 @@ export const computePace = (point: RoutePoint) => {
   return minStr + ':' + secStr;
 };
 
-// draw strava path on map point by point using d3 interpolate
-export const drawStravaPath = (stravaPath: StravaRouteStream) => {
-  let totalInterpolated: Position[] = [];
-
-  for (let i = 0; i < stravaPath.latlng.length - 1; i++) {
-    const pairLocations = stravaPath.latlng.slice(i, i + 2);
-
-    const n =
-      Math.floor(
-        Math.max(
-          Math.abs(pairLocations[1][1] - pairLocations[0][1]),
-          Math.abs(pairLocations[1][0] - pairLocations[0][0])
-        )
-      ) + 2;
-
-    const lat = interpolateBasis(pairLocations.map((item) => item[1]));
-    const lng = interpolateBasis(pairLocations.map((item) => item[0]));
-
-    const _interpolated = zip(quantize(lng, n), quantize(lat, n));
-
-    totalInterpolated = [...totalInterpolated, ..._interpolated];
-  }
-
-  return [...totalInterpolated];
-};
-
-export const drawStravaPathRefactored = (
-  stravaData: ActivityStreamResponse
-) => {
-  let stravaPath;
-
-  if (stravaData.data[0][0].type == 'latlng') {
-    stravaPath = stravaData.data[0][0].data;
-  }
-
-  let totalInterpolated: Position[] = [];
-
-  if (stravaPath) {
-    for (let i = 0; i < stravaPath.length - 1; i++) {
-      const pairLocations = stravaPath.slice(i, i + 2);
-
-      const n =
-        Math.floor(
-          Math.max(
-            Math.abs(pairLocations[1][1] - pairLocations[0][1]),
-            Math.abs(pairLocations[1][0] - pairLocations[0][0])
-          )
-        ) + 2;
-
-      const lat = interpolateBasis(pairLocations.map((item) => item[1]));
-      const lng = interpolateBasis(pairLocations.map((item) => item[0]));
-
-      const _interpolated = zip(quantize(lng, n), quantize(lat, n));
-
-      totalInterpolated = [...totalInterpolated, ..._interpolated];
-    }
-  }
-
-  return [...totalInterpolated];
-};
-
 export const returnSampledFrame = (
   currentFrame: number,
   lastValidFrame: number,
   samplingRate?: number
 ) => {
-  // if no sampling rate is provided, set default of 50
+  // if no sampling rate is provided, set default of 25
   if (!samplingRate) {
     samplingRate = 25;
   }
 
   // if current frame is greater than last sampling interval, return last frame of metric array
-  if (lastValidFrame * 2 - currentFrame < samplingRate) {
+  if (lastValidFrame - currentFrame < samplingRate) {
     return lastValidFrame;
   }
 
   // only return if current frame hits sampling interval
   if (currentFrame % samplingRate == 0) {
-    return Math.floor(currentFrame / 2);
+    return Math.floor(currentFrame);
   }
 };
 
