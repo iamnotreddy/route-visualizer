@@ -8,7 +8,7 @@ import {
   Position,
 } from 'geojson';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Map, {
   Layer,
   MapRef,
@@ -20,7 +20,6 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import {
-  drawStravaPath,
   returnSampledFrame,
   transformActivityStreamResponse,
 } from '@/api/helpers';
@@ -40,17 +39,10 @@ import {
   StravaRouteStream,
 } from '@/api/types';
 
-// initialize variables that control animation
-let frameStartTime: number;
-let animation: number;
-const FPS = 60;
-const fpsInterval = 1000 % FPS;
-
 export default function Dashboard() {
   // get Strava activity ID from URL param
   const router = useRouter();
   const { slug } = router.query;
-  const [loading, setLoading] = useState(true);
 
   const [stravaPath, setStravaPath] = useState<StravaRouteStream>();
 
@@ -74,52 +66,35 @@ export default function Dashboard() {
     {} as FeatureCollection<Geometry, GeoJsonProperties>
   );
 
-  // the line animation point by point
-  const [interpolated, setInterpolated] = useState<Position[]>([]);
-
   // holds performance metrics at current route point
   const [currentMetrics, setCurrentMetrics] = useState<RoutePoint>();
 
   const mapRef = useRef<MapRef>(null);
-
-  const [rangeControl, setRangeControl] = useState(0);
 
   // change viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
 
-  const handleRouteControl = () => {
-    setCurrentFrame((currentFrame) => {
-      // increment next frame
-      const nextFrame = currentFrame + 1;
-      if (nextFrame > interpolated.length - 1) {
-        setInterpolated([]);
-        cancelAnimationFrame(animation);
-      }
+  const handleRouteControl = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputFrame = parseInt(e.target.value);
 
+    if (mapRef.current && stravaPath) {
+      setCurrentFrame(inputFrame);
       // set line coordinates to next frame
-      setLineCoordinates((lineCoordinates: Position[]) => {
-        if (mapRef.current && interpolated[nextFrame]) {
-          mapRef.current.panTo(
-            [interpolated[nextFrame][0], interpolated[nextFrame][1]],
-            { duration: 500 }
-          );
+      setLineCoordinates((prev) => {
+        if (stravaPath) {
+          return stravaPath.latlng.slice(0, inputFrame + 1);
+        } else {
+          return prev;
         }
-
-        if (!interpolated[nextFrame]) {
-          return [...lineCoordinates];
-        }
-
-        return [...lineCoordinates, interpolated[nextFrame]];
       });
-
-      // set current point to next frame
-      setCurrentPoint(interpolated[nextFrame]);
-
-      // return next frame to currentFrame state
-      return nextFrame;
-    });
+      mapRef.current.panTo([
+        stravaPath?.latlng[inputFrame][0],
+        stravaPath?.latlng[inputFrame][1],
+      ]);
+      setCurrentPoint(stravaPath.latlng[inputFrame]);
+    }
   };
 
   // load data from api
@@ -135,8 +110,8 @@ export default function Dashboard() {
         const res = (await response.json()) as ActivityStreamResponse;
 
         setStravaPath(transformActivityStreamResponse(res.data[0]));
-      } finally {
-        setLoading(false);
+      } catch {
+        alert('Route did not load successfully');
       }
     };
     getStravaData();
@@ -148,62 +123,8 @@ export default function Dashboard() {
       setViewState(findInitialViewState(stravaPath));
       setCurrentPoint(stravaPath.latlng[0]);
       setRouteLineString(findRouteLineString(stravaPath));
-      setLineCoordinates(stravaPath.latlng);
     }
   }, [stravaPath]);
-
-  // controls the route animation
-  // TODO: make a custom useRouteAnimation hook
-  // useEffect(() => {
-  //   const animateLine = (timestamp: number) => {
-  //     if (!frameStartTime) {
-  //       frameStartTime = timestamp;
-  //     }
-
-  //     const elapsed = timestamp - frameStartTime;
-  //     if (elapsed > fpsInterval) {
-  //       frameStartTime = timestamp - (elapsed % fpsInterval);
-
-  //       setCurrentFrame((currentFrame) => {
-  //         // increment next frame
-  //         const nextFrame = currentFrame + 1;
-  //         if (nextFrame > interpolated.length - 1) {
-  //           setInterpolated([]);
-  //           cancelAnimationFrame(animation);
-  //         }
-
-  //         // set line coordinates to next frame
-  //         setLineCoordinates((lineCoordinates: Position[]) => {
-  //           if (mapRef.current && interpolated[nextFrame]) {
-  //             mapRef.current.panTo(
-  //               [interpolated[nextFrame][0], interpolated[nextFrame][1]],
-  //               { duration: 500 }
-  //             );
-  //           }
-
-  //           if (!interpolated[nextFrame]) {
-  //             return [...lineCoordinates];
-  //           }
-
-  //           return [...lineCoordinates, interpolated[nextFrame]];
-  //         });
-
-  //         // set current point to next frame
-  //         setCurrentPoint(interpolated[nextFrame]);
-
-  //         // return next frame to currentFrame state
-  //         return nextFrame;
-  //       });
-  //     }
-  //     animation = requestAnimationFrame(animateLine);
-  //   };
-
-  //   if (interpolated.length > 0) {
-  //     animation = requestAnimationFrame(animateLine);
-  //   }
-
-  //   return () => cancelAnimationFrame(animation);
-  // }, [interpolated]);
 
   // samples frames sent to child components to reduce rendering rate
   useEffect(() => {
@@ -227,33 +148,27 @@ export default function Dashboard() {
 
   // initialize drawing of route
   const handleOnMapLoad = () => {
-    let interpolated;
     if (stravaPath) {
-      interpolated = drawStravaPath(stravaPath);
-    }
-
-    if (interpolated) {
-      setInterpolated(interpolated);
-      setLineCoordinates([interpolated[0]]);
+      setLineCoordinates([stravaPath.latlng[0]]);
     }
   };
 
   return (
     <main className='m-8 grid grid-cols-4 space-y-8'>
-      <div className='col-span-3'>
+      <div className='col-span-2 col-start-1'>
         <label
           id='default-range'
           className='mb-2 block text-sm font-medium text-gray-900 dark:text-white'
         >
-          Default range
+          Control Route Animation
         </label>
         <input
           className='dark:bg-gray-700" h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200'
           id='default-range'
           type='range'
           min={0}
-          max={stravaPath?.latlng.length}
-          value={Math.floor(currentFrame / 2)}
+          max={stravaPath ? stravaPath.latlng.length - 1 : 0}
+          value={currentFrame}
           onChange={handleRouteControl}
         />
       </div>
