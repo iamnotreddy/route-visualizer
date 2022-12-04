@@ -37,6 +37,27 @@ export default function MetricsSidebar({
       metricArray: stravaPath.time,
       currentMetric: formatTime(currentMetrics.time),
     },
+    {
+      metricTitle: 'Altitude',
+      metricArray: stravaPath.altitude,
+      currentMetric: currentMetrics.altitude
+        ? currentMetrics.altitude.toString()
+        : '0',
+    },
+    {
+      metricTitle: 'Grade',
+      metricArray: stravaPath.grade_smooth,
+      currentMetric: currentMetrics.grade_smooth
+        ? currentMetrics.grade_smooth.toString()
+        : '0',
+    },
+    {
+      metricTitle: 'Velocity',
+      metricArray: stravaPath.velocity_smooth,
+      currentMetric: currentMetrics.velocity_smooth
+        ? currentMetrics.velocity_smooth.toString()
+        : '0',
+    },
   ];
 
   return (

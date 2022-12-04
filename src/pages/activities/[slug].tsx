@@ -157,9 +157,9 @@ export default function Dashboard() {
 
   //
   useEffect(() => {
-    // Check if the animation is currently "playing"
     const routeLength = stravaPath?.latlng.length;
 
+    // Check if the animation is currently "playing"
     if (animationState === 'playing' && routeLength) {
       // Update the value of the slider every 50 milliseconds
       const interval = setInterval(() => {
@@ -176,13 +176,11 @@ export default function Dashboard() {
   // route animation
   useEffect(() => {
     if (mapRef.current && stravaPath && stravaPath.latlng[currentFrame]) {
-      mapRef.current.panTo([
-        stravaPath?.latlng[currentFrame][0],
-        stravaPath?.latlng[currentFrame][1],
-      ]);
-      setLineCoordinates(stravaPath.latlng.slice(0, currentFrame + 1));
+      const route = stravaPath.latlng;
+      mapRef.current.panTo([route[currentFrame][0], route[currentFrame][1]]);
+      setLineCoordinates(route.slice(0, currentFrame + 1));
 
-      setCurrentPoint(stravaPath.latlng[currentFrame]);
+      setCurrentPoint(route[currentFrame]);
     }
   }, [currentFrame]);
 
