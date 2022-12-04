@@ -38,6 +38,27 @@ export type ActivityStream =
       series_type: string;
       original_size: number;
       resolution: string;
+    }
+  | {
+      type: 'velocity_smooth';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
+    }
+  | {
+      type: 'grade_smooth';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
+    }
+  | {
+      type: 'altitude';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
     };
 
 export type RoutePoint = {
@@ -45,6 +66,9 @@ export type RoutePoint = {
   distance: number;
   time: number;
   routePoint?: Position;
+  grade_smooth?: number;
+  velocity_smooth?: number;
+  altitude?: number;
 };
 
 // strava data mappers
@@ -61,6 +85,9 @@ export type StravaRouteStream = {
   heartRate: number[];
   distance: number[];
   time: number[];
+  velocity_smooth: number[];
+  grade_smooth: number[];
+  altitude: number[];
 };
 
 // Strava Endpoint Types

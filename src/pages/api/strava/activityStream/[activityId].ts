@@ -16,7 +16,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { activityId } = req.query;
 
-  const dataScope = 'latlng,distance,heartrate,time';
+  const dataScope =
+    'latlng,distance,heartrate,time,velocity_smooth,grade_smooth,altitude';
 
   const url = `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=${dataScope}&access_token=${accessToken}`;
 
@@ -29,7 +30,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
   } catch (err) {
     return res.status(400).json({
-      status: 'loooool nice try',
+      status: err,
     });
   }
 };

@@ -17,6 +17,9 @@ export const transformActivityStreamResponse = (
     heartRate: [],
     distance: [],
     time: [],
+    velocity_smooth: [],
+    grade_smooth: [],
+    altitude: [],
   };
 
   data.map((activity) => {
@@ -31,6 +34,15 @@ export const transformActivityStreamResponse = (
     }
     if (activity.type == 'time') {
       transformed.time = activity.data;
+    }
+    if (activity.type == 'velocity_smooth') {
+      transformed.velocity_smooth = activity.data;
+    }
+    if (activity.type == 'grade_smooth') {
+      transformed.grade_smooth = activity.data;
+    }
+    if (activity.type == 'altitude') {
+      transformed.altitude = activity.data;
     }
   });
 
