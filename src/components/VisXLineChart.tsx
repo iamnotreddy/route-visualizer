@@ -36,7 +36,6 @@ export default function VisXLineChart({
   const data = transformArray(metricArray);
 
   // Define the dimensions and margins of the chart
-
   const width = 800;
   const height = 400;
   const margin = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -61,15 +60,9 @@ export default function VisXLineChart({
             round: true,
           }}
           yScale={{ type: 'linear', domain: [0, 200], range: [height, 50] }}
-          onPointerMove={(e: EventHandlerParams<object>) => {
-            let frame = 0;
-            if ('x' in e.datum) {
-              if (typeof e.datum.x == 'number') {
-                frame = e.datum.x;
-                setCurrentFrame(frame);
-              }
-            }
-          }}
+          onPointerMove={(e: EventHandlerParams<DataPoint>) =>
+            setCurrentFrame(e.datum.x)
+          }
         >
           <AnimatedAxis orientation='bottom' />
           <AnimatedGrid columns={false} numTicks={2} />
