@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 
 import '@/styles/globals.css';
 
+import Header from '@/components/layout/Header';
 import Layout from '@/components/layout/Layout';
 
 function MyApp({
@@ -13,6 +14,7 @@ function MyApp({
   return (
     <SessionProvider session={session}>
       <Layout>
+        <Header />
         <Component {...pageProps} />
       </Layout>
     </SessionProvider>
