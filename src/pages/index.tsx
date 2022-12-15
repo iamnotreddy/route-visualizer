@@ -1,5 +1,4 @@
 import { signIn } from 'next-auth/react';
-import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import ActivityList from '@/components/ActivityList';
@@ -35,7 +34,7 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <main className='layout bg-slate-100'>
+      <main className=' bg-slate-100'>
         <div className=' m-8 flex justify-center'>
           {activities[0] && activities.length > 0 && !loading ? (
             <ActivityList activities={activities} />
