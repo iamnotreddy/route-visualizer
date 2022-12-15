@@ -20,12 +20,9 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import AnimationControl from '@/components/AnimationControl';
-import MetricsSidebar from '@/components/MetricsSidebar';
+import VisXLineChart from '@/components/VisXLineChart';
 
-import {
-  returnSampledFrame,
-  transformActivityStreamResponse,
-} from '@/api/helpers';
+import { transformActivityStreamResponse } from '@/api/helpers';
 import { findInitialViewState, findRouteLineString } from '@/api/initialValues';
 import {
   animatedLineLayerStyle,
@@ -36,11 +33,7 @@ import {
   skyLayer,
   skySource,
 } from '@/api/layers';
-import {
-  ActivityStreamResponse,
-  RoutePoint,
-  StravaRouteStream,
-} from '@/api/types';
+import { ActivityStreamResponse, StravaRouteStream } from '@/api/types';
 
 export default function Dashboard() {
   // get Strava activity ID from URL param
@@ -51,8 +44,6 @@ export default function Dashboard() {
 
   // current animation frame index
   const [currentFrame, setCurrentFrame] = useState(0);
-
-  const [displayFrame, setDisplayFrame] = useState(0);
 
   // current Mapbox ViewState, initialized to first point of strava route
   const [viewState, setViewState] = useState<ViewState>();
@@ -67,9 +58,6 @@ export default function Dashboard() {
   const [routeLineString, setRouteLineString] = useState(
     {} as FeatureCollection<Geometry, GeoJsonProperties>
   );
-
-  // holds performance metrics at current route point
-  const [currentMetrics, setCurrentMetrics] = useState<RoutePoint>();
 
   // Set the initial state of the animation to "paused"
   const [animationState, setAnimationState] = useState('paused');
@@ -137,26 +125,6 @@ export default function Dashboard() {
     }
   }, [stravaPath]);
 
-  // samples frames sent to child components to reduce chart rendering rate
-  useEffect(() => {
-    let tempFrame;
-
-    if (stravaPath) {
-      const lastValidFrame = stravaPath.latlng.length - 1;
-      tempFrame = returnSampledFrame(currentFrame, lastValidFrame);
-    }
-
-    // only set display frame and metrics if current frame hits valid sample interval
-    if (tempFrame && stravaPath) {
-      setDisplayFrame(tempFrame);
-      setCurrentMetrics({
-        heartRate: stravaPath.heartRate[tempFrame],
-        distance: stravaPath.distance[tempFrame],
-        time: stravaPath.time[tempFrame],
-      });
-    }
-  }, [currentFrame]);
-
   //
   useEffect(() => {
     const routeLength = stravaPath?.latlng.length;
@@ -194,32 +162,11 @@ export default function Dashboard() {
   };
 
   return (
-    <main className='m-8 grid grid-cols-4 justify-evenly space-y-8'>
-      <div className='col-span-3'>
-        <div className='space-x-2'>
-          {stravaPath && (
-            <AnimationControl
-              animationState={animationState}
-              stravaPath={stravaPath}
-              currentFrame={currentFrame}
-              setAnimationState={setAnimationState}
-              setViewState={setViewState}
-              setCurrentPoint={setCurrentPoint}
-              setRouteLineString={setRouteLineString}
-              setLineCoordinates={setLineCoordinates}
-              setCurrentFrame={setCurrentFrame}
-              handleRouteControl={handleRouteControl}
-              sliderRef={sliderRef}
-            />
-          )}
-        </div>
-      </div>
-
-      <div className='col-span-3 col-start-1'>
+    <main className='m-4 flex flex-col justify-evenly'>
+      <div className='relative'>
         {/* Mapbox parent component; each source renders a different layer onto the map */}
-
         <Map
-          style={{ width: '70vw', height: '100vh' }}
+          style={{ width: '95vw', height: '50vh' }}
           {...viewState}
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
           ref={mapRef}
@@ -249,14 +196,32 @@ export default function Dashboard() {
             <Layer {...animatedLineLayerStyle} />
           </Source>
         </Map>
+        <div className='absolute bottom-0 left-20 w-1/2'>
+          {stravaPath && (
+            <AnimationControl
+              animationState={animationState}
+              stravaPath={stravaPath}
+              currentFrame={currentFrame}
+              setAnimationState={setAnimationState}
+              setViewState={setViewState}
+              setCurrentPoint={setCurrentPoint}
+              setRouteLineString={setRouteLineString}
+              setLineCoordinates={setLineCoordinates}
+              setCurrentFrame={setCurrentFrame}
+              handleRouteControl={handleRouteControl}
+              sliderRef={sliderRef}
+            />
+          )}
+        </div>
       </div>
-
-      {stravaPath && currentMetrics && (
-        <MetricsSidebar
-          currentMetrics={currentMetrics}
-          stravaPath={stravaPath}
-          currentFrame={displayFrame}
-        />
+      {stravaPath && (
+        <div className='col-span-4 col-start-1'>
+          <VisXLineChart
+            metricArray={stravaPath?.heartRate}
+            currentFrame={currentFrame}
+            setCurrentFrame={setCurrentFrame}
+          />
+        </div>
       )}
     </main>
   );
