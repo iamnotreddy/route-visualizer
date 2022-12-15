@@ -63,9 +63,11 @@ export default function VisXLineChart({
           yScale={{ type: 'linear', domain: [0, 200], range: [height, 50] }}
           onPointerMove={(e: EventHandlerParams<object>) => {
             let frame = 0;
-            if ('x' in e.datum && typeof e.datum.x == 'number') {
-              frame = e.datum.x;
-              setCurrentFrame(frame);
+            if ('x' in e.datum) {
+              if (typeof e.datum.x == 'number') {
+                frame = e.datum.x;
+                setCurrentFrame(frame);
+              }
             }
           }}
         >
