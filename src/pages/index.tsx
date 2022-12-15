@@ -1,73 +1,67 @@
-import * as React from 'react';
+import { signIn } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
+import ActivityList from '@/components/ActivityList';
+import Button from '@/components/buttons/Button';
 import Layout from '@/components/layout/Layout';
 import ArrowLink from '@/components/links/ArrowLink';
-import ButtonLink from '@/components/links/ButtonLink';
-import UnderlineLink from '@/components/links/UnderlineLink';
 import UnstyledLink from '@/components/links/UnstyledLink';
-import Seo from '@/components/Seo';
 
-/**
- * SVGR Support
- * Caveat: No React Props Type.
- *
- * You can override the next-env if the type is important to you
- * @see https://stackoverflow.com/questions/68103844/how-to-override-next-js-svg-module-declaration
- */
-import Vercel from '~/svg/Vercel.svg';
-
-// !STARTERCONF -> Select !STARTERCONF and CMD + SHIFT + F
-// Before you begin editing, follow all comments with `STARTERCONF`,
-// to customize the default configuration.
+import { ActivityListResponse, StravaActivity } from '@/api/types';
 
 export default function HomePage() {
+  const [activities, setActivities] = useState([] as StravaActivity[]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getActivityList = async () => {
+      try {
+        const response = await fetch('/api/strava/activities');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = (await response.json()) as ActivityListResponse;
+        setActivities(data.data[0]);
+      } finally {
+        setLoading(false);
+      }
+      // const activityData: StravaActivity[] = response['data'][0];
+    };
+    getActivityList();
+  }, []);
+
   return (
     <Layout>
-      {/* <Seo templateTitle='Home' /> */}
-      <Seo />
+      <main className=' bg-slate-100'>
+        <div className=' m-8 flex justify-center'>
+          {activities[0] && activities.length > 0 && !loading ? (
+            <ActivityList activities={activities} />
+          ) : (
+            <div className='space-y-4'>
+              <h1 className='mt-4'>Replay your favorite Strava activities</h1>
+              <Button
+                className='z-30'
+                variant='dark'
+                onClick={() => signIn('strava')}
+              >
+                Login
+              </Button>
 
-      <main>
-        <section className='bg-white'>
-          <div className='layout flex min-h-screen flex-col items-center justify-center text-center'>
-            <Vercel className='text-5xl' />
-            <h1 className='mt-4'>
-              Next.js + Tailwind CSS + TypeScript Starter
-            </h1>
-            <p className='mt-2 text-sm text-gray-800'>
-              A starter for Next.js, Tailwind CSS, and TypeScript with Absolute
-              Import, Seo, Link component, pre-configured with Husky{' '}
-            </p>
-            <p className='mt-2 text-sm text-gray-700'>
-              <ArrowLink href='https://github.com/theodorusclarence/ts-nextjs-tailwind-starter'>
-                See the repository
-              </ArrowLink>
-            </p>
-
-            <ButtonLink className='mt-6' href='/components' variant='light'>
-              See all components
-            </ButtonLink>
-
-            <UnstyledLink
-              href='https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Ftheodorusclarence%2Fts-nextjs-tailwind-starter'
-              className='mt-4'
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                width='92'
-                height='32'
-                src='https://vercel.com/button'
-                alt='Deploy with Vercel'
-              />
-            </UnstyledLink>
-
-            <footer className='absolute bottom-2 text-gray-700'>
-              © {new Date().getFullYear()} By{' '}
-              <UnderlineLink href='https://theodorusclarence.com?ref=tsnextstarter'>
-                Theodorus Clarence
-              </UnderlineLink>
-            </footer>
-          </div>
-        </section>
+              <UnstyledLink
+                href='https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Ftheodorusclarence%2Fts-nextjs-tailwind-starter'
+                className='mt-4'
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+              </UnstyledLink>
+            </div>
+          )}
+          <footer className='absolute bottom-2 text-gray-700'>
+            © {new Date().getFullYear()} By{' '}
+            <ArrowLink href='https://github.com/iamnotreddy'>raveen</ArrowLink>
+          </footer>
+        </div>
       </main>
     </Layout>
   );

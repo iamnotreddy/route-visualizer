@@ -6,7 +6,7 @@ import { RoutePoint, StravaRouteStream } from '@/api/types';
 type MetricsSidebarProps = {
   currentMetrics: RoutePoint;
   stravaPath: StravaRouteStream;
-  displayFrame: number;
+  currentFrame: number;
 };
 
 // type for rendering each metric on sidebar
@@ -19,7 +19,7 @@ type RenderMetrics = {
 export default function MetricsSidebar({
   currentMetrics,
   stravaPath,
-  displayFrame,
+  currentFrame,
 }: MetricsSidebarProps) {
   const renderMetrics: RenderMetrics[] = [
     {
@@ -37,6 +37,27 @@ export default function MetricsSidebar({
       metricArray: stravaPath.time,
       currentMetric: formatTime(currentMetrics.time),
     },
+    {
+      metricTitle: 'Altitude',
+      metricArray: stravaPath.altitude,
+      currentMetric: currentMetrics.altitude
+        ? currentMetrics.altitude.toString()
+        : '0',
+    },
+    {
+      metricTitle: 'Grade',
+      metricArray: stravaPath.grade_smooth,
+      currentMetric: currentMetrics.grade_smooth
+        ? currentMetrics.grade_smooth.toString()
+        : '0',
+    },
+    {
+      metricTitle: 'Velocity',
+      metricArray: stravaPath.velocity_smooth,
+      currentMetric: currentMetrics.velocity_smooth
+        ? currentMetrics.velocity_smooth.toString()
+        : '0',
+    },
   ];
 
   return (
@@ -51,7 +72,7 @@ export default function MetricsSidebar({
               <div className='col-span-6'>
                 <VictoryMetricChart
                   metricArray={metric.metricArray}
-                  displayFrame={displayFrame}
+                  currentFrame={currentFrame}
                 />
               </div>
             </div>

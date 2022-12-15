@@ -8,9 +8,9 @@ export const pointLayerStyle: LayerProps = {
   id: 'point',
   type: 'circle',
   paint: {
-    'circle-radius': 5,
-    'circle-color': 'pink',
-    'circle-stroke-width': 3,
+    'circle-radius': 4,
+    'circle-color': '#f6f3ee',
+    'circle-stroke-width': 2,
     'circle-stroke-color': 'black',
   },
 };
@@ -55,7 +55,7 @@ export const skySource: SourceProps = {
 export const lineLayerStyle: LayerProps = {
   id: 'line',
   type: 'line',
-  paint: { 'line-color': 'white', 'line-width': 8 },
+  paint: { 'line-color': '#004225', 'line-width': 5 },
 };
 
 export const defineLineSource = (coordinates: Position[]): SourceProps => {
@@ -80,8 +80,8 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'crimson',
-    'line-width': 3,
+    'line-color': '#f6f3ee',
+    'line-width': 2,
   },
 };
 

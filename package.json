@@ -18,14 +18,23 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@react-spring/web": "^9.5.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@turf/turf": "^6.5.0",
     "@types/d3": "^7.4.0",
     "@types/geojson": "^7946.0.10",
+    "@visx/group": "^2.10.0",
+    "@visx/scale": "^2.2.2",
+    "@visx/shape": "^2.12.2",
+    "@visx/xychart": "^2.16.0",
     "axios": "^1.1.2",
     "clsx": "^1.2.1",
     "connected-react-router": "^6.9.3",
     "d3": "^7.6.1",
+    "d3-time": "^3.1.0",
+    "date-fns": "^2.29.3",
     "geojson": "^0.5.0",
+    "heroicons": "^2.0.13",
     "http-proxy": "^1.18.1",
     "jotai": "^1.8.6",
     "mapbox-gl": "^2.10.0",
@@ -38,6 +47,9 @@
     "react-router-dom": "^6.4.1",
     "tailwind-merge": "^1.6.0",
     "victory": "^36.6.7"
+  },
+  "peerDependencies": {
+    "react-spring/web": "^8.x"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",

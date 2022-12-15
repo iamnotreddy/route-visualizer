@@ -9,14 +9,6 @@ module.exports = {
   // Uncoment to add domain whitelist
   images: {
     formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'dgalywyr863hv.cloudfront.net',
-        port: '',
-        pathname: '/pictures/athletes/***',
-      },
-    ],
   },
 
   // SVGR

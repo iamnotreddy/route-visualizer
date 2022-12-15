@@ -1,7 +1,7 @@
 import {
+  VictoryArea,
   VictoryAxis,
   VictoryChart,
-  VictoryLine,
   VictoryScatter,
 } from 'victory';
 
@@ -14,12 +14,12 @@ const transformArray = (input: number[]) => {
 
 type RouteMetricChartProps = {
   metricArray: number[];
-  displayFrame: number;
+  currentFrame: number;
 };
 
 export default function RouteMetricChart({
   metricArray,
-  displayFrame,
+  currentFrame,
 }: RouteMetricChartProps) {
   return (
     <div>
@@ -29,17 +29,22 @@ export default function RouteMetricChart({
             dependentAxis={true}
             style={{ axis: { stroke: 'none' } }}
           />
-          <VictoryLine
+          <VictoryArea
             data={transformArray(metricArray)}
             style={{
-              data: { stroke: '#005083', strokeWidth: '3' },
+              data: { fill: '#6aa68c', stroke: '#004225', strokeWidth: '3' },
             }}
           />
+
           <VictoryScatter
-            data={[transformArray(metricArray)[displayFrame]]}
+            data={[transformArray(metricArray)[currentFrame]]}
             size={5}
             style={{
-              data: { fill: '#ffb14e', stroke: 'black', strokeWidth: '2' },
+              data: { fill: '#f6f3ee', stroke: 'black', strokeWidth: '2' },
+            }}
+            animate={{
+              duration: 1000,
+              onLoad: { duration: 1000 },
             }}
           />
         </VictoryChart>
