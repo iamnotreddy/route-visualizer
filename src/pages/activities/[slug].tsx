@@ -217,7 +217,7 @@ export default function Dashboard() {
       {stravaPath && (
         <div className='col-span-4 col-start-1'>
           <VisXLineChart
-            metricArray={stravaPath?.heartRate}
+            metrics={stravaPath}
             currentFrame={currentFrame}
             setCurrentFrame={setCurrentFrame}
           />
