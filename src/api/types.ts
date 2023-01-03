@@ -109,3 +109,8 @@ export type StravaActivity = {
 export type StravaActivityAthlete = {
   id: string;
 };
+
+export type DataPoint = {
+  x: number;
+  y: number;
+};
