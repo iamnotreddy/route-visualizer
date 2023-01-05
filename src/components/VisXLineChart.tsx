@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 import ChooseMetricBar from '@/components/ChooseMetricBar';
 
 import { convertPaceValueForDisplay, generatePace } from '@/api/chartHelpers';
+import { calculateDomain } from '@/api/helpers';
 import { DataPoint, StravaRouteStream } from '@/api/types';
 
 type ChartProps = {
@@ -38,11 +39,10 @@ export default function VisXLineChart({
   // Define the dimensions and margins of the chart
   const width = 1000;
   const height = 300;
-  const margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
   const accessors = {
-    xAccessor: (d: DataPoint) => d.x,
-    yAccessor: (d: DataPoint) => d.y,
+    xAccessor: (d: DataPoint) => (d ? d.x : 0),
+    yAccessor: (d: DataPoint) => (d ? d.y : 0),
   };
 
   const [lineSeries, setLineSeries] = useState<DataPoint[]>();
@@ -66,6 +66,13 @@ export default function VisXLineChart({
     } else if (lineSeriesMetric == 'grade') {
       setLineSeries(transformArray(metrics.grade_smooth));
     }
+  }, [lineSeriesMetric, metrics]);
+
+  useEffect(() => {
+    const paceArray = generatePace(
+      transformArray(metrics.time),
+      transformArray(metrics.distance)
+    );
 
     if (areaSeriesMetric == 'heartRate') {
       setAreaSeries(transformArray(metrics.heartRate));
@@ -76,7 +83,7 @@ export default function VisXLineChart({
     } else if (areaSeriesMetric == 'grade') {
       setAreaSeries(transformArray(metrics.grade_smooth));
     }
-  }, [areaSeriesMetric, lineSeriesMetric, metrics]);
+  }, [areaSeriesMetric, metrics]);
 
   return (
     <div className='flex flex-row items-center space-x-4'>
@@ -86,14 +93,17 @@ export default function VisXLineChart({
           captureEvents={true}
           width={width}
           height={height}
-          margin={margin}
           xScale={{
             type: 'linear',
             domain: [0, lineSeries.length - 1],
+            zero: false,
+            nice: true,
           }}
           yScale={{
             type: 'linear',
-            domain: [0, lineSeries[lineSeries.length - 1].y],
+            domain: calculateDomain(lineSeries),
+            zero: false,
+            nice: true,
           }}
           onPointerMove={(e: EventHandlerParams<DataPoint>) =>
             setCurrentFrame(e.datum.x)
@@ -105,57 +115,60 @@ export default function VisXLineChart({
               data={lineSeries}
               {...accessors}
             />
-            <AnimatedAxis tickFormat={(v) => `${v}%`} orientation='left' />
+            <Annotation
+              dataKey='line'
+              datum={lineSeries[currentFrame]}
+              {...accessors}
+              dx={10}
+              dy={50}
+            >
+              <AnnotationLabel
+                title={lineSeriesMetric}
+                subtitle={
+                  lineSeriesMetric == 'pace'
+                    ? convertPaceValueForDisplay(lineSeries[currentFrame].y)
+                    : lineSeries[currentFrame].y.toString()
+                }
+                subtitleFontWeight={2}
+                showAnchorLine={false}
+                backgroundFill='rgba(0,150,150,0.1)'
+                backgroundPadding={10}
+              />
+              <AnnotationCircleSubject radius={4} stroke='green' />
+              <AnnotationConnector />
+            </Annotation>
+            <AnimatedAxis tickFormat={(v) => `${v}`} orientation='left' />
           </Group>
-          <Group top={0} left={10}>
+          <Group top={0} left={0}>
             <AnimatedAreaSeries
               dataKey='area'
               data={areaSeries}
               {...accessors}
               fillOpacity={0.4}
             />
-            <AnimatedAxis tickFormat={(v) => `${v}%`} orientation='right' />
+            <Annotation
+              dataKey='area'
+              datum={areaSeries[currentFrame]}
+              {...accessors}
+              dx={50}
+              dy={20}
+            >
+              <AnnotationLabel
+                title={areaSeriesMetric}
+                subtitle={
+                  lineSeriesMetric == 'pace'
+                    ? convertPaceValueForDisplay(lineSeries[currentFrame].y)
+                    : lineSeries[currentFrame].y.toString()
+                }
+                subtitleFontWeight={2}
+                showAnchorLine={false}
+                backgroundFill='rgba(0,150,150,0.1)'
+                backgroundPadding={10}
+              />
+              <AnnotationCircleSubject radius={4} stroke='green' />
+              <AnnotationConnector />
+            </Annotation>
           </Group>
-          <Annotation
-            dataKey='line'
-            datum={lineSeries[currentFrame]}
-            {...accessors}
-            dx={-10}
-            dy={50}
-          >
-            <AnnotationLabel
-              title={lineSeriesMetric}
-              subtitle={
-                lineSeriesMetric == 'pace'
-                  ? convertPaceValueForDisplay(lineSeries[currentFrame].y)
-                  : lineSeries[currentFrame].y.toString()
-              }
-              subtitleFontWeight={2}
-              showAnchorLine={false}
-              backgroundFill='rgba(0,150,150,0.1)'
-              backgroundPadding={10}
-            />
-            <AnnotationCircleSubject radius={4} stroke='green' />
-            <AnnotationConnector />
-          </Annotation>
-          <Annotation
-            dataKey='area'
-            datum={areaSeries[currentFrame]}
-            {...accessors}
-            dx={50}
-            dy={20}
-          >
-            <AnnotationLabel
-              title={areaSeriesMetric}
-              subtitle={areaSeries[currentFrame].y.toString()}
-              subtitleFontWeight={2}
-              showAnchorLine={false}
-              backgroundFill='rgba(0,150,150,0.1)'
-              backgroundPadding={10}
-            />
-            <AnnotationCircleSubject radius={4} stroke='green' />
-            <AnnotationConnector />
-          </Annotation>
         </XYChart>
       )}
       <ChooseMetricBar setCurrentMetric={setAreaSeriesMetric} />

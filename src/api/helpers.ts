@@ -1,6 +1,11 @@
 import { Position } from 'geojson';
 
-import { ActivityStream, RoutePoint, StravaRouteStream } from '@/api/types';
+import {
+  ActivityStream,
+  DataPoint,
+  RoutePoint,
+  StravaRouteStream,
+} from '@/api/types';
 
 // returns [longitude, latitude] to account for mapbox quirk
 export const reverseLatLng = (coordinates: Position[]) => {
@@ -102,4 +107,13 @@ export const formatTime = (time: number) => {
       hours.toString() + ':' + displayMinutes + ':' + displaySeconds;
   }
   return displayTime;
+};
+
+export const calculateDomain = (series: DataPoint[]) => {
+  const seriesPoints = series.map((point) => point.y);
+  const [minY, maxY] = [Math.min(...seriesPoints), Math.max(...seriesPoints)];
+
+  const padding = 0.02;
+
+  return [minY * (1 - padding), maxY * (1 + padding)];
 };
