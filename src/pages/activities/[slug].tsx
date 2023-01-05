@@ -98,6 +98,7 @@ export default function Dashboard() {
 
   // load data from api
   useEffect(() => {
+    let attempt = 1;
     const getStravaData = async () => {
       try {
         const response = await fetch(`/api/strava/activityStream/${slug}`);
@@ -110,11 +111,13 @@ export default function Dashboard() {
 
         setStravaPath(transformActivityStreamResponse(res.data[0]));
       } catch {
-        alert('Route did not load successfully');
+        alert(`error requesting data, attempt: ${attempt}`);
+        attempt++;
       }
     };
+
     getStravaData();
-  }, []);
+  }, [slug]);
 
   // set initial points on chart
   useEffect(() => {

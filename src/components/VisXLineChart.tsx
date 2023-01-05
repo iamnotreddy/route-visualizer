@@ -32,7 +32,6 @@ const transformArray = (input: number[]): DataPoint[] => {
 
 export default function VisXLineChart({
   metrics,
-  // eslint-disable-next-line unused-imports/no-unused-vars
   currentFrame,
   setCurrentFrame,
 }: ChartProps) {
@@ -67,13 +66,6 @@ export default function VisXLineChart({
     } else if (lineSeriesMetric == 'grade') {
       setLineSeries(transformArray(metrics.grade_smooth));
     }
-  }, [lineSeriesMetric, metrics]);
-
-  useEffect(() => {
-    const paceArray = generatePace(
-      transformArray(metrics.time),
-      transformArray(metrics.distance)
-    );
 
     if (areaSeriesMetric == 'heartRate') {
       setAreaSeries(transformArray(metrics.heartRate));
@@ -84,7 +76,7 @@ export default function VisXLineChart({
     } else if (areaSeriesMetric == 'grade') {
       setAreaSeries(transformArray(metrics.grade_smooth));
     }
-  }, [areaSeriesMetric, metrics]);
+  }, [areaSeriesMetric, lineSeriesMetric, metrics]);
 
   return (
     <div className='flex flex-row items-center space-x-4'>
@@ -107,7 +99,7 @@ export default function VisXLineChart({
             setCurrentFrame(e.datum.x)
           }
         >
-          <Group top={40} left={0}>
+          <Group top={0} left={0}>
             <AnimatedLineSeries
               dataKey='line'
               data={lineSeries}
@@ -115,7 +107,7 @@ export default function VisXLineChart({
             />
             <AnimatedAxis tickFormat={(v) => `${v}%`} orientation='left' />
           </Group>
-          <Group top={140} left={10}>
+          <Group top={0} left={10}>
             <AnimatedAreaSeries
               dataKey='area'
               data={areaSeries}
