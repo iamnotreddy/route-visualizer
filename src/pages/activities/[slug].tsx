@@ -131,11 +131,22 @@ export default function Dashboard() {
 
     // Check if the animation is currently "playing"
     if (animationState === 'playing' && routeLength) {
-      // Update the value of the slider every 50 milliseconds
+      // Update the value of the slider every 100 milliseconds
       const interval = setInterval(() => {
-        setCurrentFrame((prevValue) =>
-          prevValue < routeLength ? prevValue + 1 : prevValue
-        );
+        setCurrentFrame((prevValue) => {
+          let nextValue;
+          if (stravaPath.latlng[prevValue++]) {
+            nextValue = prevValue++;
+          } else {
+            nextValue = prevValue;
+          }
+
+          if (nextValue == stravaPath.latlng.length - 1) {
+            nextValue = 0;
+          }
+
+          return nextValue;
+        });
       }, 100);
 
       // Clear the interval when the component unmounts

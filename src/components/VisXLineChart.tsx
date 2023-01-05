@@ -1,11 +1,13 @@
+import { Group } from '@visx/group';
 import {
+  AnimatedAreaSeries,
+  AnimatedAxis,
+  AnimatedLineSeries,
   Annotation,
   AnnotationCircleSubject,
   AnnotationConnector,
   AnnotationLabel,
-  AreaSeries,
   EventHandlerParams,
-  LineSeries,
   XYChart,
 } from '@visx/xychart';
 import React, { useEffect, useState } from 'react';
@@ -35,9 +37,9 @@ export default function VisXLineChart({
   setCurrentFrame,
 }: ChartProps) {
   // Define the dimensions and margins of the chart
-  const width = 800;
+  const width = 1000;
   const height = 300;
-  // const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+  const margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
   const accessors = {
     xAccessor: (d: DataPoint) => d.x,
@@ -47,11 +49,8 @@ export default function VisXLineChart({
   const [lineSeries, setLineSeries] = useState<DataPoint[]>();
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
-  const [lineSeriesMetric, setLineSeriesMetric] = useState('pace');
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
-
-  // const lineSeries = transformArray(metrics.heartRate);
-  // const areaSeries = transformArray(metrics.altitude);
+  const [lineSeriesMetric, setLineSeriesMetric] = useState('heartRate');
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('pace');
 
   useEffect(() => {
     const paceArray = generatePace(
@@ -88,13 +87,14 @@ export default function VisXLineChart({
   }, [areaSeriesMetric, metrics]);
 
   return (
-    <div className='flex flex-row items-center'>
+    <div className='flex flex-row items-center space-x-4'>
       <ChooseMetricBar setCurrentMetric={setLineSeriesMetric} />
       {lineSeries && areaSeries && (
         <XYChart
           captureEvents={true}
           width={width}
           height={height}
+          margin={margin}
           xScale={{
             type: 'linear',
             domain: [0, lineSeries.length - 1],
@@ -107,13 +107,23 @@ export default function VisXLineChart({
             setCurrentFrame(e.datum.x)
           }
         >
-          <LineSeries dataKey='line' data={lineSeries} {...accessors} />
-          <AreaSeries
-            dataKey='area'
-            data={areaSeries}
-            {...accessors}
-            fillOpacity={0.4}
-          />
+          <Group top={40} left={0}>
+            <AnimatedLineSeries
+              dataKey='line'
+              data={lineSeries}
+              {...accessors}
+            />
+            <AnimatedAxis tickFormat={(v) => `${v}%`} orientation='left' />
+          </Group>
+          <Group top={140} left={10}>
+            <AnimatedAreaSeries
+              dataKey='area'
+              data={areaSeries}
+              {...accessors}
+              fillOpacity={0.4}
+            />
+            <AnimatedAxis tickFormat={(v) => `${v}%`} orientation='right' />
+          </Group>
           <Annotation
             dataKey='line'
             datum={lineSeries[currentFrame]}
@@ -154,22 +164,6 @@ export default function VisXLineChart({
             <AnnotationCircleSubject radius={4} stroke='green' />
             <AnnotationConnector />
           </Annotation>
-
-          {/* <Tooltip<DataPoint>
-            showSeriesGlyphs
-            renderTooltip={({ tooltipData }) => {
-              if (tooltipData?.nearestDatum && tooltipData.nearestDatum) {
-                return (
-                  <div>
-                    <p style={{ color: 'black' }}>
-                      {tooltipData.datumByKey['Grade'].datum.y}
-                    </p>
-                    <p>{tooltipData.nearestDatum.datum.y}</p>
-                  </div>
-                );
-              }
-            }}
-          /> */}
         </XYChart>
       )}
       <ChooseMetricBar setCurrentMetric={setAreaSeriesMetric} />
