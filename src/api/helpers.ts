@@ -117,3 +117,10 @@ export const calculateDomain = (series: DataPoint[]) => {
 
   return [minY * (1 - padding), maxY * (1 + padding)];
 };
+
+export const transformMetricToDataPoint = (input: number[]): DataPoint[] => {
+  return input.map((pt, idx) => ({
+    x: idx,
+    y: pt,
+  }));
+};

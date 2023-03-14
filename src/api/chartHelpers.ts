@@ -45,6 +45,14 @@ export const generatePace = (
   return paceArray;
 };
 
+export const generatePacePoint = (time: number, distance: number) => {
+  const minutes = time / 60;
+  const miles = distance * 0.00062137;
+  const pace = minutes / miles;
+
+  return pace;
+};
+
 export const convertPaceValueForDisplay = (pace: number) => {
   const minutes = Math.floor(pace);
   const seconds = Math.floor((pace - Math.floor(pace)) * 60);
