@@ -1,5 +1,6 @@
 import {
   AnimatedAreaSeries,
+  AnimatedLineSeries,
   Annotation,
   AnnotationCircleSubject,
   AnnotationConnector,
@@ -12,7 +13,7 @@ import React, { useEffect, useState } from 'react';
 import ChooseMetricBar from '@/components/ChooseMetricBar';
 
 import { convertPaceValueForDisplay, generatePace } from '@/api/chartHelpers';
-import { calculateDomain } from '@/api/helpers';
+import { calculateDomain, transformMetricToDataPoint } from '@/api/helpers';
 import { DataPoint, StravaRouteStream } from '@/api/types';
 
 type ChartProps = {
@@ -21,20 +22,13 @@ type ChartProps = {
   setCurrentFrame: (newValue: number) => void;
 };
 
-const transformArray = (input: number[]): DataPoint[] => {
-  return input.map((pt, idx) => ({
-    x: idx,
-    y: pt,
-  }));
-};
-
 export default function VisXLineChart({
   metrics,
   currentFrame,
   setCurrentFrame,
 }: ChartProps) {
   // Define the dimensions and margins of the chart
-  const width = 1000;
+  const width = 1100;
 
   const accessors = {
     xAccessor: (d: DataPoint) => (d ? d.x : 0),
@@ -47,24 +41,37 @@ export default function VisXLineChart({
 
   useEffect(() => {
     const paceArray = generatePace(
-      transformArray(metrics.time),
-      transformArray(metrics.distance)
+      transformMetricToDataPoint(metrics.time),
+      transformMetricToDataPoint(metrics.distance)
     );
 
     if (areaSeriesMetric == 'heartRate') {
-      setAreaSeries(transformArray(metrics.heartRate));
-    } else if (areaSeriesMetric == 'distance') {
-      setAreaSeries(transformArray(metrics.distance));
+      setAreaSeries(transformMetricToDataPoint(metrics.heartRate));
+    } else if (areaSeriesMetric == 'elevation') {
+      setAreaSeries(transformMetricToDataPoint(metrics.altitude));
     } else if (areaSeriesMetric == 'pace') {
       setAreaSeries(paceArray);
     } else if (areaSeriesMetric == 'grade') {
-      setAreaSeries(transformArray(metrics.grade_smooth));
+      setAreaSeries(transformMetricToDataPoint(metrics.grade_smooth));
     }
   }, [areaSeriesMetric, metrics]);
 
+  const fillStyles = {
+    heartRate: '#f9a8d4',
+    pace: '#059669',
+    elevation: '#d8b4fe',
+    grade: '#f59e0b',
+  };
+
+  type FillStylesKeys = keyof typeof fillStyles;
+  const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
+
   return (
     <div className='flex flex-row items-center space-x-4'>
-      <ChooseMetricBar setCurrentMetric={setAreaSeriesMetric} />
+      <ChooseMetricBar
+        setCurrentMetric={setAreaSeriesMetric}
+        currentMetric={areaSeriesMetric}
+      />
       {areaSeries && (
         <XYChart
           captureEvents={true}
@@ -90,7 +97,14 @@ export default function VisXLineChart({
             dataKey='area'
             data={areaSeries}
             {...accessors}
-            fillOpacity={0.4}
+            fillOpacity={0.6}
+            fill={currentFillColor}
+          />
+          <AnimatedLineSeries
+            dataKey='area'
+            data={areaSeries}
+            {...accessors}
+            stroke='#334155'
           />
           <Annotation
             dataKey='area'
