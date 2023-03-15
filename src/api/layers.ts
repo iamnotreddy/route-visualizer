@@ -77,6 +77,26 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
   };
 };
 
+// export const findPolygon = (coordinates: Position[]): SourceProps => {
+//   const boundingBox = lineString(coordinates);
+//   return {
+//     type: 'geojson',
+//     data: {
+//       type: 'FeatureCollection',
+//       features: [
+//         {
+//           type: 'Feature',
+//           geometry: {
+//             type: 'Polygon',
+//             coordinates: boundingBox.bbox,
+//           },
+//           properties: {},
+//         },
+//       ],
+//     },
+//   };
+// };
+
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {

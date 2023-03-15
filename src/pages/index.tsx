@@ -23,6 +23,7 @@ export default function HomePage() {
         }
 
         const data = (await response.json()) as ActivityListResponse;
+
         setActivities(data.data[0]);
       } finally {
         setLoading(false);
