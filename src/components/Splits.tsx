@@ -1,3 +1,4 @@
+import { animated, useSprings } from '@react-spring/web';
 import React from 'react';
 
 import { formatSecondsToPace } from '@/api/chartHelpers';
@@ -21,26 +22,34 @@ export default function Splits({ metricArray, metricType }: SplitsProps) {
   type FillStylesKeys = keyof typeof fillStyles;
   const currentFillColor = fillStyles[metricType as FillStylesKeys];
 
+  const springs = useSprings(
+    metricArray.length,
+    metricArray.map((lap) => ({
+      width: 0,
+      to: { width: (lap / svgNormalizeValue) * 100 },
+    }))
+  );
+
   return (
     <div className='grid grid-cols-6 items-start'>
       {metricArray.length > 0 &&
-        metricArray.map((value, index) => {
+        springs.map((value, index) => {
           return (
             <React.Fragment key={index}>
               <div>{index}</div>
               <svg className='col-span-4' viewBox='0 0 100 10'>
-                <rect
+                <animated.rect
                   x='0'
                   y='0'
-                  width={`${(value / svgNormalizeValue) * 100}%`}
+                  width={value.width}
                   height='10'
                   fill={currentFillColor}
                 />
               </svg>
               <div>
                 {metricType == 'pace'
-                  ? formatSecondsToPace(value)
-                  : Math.floor(value)}
+                  ? formatSecondsToPace(metricArray[index])
+                  : Math.floor(metricArray[index])}
               </div>
             </React.Fragment>
           );
