@@ -71,6 +71,7 @@ export default function VisXLineChart({
       <ChooseMetricBar
         setCurrentMetric={setAreaSeriesMetric}
         currentMetric={areaSeriesMetric}
+        orientation='vertical'
       />
       {areaSeries && (
         <XYChart

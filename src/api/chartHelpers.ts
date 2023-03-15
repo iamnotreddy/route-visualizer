@@ -73,3 +73,13 @@ export const convertPaceToEntireArray = (paceStream: DataPoint[]) => {
 
   return conversion;
 };
+
+export const formatSecondsToPace = (seconds: number) => {
+  const displayMinutes = Math.floor(seconds / 60);
+  const displaySeconds = Math.floor(seconds % 60);
+  const displayTime = `${displayMinutes}:${displaySeconds
+    .toString()
+    .padStart(2, '0')}`;
+
+  return displayTime;
+};

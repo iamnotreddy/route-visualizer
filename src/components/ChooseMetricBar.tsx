@@ -3,17 +3,25 @@ import { Dispatch, SetStateAction } from 'react';
 type ChooseMetricBarProps = {
   currentMetric: string;
   setCurrentMetric: Dispatch<SetStateAction<string>>;
+  orientation: 'horizontal' | 'vertical';
 };
+
+type Icon = {
+  name: string;
+  path: string;
+  baseClass: string;
+  selectedClass: string;
+};
+
 export default function ChooseMetricBar({
   currentMetric,
   setCurrentMetric,
+  orientation,
 }: ChooseMetricBarProps) {
-  type Icon = {
-    name: string;
-    path: string;
-    baseClass: string;
-    selectedClass: string;
-  };
+  const tailwindStyle =
+    orientation == 'vertical'
+      ? 'flex-col items-center space-y-2'
+      : 'flex-row items-center space-x-2';
 
   const heroIconPaths: Icon[] = [
     {
@@ -71,7 +79,7 @@ export default function ChooseMetricBar({
   };
 
   return (
-    <div className='flex flex-col items-center space-y-2'>
+    <div className={`flex ${tailwindStyle}`}>
       {heroIconPaths.map((icon) => {
         return (
           <button

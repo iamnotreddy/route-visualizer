@@ -1,11 +1,14 @@
 import { animated, useTrail } from '@react-spring/web';
-import React from 'react';
+import { format } from 'date-fns';
+import React, { useState } from 'react';
 
+import ChooseMetricBar from '@/components/ChooseMetricBar';
 import {
   DistanceComponent,
   PaceComponent,
   TimeComponent,
 } from '@/components/MetricDisplay';
+import Splits from '@/components/Splits';
 
 import { ActivitySplits, StravaRouteStream } from '@/api/types';
 
@@ -43,20 +46,43 @@ export const ActivityOverview = ({
   metrics,
   splits,
 }: ActivityOverviewProps) => {
+  const [currentSplitSeries, setCurrentSplitSeries] = useState('pace');
+
+  const chooseSplitsArray = () => {
+    // default to pace
+    let returnArray = splits.map((lap) => lap.moving_time);
+    if (currentSplitSeries == 'pace') {
+      returnArray = splits.map((lap) => lap.moving_time);
+    } else if (currentSplitSeries == 'heartRate') {
+      returnArray = splits.map((lap) => lap.average_heartrate);
+    } else if (currentSplitSeries == 'elevation') {
+      returnArray = splits.map((lap) => lap.total_elevation_gain);
+    } else if (currentSplitSeries == 'grade') {
+      returnArray = splits.map((lap) => lap.average_cadence);
+    } else {
+      returnArray = splits.map((lap) => lap.moving_time);
+    }
+    return returnArray;
+  };
+
+  const formattedActivityDate = format(
+    new Date(splits[0].start_date_local),
+    'EEEE, MMMM d yyyy'
+  );
+
   return (
     <div
       style={{ width: '22vw', height: '50vh' }}
-      className='space-y-2 border-2 border-dashed border-slate-300 p-4'
+      className='space-y-2 overflow-hidden p-4'
     >
       <p className='text-2xl font-bold'>Evening Run</p>
       <div className='flex flex-row items-center space-x-1'>
-        <p className='items-center text-xs font-light text-slate-900'>
-          Friday, December 14 2022
+        <p className='items-center text-sm font-light text-slate-900'>
+          {formattedActivityDate}
         </p>
         <p className='font-thin text-slate-400  '>|</p>
-        <p className='text-xs font-light text-slate-900'>New York, NY</p>
+        <p className='text-sm font-light text-slate-900'>New York, NY</p>
       </div>
-
       <div className='flex flex-row items-center space-x-2 text-3xl '>
         <DistanceComponent
           distance={metrics.distance[metrics.distance.length - 1]}
@@ -74,20 +100,16 @@ export const ActivityOverview = ({
           showMetricTitle
         />
       </div>
-      <div className='flex flex-col'>
-        {splits.length > 0 &&
-          splits.map((lap, index) => {
-            return (
-              <div key={lap.id} className='flex flex-row space-x-4'>
-                <p>{index}</p>
-                <svg>
-                  <rect width='25%' height='5%' fill='blue' />
-                </svg>
-                <p>{lap.average_speed}</p>
-                <p>{lap.total_elevation_gain}</p>
-              </div>
-            );
-          })}
+      <div className='flex flex-col space-y-4'>
+        <ChooseMetricBar
+          currentMetric={currentSplitSeries}
+          setCurrentMetric={setCurrentSplitSeries}
+          orientation='horizontal'
+        />
+        <Splits
+          metricArray={chooseSplitsArray()}
+          metricType={currentSplitSeries}
+        />
       </div>
     </div>
   );
