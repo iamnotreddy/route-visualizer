@@ -10,6 +10,7 @@ import {
 } from '@/components/MetricDisplay';
 import Splits from '@/components/Splits';
 
+import { metersToMiles } from '@/api/helpers';
 import { ActivitySplits, StravaRouteStream } from '@/api/types';
 
 type ActivityOverviewProps = {
@@ -17,6 +18,7 @@ type ActivityOverviewProps = {
   userNotes: string;
   metrics: StravaRouteStream;
   splits: ActivitySplits[];
+  currentFrame: number;
 };
 
 export const Trail: React.FC<{ open: boolean; children: React.ReactNode }> = ({
@@ -45,8 +47,20 @@ export const Trail: React.FC<{ open: boolean; children: React.ReactNode }> = ({
 export const ActivityOverview = ({
   metrics,
   splits,
+  currentFrame,
 }: ActivityOverviewProps) => {
   const [currentSplitSeries, setCurrentSplitSeries] = useState('pace');
+
+  const returnCurrentSplit = (
+    distanceArray: number[],
+    currentFrame: number
+  ) => {
+    const distance = distanceArray[currentFrame];
+    const miles = metersToMiles(distance);
+    return Math.floor(parseInt(miles));
+  };
+
+  const currentSplit = returnCurrentSplit(metrics.distance, currentFrame);
 
   const chooseSplitsArray = () => {
     // default to pace
@@ -109,6 +123,7 @@ export const ActivityOverview = ({
         <Splits
           metricArray={chooseSplitsArray()}
           metricType={currentSplitSeries}
+          currentSplit={currentSplit}
         />
       </div>
     </div>

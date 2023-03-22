@@ -287,6 +287,7 @@ export default function Dashboard() {
               userNotes=''
               metrics={stravaPath}
               splits={splits}
+              currentFrame={currentFrame}
             />
           </Trail>
         )}
@@ -307,19 +308,3 @@ export default function Dashboard() {
     </main>
   );
 }
-
-// <div className='ml-20 flex h-1/6 flex-row items-center justify-start space-x-12'>
-//               <TimeComponent
-//                 time={stravaPath.time[currentFrame]}
-//                 showMetricTitle
-//               />
-//               <DistanceComponent
-//                 distance={stravaPath.distance[currentFrame]}
-//                 showMetricTitle
-//               />
-//               <PaceComponent
-//                 time={stravaPath.time[currentFrame]}
-//                 distance={stravaPath.distance[currentFrame]}
-//                 showMetricTitle
-//               />
-//             </div>

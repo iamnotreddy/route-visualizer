@@ -6,9 +6,14 @@ import { formatSecondsToPace } from '@/api/chartHelpers';
 type SplitsProps = {
   metricArray: number[];
   metricType: string;
+  currentSplit: number;
 };
 
-export default function Splits({ metricArray, metricType }: SplitsProps) {
+export default function Splits({
+  metricArray,
+  metricType,
+  currentSplit,
+}: SplitsProps) {
   // used to calculate svg rect length; add 20% chart padding
   const svgNormalizeValue = Math.max(...metricArray) * 1.2;
 
@@ -30,6 +35,15 @@ export default function Splits({ metricArray, metricType }: SplitsProps) {
     }))
   );
 
+  const returnCurrentSplitStyle = (
+    currentSplit: number,
+    mappedSplit: number
+  ) => {
+    if (currentSplit === mappedSplit) {
+      return true;
+    }
+  };
+
   return (
     <div className='grid grid-cols-6 items-start space-y-1'>
       {metricArray.length > 0 &&
@@ -45,8 +59,26 @@ export default function Splits({ metricArray, metricType }: SplitsProps) {
                   height='10'
                   fill={currentFillColor}
                 />
+                {returnCurrentSplitStyle(currentSplit, index) && (
+                  <svg className='col-span-4' viewBox='0 0 100 10'>
+                    <animated.rect
+                      x='0'
+                      y='0'
+                      width={value.width}
+                      height='20'
+                      fill='slate'
+                      fillOpacity={0.4}
+                    />
+                  </svg>
+                )}
               </svg>
-              <div>
+              <div
+                className={
+                  returnCurrentSplitStyle(currentSplit, index)
+                    ? 'scale-125 font-semibold'
+                    : ''
+                }
+              >
                 {metricType == 'pace'
                   ? formatSecondsToPace(metricArray[index])
                   : Math.floor(metricArray[index])}
