@@ -213,19 +213,10 @@ export default function Dashboard() {
     }
   };
 
-  const baseClass =
-    'h-5 w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-purple-300 animate-pulse';
-  const selectedClass =
-    'h-7 w-7 fill-purple-300 stroke-zinc-700 stroke-2 hover:scale-150';
-
   const mapSpring = useSpring({
     width: isSidebarOpen ? '75vw' : '95vw',
     height: isSidebarOpen ? '50vh' : '85vh',
     config: { tension: 100 },
-  });
-
-  const { transform } = useSpring({
-    transform: isSidebarOpen ? 'rotate(0deg)' : 'rotate(2340deg)',
   });
 
   useEffect(() => {
@@ -282,26 +273,13 @@ export default function Dashboard() {
                 setCurrentFrame={setCurrentFrame}
                 handleRouteControl={handleRouteControl}
                 sliderRef={sliderRef}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
               />
             )}
           </div>
         </div>
-        <div>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='currentColor'
-            className={isSidebarOpen ? baseClass : selectedClass}
-            onClick={() => setIsSidebarOpen((prev) => !prev)}
-          >
-            <animated.path
-              fillRule='evenodd'
-              d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z'
-              clipRule='evenodd'
-              style={{ transform, transformOrigin: 'center' }}
-            />
-          </svg>
-        </div>
+
         {stravaPath && hasMapLoaded && (
           <Trail open={isSidebarOpen}>
             <ActivityOverview
@@ -309,6 +287,7 @@ export default function Dashboard() {
               userNotes=''
               metrics={stravaPath}
               splits={splits}
+              currentFrame={currentFrame}
             />
           </Trail>
         )}
@@ -329,19 +308,3 @@ export default function Dashboard() {
     </main>
   );
 }
-
-// <div className='ml-20 flex h-1/6 flex-row items-center justify-start space-x-12'>
-//               <TimeComponent
-//                 time={stravaPath.time[currentFrame]}
-//                 showMetricTitle
-//               />
-//               <DistanceComponent
-//                 distance={stravaPath.distance[currentFrame]}
-//                 showMetricTitle
-//               />
-//               <PaceComponent
-//                 time={stravaPath.time[currentFrame]}
-//                 distance={stravaPath.distance[currentFrame]}
-//                 showMetricTitle
-//               />
-//             </div>
