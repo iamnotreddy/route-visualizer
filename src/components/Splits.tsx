@@ -31,7 +31,7 @@ export default function Splits({ metricArray, metricType }: SplitsProps) {
   );
 
   return (
-    <div className='grid grid-cols-6 items-start'>
+    <div className='grid grid-cols-6 items-start space-y-1'>
       {metricArray.length > 0 &&
         springs.map((value, index) => {
           return (
