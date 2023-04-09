@@ -72,7 +72,9 @@ export default function Dashboard() {
   );
 
   // Set the initial state of the animation to "paused"
-  const [animationState, setAnimationState] = useState('paused');
+  const [animationState, setAnimationState] = useState<'paused' | 'playing'>(
+    'paused'
+  );
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -200,7 +202,6 @@ export default function Dashboard() {
       const route = stravaPath.latlng;
       mapRef.current.panTo([route[currentFrame][0], route[currentFrame][1]]);
       setLineCoordinates(route.slice(0, currentFrame + 1));
-
       setCurrentPoint(route[currentFrame]);
     }
   }, [currentFrame]);
@@ -222,6 +223,21 @@ export default function Dashboard() {
   useEffect(() => {
     setIsSidebarOpen((prev) => !prev);
   }, [hasMapLoaded]);
+
+  // control sidebar with spacebar
+  useEffect(() => {
+    const handleSpaceBar = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        setIsSidebarOpen((prev) => !prev);
+      }
+    };
+
+    document.addEventListener('keydown', handleSpaceBar);
+
+    return () => {
+      document.removeEventListener('keydown', handleSpaceBar);
+    };
+  }, []);
 
   return (
     <main className='m-4 flex flex-col justify-evenly'>
