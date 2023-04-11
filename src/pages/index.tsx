@@ -34,14 +34,12 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <main className=' bg-slate-100'>
-        <div className='flex flex-col items-center space-y-4 '>
-          <h1 className='mt-8 font-extralight'>Your Activities</h1>
-
+      <main className=' h-screen bg-slate-100'>
+        <div className='flex flex-col items-center space-y-4'>
           {activities[0] && activities.length > 0 && !loading ? (
             <ActivityList activities={activities} />
           ) : (
-            <div className='space-y-4'>
+            <div className='flex flex-col items-center justify-center space-y-4'>
               <h1 className='mt-4'>Replay your favorite Strava activities</h1>
               <Button
                 className='z-30'

@@ -96,7 +96,7 @@ export default function ActivityRow({ activity }: ActivityListProps) {
   return (
     <>
       <UnstyledLink href={`/activities/${activity.id}`}>
-        <div className='flex items-center space-x-4 p-4'>
+        <div className='items-center space-x-4 p-4 md:flex'>
           <div className='flex flex-1 flex-col space-y-2 '>
             <div className='flex flex-row space-x-4'>
               <div className='flex flex-col p-2'>
