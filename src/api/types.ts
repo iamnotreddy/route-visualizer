@@ -134,6 +134,11 @@ export type StravaActivity = {
   timezone: string;
   start_latlng: Position[];
   end_latlng: Position[];
+  map: {
+    summary_polyline: string;
+  };
+  average_heartrate: number;
+  total_elevation_gain: number;
 };
 
 export type StravaActivityAthlete = {
