@@ -17,7 +17,7 @@ type AnimationControlProps = {
   currentFrame: number;
   isSidebarOpen: boolean;
   sliderRef: MutableRefObject<null>;
-  setAnimationState: (animationState: string) => void;
+  setAnimationState: (animationState: 'paused' | 'playing') => void;
   setViewState: (viewState: ViewState) => void;
   setCurrentPoint: (currentPoint: Position) => void;
   setRouteLineString: (

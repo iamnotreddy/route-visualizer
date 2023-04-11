@@ -28,7 +28,6 @@ export default function HomePage() {
       } finally {
         setLoading(false);
       }
-      // const activityData: StravaActivity[] = response['data'][0];
     };
     getActivityList();
   }, []);
@@ -36,7 +35,9 @@ export default function HomePage() {
   return (
     <Layout>
       <main className=' bg-slate-100'>
-        <div className=' m-8 flex justify-center'>
+        <div className='flex flex-col items-center space-y-4 '>
+          <h1 className='mt-8 font-extralight'>Your Activities</h1>
+
           {activities[0] && activities.length > 0 && !loading ? (
             <ActivityList activities={activities} />
           ) : (
@@ -58,7 +59,7 @@ export default function HomePage() {
               </UnstyledLink>
             </div>
           )}
-          <footer className='absolute bottom-2 text-gray-700'>
+          <footer className=' text-gray-700'>
             © {new Date().getFullYear()} By{' '}
             <ArrowLink href='https://github.com/iamnotreddy'>raveen</ArrowLink>
           </footer>
