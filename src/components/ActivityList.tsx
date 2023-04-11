@@ -8,9 +8,12 @@ type ActivityListProps = {
 
 export default function ActivityList({ activities }: ActivityListProps) {
   return (
-    <div className='layout z-20 m-8 h-96 overflow-auto shadow-lg'>
-      {activities.map((activity) => (
-        <div className=' hover:bg-green-100' key={activity.id}>
+    <div className='flex flex-col space-y-4  border-2 border-slate-200 p-4 shadow-2xl'>
+      {activities.slice(0, 2).map((activity) => (
+        <div
+          className='border-2 border-slate-500 hover:scale-105 hover:bg-emerald-50'
+          key={activity.id}
+        >
           <ActivityRow activity={activity} />
         </div>
       ))}

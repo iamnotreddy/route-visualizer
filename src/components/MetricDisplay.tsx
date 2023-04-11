@@ -34,7 +34,7 @@ export const DistanceComponent = ({
   });
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col '>
       <div className='flex flex-row items-center font-light'>
         <animated.div>{number.to((val) => val.toFixed(1))}</animated.div>
         <p className='ml-1 text-xs'>mi</p>
