@@ -34,34 +34,36 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <main className=' h-screen bg-slate-100'>
-        <div className='flex flex-col items-center space-y-4'>
-          {activities[0] && activities.length > 0 && !loading ? (
-            <ActivityList activities={activities} />
-          ) : (
-            <div className='flex flex-col items-center justify-center space-y-4'>
-              <h1 className='mt-4'>Replay your favorite Strava activities</h1>
-              <Button
-                className='z-30'
-                variant='dark'
-                onClick={() => signIn('strava')}
-              >
-                Login
-              </Button>
-
-              <UnstyledLink
-                href='https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Ftheodorusclarence%2Fts-nextjs-tailwind-starter'
-                className='mt-4'
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-              </UnstyledLink>
+      <main className='flex min-h-screen flex-grow flex-col items-center justify-center overflow-hidden bg-slate-100'>
+        {activities[0] && activities.length > 0 && !loading ? (
+          <div className='flex-grow overflow-auto'>
+            <div className='h-screen overflow-y-scroll'>
+              <ActivityList activities={activities} />
             </div>
-          )}
-          <footer className=' text-gray-700'>
-            © {new Date().getFullYear()} By{' '}
-            <ArrowLink href='https://github.com/iamnotreddy'>raveen</ArrowLink>
-          </footer>
-        </div>
+          </div>
+        ) : (
+          <div className='flex flex-col items-center justify-center space-y-4'>
+            <h1 className='mt-4'>Replay your favorite Strava activities</h1>
+            <Button
+              className='z-30'
+              variant='dark'
+              onClick={() => signIn('strava')}
+            >
+              Login
+            </Button>
+
+            <UnstyledLink
+              href='https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Ftheodorusclarence%2Fts-nextjs-tailwind-starter'
+              className='mt-4'
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+            </UnstyledLink>
+          </div>
+        )}
+        <footer className=' fixed bottom-0 mt-auto text-gray-700'>
+          © {new Date().getFullYear()} By{' '}
+          <ArrowLink href='https://github.com/iamnotreddy'>raveen</ArrowLink>
+        </footer>
       </main>
     </Layout>
   );
