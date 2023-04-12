@@ -11,6 +11,7 @@ import {
   convertPaceValueForDisplay,
   generatePacePoint,
 } from '@/api/chartHelpers';
+import { defineLineSource, polylineLayerStyle } from '@/api/layers';
 import { StravaActivity } from '@/api/types';
 
 type ActivityListProps = {
@@ -37,9 +38,9 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
           left: 1,
           right: 1,
         },
-        latitude: coordinates[0][0],
-        longitude: coordinates[0][1],
-        zoom: 10,
+        latitude: coordinates[0][1],
+        longitude: coordinates[0][0],
+        zoom: 12,
       });
     }
   }, [coordinates]);
@@ -53,23 +54,8 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
         ref={mapRef}
         mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
       >
-        <Source
-          id='polyline'
-          type='geojson'
-          data={{
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: coordinates },
-            properties: {},
-          }}
-        >
-          <Layer
-            id='polyline'
-            type='line'
-            paint={{
-              'line-color': '#0070f3',
-              'line-width': 5,
-            }}
-          />
+        <Source {...defineLineSource(coordinates)}>
+          <Layer {...polylineLayerStyle} />
         </Source>
       </Map>
     );
@@ -80,7 +66,7 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
 
 export default function ActivityRow({ activity }: ActivityListProps) {
   const decodedPolyline = polyline.decode(activity.map.summary_polyline);
-  const coordinates = decodedPolyline.map(([lng, lat]) => [lng, lat]);
+  const coordinates = decodedPolyline.map(([lng, lat]) => [lat, lng]);
   const cityPlaceHolder = activity.timezone.split('/')[1].replace('_', ' ');
   const startTime = format(parseISO(activity.start_date), 'hh:mm a');
   const metersToMiles = 0.000621371;
