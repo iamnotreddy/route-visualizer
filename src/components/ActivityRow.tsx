@@ -87,12 +87,12 @@ export default function ActivityRow({ activity }: ActivityListProps) {
             <div className='flex flex-row space-x-4'>
               <div className='flex flex-col p-2'>
                 <div className='text-2xl font-semibold'>{activity.name}</div>
-                <div className='flex flex-row space-x-1 text-sm text-slate-600'>
+                <div className='flex flex-row space-x-1 text-lg text-slate-600'>
                   <p>{formattedActivityDate}</p>
                   <p>·</p>
                   <p>{startTime}</p>
                 </div>
-                <div className='text-sm text-slate-600'>{cityPlaceHolder}</div>
+                <div className='text-lg text-slate-600'>{cityPlaceHolder}</div>
               </div>
             </div>
             <div className='flex flex-row space-x-8'>
@@ -104,7 +104,7 @@ export default function ActivityRow({ activity }: ActivityListProps) {
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-center text-lg text-slate-600'>time</p>
+                <p className='text-lg text-slate-600'>time</p>
                 <div className='flex flex-row items-center space-x-2'>
                   <p className='text-3xl'>
                     {convertPaceValueForDisplay(activity.moving_time / 60)}
@@ -112,7 +112,7 @@ export default function ActivityRow({ activity }: ActivityListProps) {
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-center text-lg text-slate-600'>pace</p>
+                <p className='text-lg text-slate-600'>pace</p>
                 <div className='flex flex-row items-center space-x-2'>
                   <p className='text-3xl'>{formattedPace}</p>
                   <div className='flex flex-col items-center text-xs'>
