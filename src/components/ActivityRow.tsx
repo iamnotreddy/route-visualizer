@@ -11,6 +11,7 @@ import {
   convertPaceValueForDisplay,
   generatePacePoint,
 } from '@/api/chartHelpers';
+import { defineLineSource, polylineLayerStyle } from '@/api/layers';
 import { StravaActivity } from '@/api/types';
 
 type ActivityListProps = {
@@ -37,9 +38,9 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
           left: 1,
           right: 1,
         },
-        latitude: coordinates[0][0],
-        longitude: coordinates[0][1],
-        zoom: 10,
+        latitude: coordinates[0][1],
+        longitude: coordinates[0][0],
+        zoom: 12,
       });
     }
   }, [coordinates]);
@@ -53,23 +54,8 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
         ref={mapRef}
         mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
       >
-        <Source
-          id='polyline'
-          type='geojson'
-          data={{
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: coordinates },
-            properties: {},
-          }}
-        >
-          <Layer
-            id='polyline'
-            type='line'
-            paint={{
-              'line-color': '#0070f3',
-              'line-width': 5,
-            }}
-          />
+        <Source {...defineLineSource(coordinates)}>
+          <Layer {...polylineLayerStyle} />
         </Source>
       </Map>
     );
@@ -80,7 +66,7 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
 
 export default function ActivityRow({ activity }: ActivityListProps) {
   const decodedPolyline = polyline.decode(activity.map.summary_polyline);
-  const coordinates = decodedPolyline.map(([lng, lat]) => [lng, lat]);
+  const coordinates = decodedPolyline.map(([lng, lat]) => [lat, lng]);
   const cityPlaceHolder = activity.timezone.split('/')[1].replace('_', ' ');
   const startTime = format(parseISO(activity.start_date), 'hh:mm a');
   const metersToMiles = 0.000621371;
@@ -96,17 +82,17 @@ export default function ActivityRow({ activity }: ActivityListProps) {
   return (
     <>
       <UnstyledLink href={`/activities/${activity.id}`}>
-        <div className='flex items-center space-x-4 p-4'>
+        <div className='items-center space-x-4 p-4 md:flex'>
           <div className='flex flex-1 flex-col space-y-2 '>
             <div className='flex flex-row space-x-4'>
               <div className='flex flex-col p-2'>
                 <div className='text-2xl font-semibold'>{activity.name}</div>
-                <div className='flex flex-row space-x-1 text-sm text-slate-600'>
+                <div className='flex flex-row space-x-1 text-lg text-slate-600'>
                   <p>{formattedActivityDate}</p>
                   <p>·</p>
                   <p>{startTime}</p>
                 </div>
-                <div className='text-sm text-slate-600'>{cityPlaceHolder}</div>
+                <div className='text-lg text-slate-600'>{cityPlaceHolder}</div>
               </div>
             </div>
             <div className='flex flex-row space-x-8'>
@@ -118,7 +104,7 @@ export default function ActivityRow({ activity }: ActivityListProps) {
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-center text-lg text-slate-600'>time</p>
+                <p className='text-lg text-slate-600'>time</p>
                 <div className='flex flex-row items-center space-x-2'>
                   <p className='text-3xl'>
                     {convertPaceValueForDisplay(activity.moving_time / 60)}
@@ -126,7 +112,7 @@ export default function ActivityRow({ activity }: ActivityListProps) {
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-center text-lg text-slate-600'>pace</p>
+                <p className='text-lg text-slate-600'>pace</p>
                 <div className='flex flex-row items-center space-x-2'>
                   <p className='text-3xl'>{formattedPace}</p>
                   <div className='flex flex-col items-center text-xs'>

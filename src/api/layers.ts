@@ -58,6 +58,15 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 5 },
 };
 
+export const polylineLayerStyle: LayerProps = {
+  id: 'polyline',
+  type: 'line',
+  paint: {
+    'line-color': '#004225',
+    'line-width': 3,
+  },
+};
+
 export const defineLineSource = (coordinates: Position[]): SourceProps => {
   return {
     type: 'geojson',
