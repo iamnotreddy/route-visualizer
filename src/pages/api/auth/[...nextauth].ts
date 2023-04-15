@@ -4,7 +4,7 @@ import StravaProvider from 'next-auth/providers/strava';
 const {
   NEXT_PUBLIC_STRAVA_CLIENT_ID = '',
   NEXT_PUBLIC_STRAVA_CLIENT_SECRET = '',
-  NEXT_PUBLIC_VERCEL_URL = 'http://localhost:3000',
+  NEXT_PUBLIC_VERCEL_URL = 'https://localhost:3000',
   NODE_ENV = 'development',
 } = process.env;
 
