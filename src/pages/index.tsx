@@ -15,13 +15,9 @@ export default function HomePage() {
   const [activities, setActivities] = useState([] as StravaActivity[]);
   const [loading, setLoading] = useState(true);
 
-  const { NODE_ENV = '' } = process.env;
-
   useEffect(() => {
     console.log('what env am i in?', process.env.NODE_ENV);
     console.log('boolean', process.env.NODE_ENV === 'production');
-    console.log('what env am i in?', NODE_ENV);
-    console.log('boolean', NODE_ENV === 'production');
     const getActivityList = async () => {
       try {
         const response = await fetch('/api/strava/activities');
