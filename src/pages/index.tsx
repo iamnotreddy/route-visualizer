@@ -9,13 +9,16 @@ import UnstyledLink from '@/components/links/UnstyledLink';
 
 import { ActivityListResponse, StravaActivity } from '@/api/types';
 
-const { NEXT_PUBLIC_VERCEL_URL = '' } = process.env;
-
 export default function HomePage() {
   const [activities, setActivities] = useState([] as StravaActivity[]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log(
+      'HI :))',
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`
+    );
     const getActivityList = async () => {
       try {
         const response = await fetch('/api/strava/activities');
@@ -37,9 +40,6 @@ export default function HomePage() {
   return (
     <Layout>
       <main className='flex min-h-screen flex-grow flex-col items-center justify-center overflow-hidden bg-slate-100'>
-        {JSON.stringify(
-          `https://${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`
-        )}
         {activities[0] && activities.length > 0 && !loading ? (
           <div className='flex-grow overflow-auto'>
             <div className='h-screen overflow-y-scroll'>
