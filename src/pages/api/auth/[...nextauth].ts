@@ -16,12 +16,15 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: requestedScope,
-          redirect_uri:
-            'https://route-visualizer.vercel.app/api/auth/callback/strava',
+          redirectUri:
+            process.env.NODE_ENV === 'production'
+              ? 'https://route-visualizer.vercel.app/api/auth/callback/strava'
+              : `https://localhost:3000/api/auth/callback/strava`,
         },
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, account }) {
       if (account?.access_token) {
@@ -31,7 +34,6 @@ export const authOptions: NextAuthOptions = {
       if (account?.refresh_token) {
         token['refreshToken'] = account.refresh_token;
       }
-
       return token;
     },
   },
