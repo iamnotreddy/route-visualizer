@@ -4,6 +4,7 @@ import StravaProvider from 'next-auth/providers/strava';
 const {
   NEXT_PUBLIC_STRAVA_CLIENT_ID = '',
   NEXT_PUBLIC_STRAVA_CLIENT_SECRET = '',
+  NEXT_PUBLIC_VERCEL_URL = 'http://localhost:3000',
   NODE_ENV = 'development',
 } = process.env;
 
@@ -19,8 +20,8 @@ export const authOptions: NextAuthOptions = {
         params: {
           scope: requestedScope,
           redirectUri: isProd
-            ? `https://route-visualizer.vercel.app/api/auth/callback/strava`
-            : `http://localhost:3000/api/auth/callback/strava`,
+            ? `https://${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`
+            : `${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`,
         },
       },
     }),
