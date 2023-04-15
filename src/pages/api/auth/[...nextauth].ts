@@ -35,7 +35,6 @@ export const authOptions: NextAuthOptions = {
       if (account?.refresh_token) {
         token['refreshToken'] = account.refresh_token;
       }
-
       return token;
     },
   },
