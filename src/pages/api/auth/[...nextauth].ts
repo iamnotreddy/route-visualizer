@@ -16,6 +16,8 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: requestedScope,
+          redirect_uri:
+            'https://route-visualizer.vercel.app/api/auth/callback/strava',
         },
       },
     }),
