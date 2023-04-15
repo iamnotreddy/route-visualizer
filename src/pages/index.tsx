@@ -14,6 +14,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('what env am i in?', process.env.NODE_ENV);
     const getActivityList = async () => {
       try {
         const response = await fetch('/api/strava/activities');
