@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
           scope: requestedScope,
           redirectUri: isProd
             ? `${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`
-            : `https://${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`,
+            : `${NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`,
         },
       },
     }),
