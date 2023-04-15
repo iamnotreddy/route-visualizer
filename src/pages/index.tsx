@@ -9,11 +9,11 @@ import UnstyledLink from '@/components/links/UnstyledLink';
 
 import { ActivityListResponse, StravaActivity } from '@/api/types';
 
+const { NEXT_PUBLIC_VERCEL_URL = '' } = process.env;
+
 export default function HomePage() {
   const [activities, setActivities] = useState([] as StravaActivity[]);
   const [loading, setLoading] = useState(true);
-
-  const { NEXT_PUBLIC_VERCEL_URL = '' } = process.env;
 
   useEffect(() => {
     const getActivityList = async () => {
