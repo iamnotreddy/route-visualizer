@@ -14,11 +14,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log(
-      'HI :))',
-      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/auth/callback/strava`
-    );
     const getActivityList = async () => {
       try {
         const response = await fetch('/api/strava/activities');
