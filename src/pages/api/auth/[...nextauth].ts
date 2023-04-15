@@ -18,9 +18,9 @@ export const authOptions: NextAuthOptions = {
         params: {
           scope: requestedScope,
           redirectUri:
-            NODE_ENV === 'development'
-              ? `https://localhost:3000/api/auth/callback/strava`
-              : 'https://route-visualizer.vercel.app/api/auth/callback/strava',
+            NODE_ENV === 'production'
+              ? 'https://route-visualizer.vercel.app/api/auth/callback/strava'
+              : `https://localhost:3000/api/auth/callback/strava`,
         },
       },
     }),
