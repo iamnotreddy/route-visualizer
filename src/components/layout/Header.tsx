@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header className='sticky top-0 z-50 bg-green-900'>
-      <div className='mx-8 flex h-14 items-center justify-between'>
+      <div className='border- mx-8 flex h-14 items-center justify-between'>
         <UnstyledLink
           href='/'
           className='font-sans text-xl text-slate-200 hover:text-blue-200'
