@@ -23,9 +23,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { ActivityOverview, Trail } from '@/components/ActivityOverview';
 import AnimationControl from '@/components/AnimationControl';
+import ChooseMetricBar from '@/components/ChooseMetricBar';
 import VisXLineChart from '@/components/VisXLineChart';
 
-import { transformActivityStreamResponse } from '@/api/helpers';
+import { generatePace } from '@/api/chartHelpers';
+import {
+  transformActivityStreamResponse,
+  transformMetricToDataPoint,
+} from '@/api/helpers';
 import { findInitialViewState, findRouteLineString } from '@/api/initialValues';
 import {
   animatedLineLayerStyle,
@@ -40,6 +45,7 @@ import {
   ActivitySplits,
   ActivitySplitsResponse,
   ActivityStreamResponse,
+  DataPoint,
   StravaRouteStream,
 } from '@/api/types';
 
@@ -77,6 +83,9 @@ export default function Dashboard() {
   );
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('');
 
   const mapRef = useRef<MapRef>(null);
   const sliderRef = useRef(null);
@@ -211,12 +220,19 @@ export default function Dashboard() {
     setHasMapLoaded(true);
     if (stravaPath) {
       setLineCoordinates([stravaPath.latlng[0]]);
+      setAreaSeriesMetric('pace');
     }
   };
 
   const mapSpring = useSpring({
-    width: isSidebarOpen ? '75vw' : '95vw',
-    height: isSidebarOpen ? '50vh' : '85vh',
+    width: isSidebarOpen ? '75vw' : '80vw',
+    height: isSidebarOpen ? '60vh' : '90vh',
+    config: { tension: 100 },
+  });
+
+  const chartSpring = useSpring({
+    width: isSidebarOpen ? '75vw' : '80vw',
+    height: isSidebarOpen ? '20vh' : '0vh',
     config: { tension: 100 },
   });
 
@@ -239,9 +255,28 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    if (stravaPath) {
+      const paceArray = generatePace(
+        transformMetricToDataPoint(stravaPath.time),
+        transformMetricToDataPoint(stravaPath.distance)
+      );
+
+      if (areaSeriesMetric == 'heartRate') {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
+      } else if (areaSeriesMetric == 'elevation') {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
+      } else if (areaSeriesMetric == 'pace') {
+        setAreaSeries(paceArray);
+      } else if (areaSeriesMetric == 'grade') {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
+      }
+    }
+  }, [areaSeriesMetric]);
+
   return (
-    <main className='m-4 flex flex-col justify-evenly'>
-      <div className='flex flex-row space-x-2'>
+    <main className='flex flex-col p-4'>
+      <div className='flex flex-row space-x-2 '>
         <div className='relative'>
           <animated.div style={{ ...mapSpring }}>
             <Map
@@ -275,7 +310,7 @@ export default function Dashboard() {
             </Map>
           </animated.div>
 
-          <div className='absolute bottom-0 left-20 w-1/2'>
+          <div className='relative bottom-10 left-20 w-1/4 '>
             {stravaPath && (
               <AnimationControl
                 animationState={animationState}
@@ -295,32 +330,44 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-
         {stravaPath && hasMapLoaded && (
+          <div className='hidden sm:block'>
+            <Trail open={isSidebarOpen}>
+              <ActivityOverview
+                activityTitle=''
+                userNotes=''
+                metrics={stravaPath}
+                splits={splits}
+                currentFrame={currentFrame}
+              />
+            </Trail>
+          </div>
+        )}
+      </div>
+      <div className='flex flex-row items-center space-x-2'>
+        {areaSeriesMetric && (
+          <ChooseMetricBar
+            setCurrentMetric={setAreaSeriesMetric}
+            currentMetric={areaSeriesMetric}
+            orientation='vertical'
+          />
+        )}
+
+        {stravaPath && (
           <Trail open={isSidebarOpen}>
-            <ActivityOverview
-              activityTitle=''
-              userNotes=''
-              metrics={stravaPath}
-              splits={splits}
-              currentFrame={currentFrame}
-            />
+            {areaSeries && areaSeriesMetric && (
+              <animated.div style={{ ...chartSpring }}>
+                <VisXLineChart
+                  currentFrame={currentFrame}
+                  setCurrentFrame={setCurrentFrame}
+                  areaSeries={areaSeries}
+                  areaSeriesMetric={areaSeriesMetric}
+                />
+              </animated.div>
+            )}
           </Trail>
         )}
       </div>
-      {stravaPath && (
-        <Trail open={isSidebarOpen}>
-          <div className='mt-2 flex flex-col'>
-            <div className='h-5/6 justify-items-start'>
-              <VisXLineChart
-                metrics={stravaPath}
-                currentFrame={currentFrame}
-                setCurrentFrame={setCurrentFrame}
-              />
-            </div>
-          </div>
-        </Trail>
-      )}
     </main>
   );
 }
