@@ -120,6 +120,7 @@ export const ActivityOverview = ({
           setCurrentMetric={setCurrentSplitSeries}
           orientation='horizontal'
         />
+
         <Splits
           metricArray={chooseSplitsArray()}
           metricType={currentSplitSeries}

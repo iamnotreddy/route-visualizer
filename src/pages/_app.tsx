@@ -13,8 +13,8 @@ function MyApp({
 }: AppProps<{ session: Session }>) {
   return (
     <SessionProvider session={session}>
+      <Header />
       <Layout>
-        <Header />
         <Component {...pageProps} />
       </Layout>
     </SessionProvider>

@@ -87,34 +87,38 @@ export default function ActivityRow({ activity }: ActivityListProps) {
             <div className='flex flex-row space-x-4'>
               <div className='flex flex-col p-2'>
                 <div className='text-2xl font-semibold'>{activity.name}</div>
-                <div className='flex flex-row space-x-1 text-lg text-slate-600'>
+                <div className='flex flex-row space-x-1 text-slate-600 md:text-lg'>
                   <p>{formattedActivityDate}</p>
                   <p>·</p>
                   <p>{startTime}</p>
                 </div>
-                <div className='text-lg text-slate-600'>{cityPlaceHolder}</div>
+                <div className='text-slate-600 md:text-lg'>
+                  {cityPlaceHolder}
+                </div>
               </div>
             </div>
-            <div className='flex flex-row space-x-8'>
+            <div className='flex flex-row space-x-8 px-2'>
               <div className='flex flex-col'>
-                <p className='text-center text-lg text-slate-600'>distance</p>
+                <p className='text-center text-slate-600 md:text-lg'>
+                  distance
+                </p>
                 <div className='flex flex-row items-center space-x-2'>
-                  <p className='text-3xl'>{distanceFormatted}</p>
+                  <p className='text-2xl md:text-3xl'>{distanceFormatted}</p>
                   <p>mi</p>
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-lg text-slate-600'>time</p>
+                <p className='text-slate-600 md:text-lg'>time</p>
                 <div className='flex flex-row items-center space-x-2'>
-                  <p className='text-3xl'>
+                  <p className='text-2xl md:text-3xl'>
                     {convertPaceValueForDisplay(activity.moving_time / 60)}
                   </p>
                 </div>
               </div>
               <div className='flex flex-col'>
-                <p className='text-lg text-slate-600'>pace</p>
+                <p className='text-slate-600 md:text-lg'>pace</p>
                 <div className='flex flex-row items-center space-x-2'>
-                  <p className='text-3xl'>{formattedPace}</p>
+                  <p className='text-2xl md:text-3xl'>{formattedPace}</p>
                   <div className='flex flex-col items-center text-xs'>
                     <p>min</p>
                     <p>m</p>
@@ -124,7 +128,9 @@ export default function ActivityRow({ activity }: ActivityListProps) {
             </div>
           </div>
 
-          <MapPolylineRow coordinates={coordinates} />
+          <div className='hidden sm:block'>
+            <MapPolylineRow coordinates={coordinates} />
+          </div>
         </div>
       </UnstyledLink>
     </>
