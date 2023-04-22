@@ -8,7 +8,7 @@ type ActivityListProps = {
 
 export default function ActivityList({ activities }: ActivityListProps) {
   return (
-    <div className='flex w-full flex-col space-y-4 border-slate-200 p-4 md:max-w-4xl'>
+    <div className='flex flex-col space-y-4 border-slate-200 p-4 shadow-xl md:max-w-4xl'>
       <h1 className='mt-4 text-center font-light md:text-4xl'>
         Your Activities
       </h1>
