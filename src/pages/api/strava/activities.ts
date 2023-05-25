@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const { page } = req.query;
+
   const token = await getToken({
     req,
     secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
@@ -14,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     accessToken = token['accessToken'];
   }
 
-  const url = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}`;
+  const url = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}&page=${page}&per_page=20`;
 
   const activities = await fetch(url).then((res) => res.json());
 
