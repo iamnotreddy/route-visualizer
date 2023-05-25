@@ -1,7 +1,7 @@
 import VictoryMetricChart from '@/components/VictoryMetricChart';
 
-import { formatTime, metersToMiles } from '@/api/helpers';
-import { RoutePoint, StravaRouteStream } from '@/api/types';
+import { formatTime, metersToMiles } from '@/helpers/helpers';
+import { RoutePoint, StravaRouteStream } from '@/helpers/types';
 
 type MetricsSidebarProps = {
   currentMetrics: RoutePoint;

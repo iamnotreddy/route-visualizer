@@ -8,8 +8,11 @@ import {
 import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ViewState } from 'react-map-gl';
 
-import { findInitialViewState, findRouteLineString } from '@/api/initialValues';
-import { StravaRouteStream } from '@/api/types';
+import {
+  findInitialViewState,
+  findRouteLineString,
+} from '@/helpers/initialValues';
+import { StravaRouteStream } from '@/helpers/types';
 
 type AnimationControlProps = {
   animationState: string;
@@ -97,9 +100,9 @@ export default function AnimationControl({
         <button
           onClick={() => {
             if (stravaPath) {
-              setViewState(findInitialViewState(stravaPath));
+              setViewState(findInitialViewState(stravaPath.latlng));
               setCurrentPoint(stravaPath.latlng[0]);
-              setRouteLineString(findRouteLineString(stravaPath));
+              setRouteLineString(findRouteLineString(stravaPath.latlng));
               setLineCoordinates([]);
               setCurrentFrame(0);
             }

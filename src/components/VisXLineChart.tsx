@@ -12,9 +12,9 @@ import {
 } from '@visx/xychart';
 import React from 'react';
 
-import { convertPaceValueForDisplay } from '@/api/chartHelpers';
-import { calculateDomain } from '@/api/helpers';
-import { DataPoint } from '@/api/types';
+import { convertPaceValueForDisplay } from '@/helpers/chartHelpers';
+import { calculateDomain } from '@/helpers/helpers';
+import { DataPoint } from '@/helpers/types';
 
 type ChartProps = {
   currentFrame: number;

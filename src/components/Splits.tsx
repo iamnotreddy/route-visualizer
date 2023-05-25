@@ -1,7 +1,7 @@
 import { animated, useSprings } from '@react-spring/web';
 import React from 'react';
 
-import { formatSecondsToPace } from '@/api/chartHelpers';
+import { formatSecondsToPace } from '@/helpers/chartHelpers';
 
 type SplitsProps = {
   metricArray: number[];

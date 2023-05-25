@@ -2,8 +2,8 @@ import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { AnimatedAreaSeries, XYChart } from '@visx/xychart';
 import React from 'react';
 
-import { calculateDomain } from '@/api/helpers';
-import { DataPoint } from '@/api/types';
+import { calculateDomain } from '@/helpers/helpers';
+import { DataPoint } from '@/helpers/types';
 
 type SparklineChartProps = {
   series: DataPoint[];
