@@ -1,6 +1,6 @@
 import SparklineChart from '@/components/SparklineChart';
 
-import { DataPoint } from '@/api/types';
+import { DataPoint } from '@/helpers/types';
 
 type SparklineContainerProps = {
   name: string;

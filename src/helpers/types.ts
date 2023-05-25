@@ -132,8 +132,8 @@ export type StravaActivity = {
   id: string;
   start_date: string;
   timezone: string;
-  start_latlng: Position[];
-  end_latlng: Position[];
+  start_latlng: Position;
+  end_latlng: Position;
   map: {
     summary_polyline: string;
   };

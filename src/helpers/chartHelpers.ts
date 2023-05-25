@@ -1,4 +1,4 @@
-import { DataPoint } from '@/api/types';
+import { DataPoint } from '@/helpers/types';
 
 export const generateMovingAverage = (
   series: DataPoint[],

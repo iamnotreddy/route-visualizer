@@ -1,10 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
-import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { signOut, useSession } from 'next-auth/react';
 import * as React from 'react';
 
 import UnstyledLink from '@/components/links/UnstyledLink';
-
-const href = '/';
 
 export default function Header() {
   const { data: session } = useSession();
@@ -27,17 +25,19 @@ export default function Header() {
           href='/'
           className='font-sans text-xl text-slate-200 hover:text-blue-200'
         >
-          RouteViz
+          RouteMapper
         </UnstyledLink>
 
         <nav>
           <ul className='flex items-center space-x-4'>
-            <UnstyledLink href={href}>
+            <UnstyledLink href='/' onClick={() => signOut()}>
               {session && (
-                <img
-                  className='h-10 w-10 rounded-full hover:text-gray-600'
+                <Image
+                  className='rounded-full'
                   src={imageLink}
-                  alt=''
+                  alt='profile picture'
+                  width={45}
+                  height={45}
                 />
               )}
             </UnstyledLink>

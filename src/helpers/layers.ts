@@ -2,6 +2,17 @@ import { Position } from 'geojson';
 import { SkyLayer } from 'mapbox-gl';
 import { LayerProps, SourceProps } from 'react-map-gl';
 
+import { getRandomColor } from '@/helpers/helpers';
+
+// map config
+export const mapConfig = {
+  mapStyle: 'mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l',
+  terrain: { source: 'mapbox-dem', exaggeration: 4 },
+  mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
+  maxPitch: 85,
+  style: { width: '80vw', height: '45vw' },
+};
+
 // layer styles
 
 export const pointLayerStyle: LayerProps = {
@@ -10,6 +21,28 @@ export const pointLayerStyle: LayerProps = {
   paint: {
     'circle-radius': 4,
     'circle-color': '#f6f3ee',
+    'circle-stroke-width': 2,
+    'circle-stroke-color': 'black',
+  },
+};
+
+export const startPointLayerStyle: LayerProps = {
+  id: 'startPoint',
+  type: 'circle',
+  paint: {
+    'circle-radius': 4,
+    'circle-color': '#097200',
+    'circle-stroke-width': 2,
+    'circle-stroke-color': 'black',
+  },
+};
+
+export const endPointLayerStyle: LayerProps = {
+  id: 'endPoint',
+  type: 'circle',
+  paint: {
+    'circle-radius': 4,
+    'circle-color': '#FF8700',
     'circle-stroke-width': 2,
     'circle-stroke-color': 'black',
   },
@@ -53,7 +86,6 @@ export const skySource: SourceProps = {
 };
 
 export const lineLayerStyle: LayerProps = {
-  id: 'line',
   type: 'line',
   paint: { 'line-color': '#004225', 'line-width': 5 },
 };
@@ -83,6 +115,13 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
         },
       ],
     },
+  };
+};
+
+export const generateLineLayer = () => {
+  return {
+    type: 'line',
+    paint: { 'line-color': getRandomColor(), 'line-width': 5 },
   };
 };
 

@@ -8,6 +8,7 @@ module.exports = {
 
   // Uncoment to add domain whitelist
   images: {
+    domains: ['dgalywyr863hv.cloudfront.net'],
     formats: ['image/avif', 'image/webp'],
   },
 

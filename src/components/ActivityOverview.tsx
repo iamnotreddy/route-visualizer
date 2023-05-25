@@ -10,8 +10,8 @@ import {
 } from '@/components/MetricDisplay';
 import Splits from '@/components/Splits';
 
-import { metersToMiles } from '@/api/helpers';
-import { ActivitySplits, StravaRouteStream } from '@/api/types';
+import { metersToMiles } from '@/helpers/helpers';
+import { ActivitySplits, StravaRouteStream } from '@/helpers/types';
 
 type ActivityOverviewProps = {
   activityTitle: string;

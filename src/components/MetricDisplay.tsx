@@ -3,7 +3,7 @@ import { animated, useSpring } from '@react-spring/web';
 import {
   convertPaceValueForDisplay,
   generatePacePoint,
-} from '@/api/chartHelpers';
+} from '@/helpers/chartHelpers';
 
 export type TimeComponentProps = {
   time: number;
