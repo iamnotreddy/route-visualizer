@@ -26,12 +26,15 @@ import AnimationControl from '@/components/AnimationControl';
 import ChooseMetricBar from '@/components/ChooseMetricBar';
 import VisXLineChart from '@/components/VisXLineChart';
 
-import { generatePace } from '@/api/chartHelpers';
+import { generatePace } from '@/helpers/chartHelpers';
 import {
   transformActivityStreamResponse,
   transformMetricToDataPoint,
-} from '@/api/helpers';
-import { findInitialViewState, findRouteLineString } from '@/api/initialValues';
+} from '@/helpers/helpers';
+import {
+  findInitialViewState,
+  findRouteLineString,
+} from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
   defineLineSource,
@@ -40,14 +43,14 @@ import {
   pointLayerStyle,
   skyLayer,
   skySource,
-} from '@/api/layers';
+} from '@/helpers/layers';
 import {
   ActivitySplits,
   ActivitySplitsResponse,
   ActivityStreamResponse,
   DataPoint,
   StravaRouteStream,
-} from '@/api/types';
+} from '@/helpers/types';
 
 export default function Dashboard() {
   // get Strava activity ID from URL param
@@ -170,9 +173,9 @@ export default function Dashboard() {
   // set initial points on chart
   useEffect(() => {
     if (stravaPath) {
-      setViewState(findInitialViewState(stravaPath));
+      setViewState(findInitialViewState(stravaPath.latlng));
       setCurrentPoint(stravaPath.latlng[0]);
-      setRouteLineString(findRouteLineString(stravaPath));
+      setRouteLineString(findRouteLineString(stravaPath.latlng));
     }
   }, [stravaPath]);
 
@@ -281,6 +284,7 @@ export default function Dashboard() {
           <animated.div style={{ ...mapSpring }}>
             <Map
               {...viewState}
+              maxPitch={85}
               mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
               ref={mapRef}
               mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'

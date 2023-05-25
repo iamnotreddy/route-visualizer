@@ -1,66 +1,54 @@
-import Image from 'next/image';
-import { signIn } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
-import ActivityList from '@/components/ActivityList';
-import Button from '@/components/buttons/Button';
-import Layout from '@/components/layout/Layout';
+import GlobalMap from '@/components/globalMap';
+import SignInPage from '@/components/SignInPage';
 
-import { ActivityListResponse, StravaActivity } from '@/api/types';
+import { getActivityList } from '@/helpers/getActivityList';
+import { StravaActivity } from '@/helpers/types';
 
 export default function HomePage() {
-  const [activities, setActivities] = useState([] as StravaActivity[]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: activities,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    ['activities'],
+    ({ pageParam = 1 }) => getActivityList(pageParam),
+    {
+      getNextPageParam: (
+        lastPage: StravaActivity[],
+        allPages: Array<StravaActivity[]>
+      ) => {
+        return lastPage.length ? allPages.length + 1 : undefined;
+      },
+    }
+  );
 
-  useEffect(() => {
-    const getActivityList = async () => {
-      try {
-        const response = await fetch('/api/strava/activities');
+  const { status } = useSession();
 
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
+  // map all pages into one array
+  const allActivities = activities
+    ? activities.pages.flatMap((page) => page)
+    : [];
 
-        const data = (await response.json()) as ActivityListResponse;
+  if (status === 'unauthenticated') {
+    return <SignInPage />;
+  }
 
-        setActivities(data.data[0]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getActivityList();
-  }, []);
+  if (status === 'loading' && isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Layout>
-      <main className='flex min-h-screen flex-col items-center justify-center overflow-hidden'>
-        {activities[0] && activities.length > 0 && !loading ? (
-          <div className='flex-grow overflow-auto'>
-            <div className='h-screen overflow-y-scroll'>
-              <ActivityList activities={activities} />
-            </div>
-          </div>
-        ) : (
-          <div className='flex flex-col items-center justify-center space-y-4'>
-            <h1 className='text-center text-3xl md:text-4xl'>
-              Replay your Strava activities
-            </h1>
-            <Button
-              className='z-30'
-              variant='dark'
-              onClick={() => signIn('strava')}
-            >
-              <p className='md:text-xl'>Login</p>
-              <Image
-                src='/images/strava_logo.png'
-                alt='Strava Logo'
-                width={25}
-                height={25}
-              />
-            </Button>
-          </div>
-        )}
-      </main>
-    </Layout>
+    allActivities &&
+    allActivities.length > 0 && (
+      <GlobalMap
+        activities={allActivities}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
+    )
   );
 }
