@@ -1,10 +1,14 @@
 import { bearing } from '@turf/turf';
-import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
+import {
+  FeatureCollection,
+  GeoJsonProperties,
+  Geometry,
+  Position,
+} from 'geojson';
 import { ViewState } from 'react-map-gl';
 
-import { RoutePoint, StravaRouteStream } from '@/api/types';
-
-export const findRouteLineString = (path: StravaRouteStream) => {
+import { RoutePoint, StravaRouteStream } from '@/helpers/types';
+export const findRouteLineString = (coordinates: Position[]) => {
   return {
     type: 'FeatureCollection',
     features: [
@@ -12,7 +16,7 @@ export const findRouteLineString = (path: StravaRouteStream) => {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: path.latlng,
+          coordinates: coordinates,
         },
         properties: {},
       },
@@ -20,16 +24,16 @@ export const findRouteLineString = (path: StravaRouteStream) => {
   } as FeatureCollection<Geometry, GeoJsonProperties>;
 };
 
-export const findInitialViewState = (path: StravaRouteStream) => {
-  const initialPoint = path.latlng[0];
-  const finalPoint = path.latlng[path.latlng.length - 1];
+export const findInitialViewState = (coordinates: Position[]) => {
+  const initialPoint = coordinates[0];
+  const finalPoint = coordinates[coordinates.length - 1];
 
   return {
     latitude: initialPoint[1],
     longitude: initialPoint[0],
-    zoom: 14,
+    zoom: 15,
     bearing: bearing(initialPoint, finalPoint),
-    pitch: 85,
+    pitch: 45,
     padding: {
       top: 1,
       bottom: 1,

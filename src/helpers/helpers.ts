@@ -1,11 +1,16 @@
+import polyline from '@mapbox/polyline';
+import { bbox } from '@turf/turf';
 import { Position } from 'geojson';
+import { RefObject } from 'react';
+import { MapRef } from 'react-map-gl';
 
 import {
   ActivityStream,
   DataPoint,
   RoutePoint,
+  StravaActivity,
   StravaRouteStream,
-} from '@/api/types';
+} from '@/helpers/types';
 
 // returns [longitude, latitude] to account for mapbox quirk
 export const reverseLatLng = (coordinates: Position[]) => {
@@ -123,4 +128,59 @@ export const transformMetricToDataPoint = (input: number[]): DataPoint[] => {
     x: idx,
     y: pt,
   }));
+};
+
+export const getRandomColor = () => {
+  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+  return '#' + randomColor;
+};
+
+export const transformActivityList = (
+  activities: StravaActivity[]
+): StravaActivity[] => {
+  const transformedActivities = activities.map((activity) => {
+    const activityCopy = { ...activity };
+    activityCopy.start_latlng = [
+      activityCopy.start_latlng[1],
+      activityCopy.start_latlng[0],
+    ];
+    activityCopy.end_latlng = [
+      activityCopy.end_latlng[1],
+      activityCopy.end_latlng[0],
+    ];
+
+    return activityCopy;
+  });
+
+  return transformedActivities;
+};
+
+export const getPolyLineCoordinates = (activity: StravaActivity) => {
+  const decodedPolyLine = polyline.decode(activity.map.summary_polyline);
+  const mapSourceCoordinates = decodedPolyLine.map(([lng, lat]) => [lat, lng]);
+  return mapSourceCoordinates;
+};
+
+export const findGlobalMapViewState = (
+  activity: StravaActivity,
+  mapRef: RefObject<MapRef>
+) => {
+  const mapCoordinates = getPolyLineCoordinates(activity);
+  const [minLng, minLat, maxLng, maxLat] = bbox({
+    type: 'LineString',
+    coordinates: mapCoordinates,
+  });
+
+  if (mapRef.current) {
+    mapRef.current.flyTo({
+      center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
+      duration: 5000,
+      zoom: Math.min(
+        Math.log2(512 / (maxLng - minLng)) - 1,
+        Math.log2(512 / (maxLat - minLat)) - 1,
+        15
+      ),
+      // zoom: 15,
+    });
+  }
 };
