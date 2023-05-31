@@ -14,7 +14,7 @@ export default function ActivityList({
   currentActivityId,
 }: ActivityListProps) {
   return (
-    <div className='flex flex-col space-y-8 overflow-auto'>
+    <div className='flex flex-col space-y-8 overflow-y-auto'>
       {activities.map((activity) => (
         <div
           className='hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'

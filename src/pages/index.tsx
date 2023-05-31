@@ -34,7 +34,11 @@ export default function HomePage() {
     : [];
 
   if (status === 'unauthenticated') {
-    return <SignInPage />;
+    return (
+      <div>
+        <SignInPage />
+      </div>
+    );
   }
 
   if (status === 'loading' && isLoading) {

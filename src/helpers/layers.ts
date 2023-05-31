@@ -13,6 +13,15 @@ export const mapConfig = {
   style: { width: '80vw', height: '45vw' },
 };
 
+export const mobileMapConfig = {
+  mapStyle: 'mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l',
+  terrain: { source: 'mapbox-dem', exaggeration: 4 },
+  mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
+  maxPitch: 85,
+  // width: '100%',
+  // height: '100%',
+};
+
 // layer styles
 
 export const pointLayerStyle: LayerProps = {
