@@ -104,6 +104,7 @@ export default function GlobalMap({
     currentFrame,
     setCurrentFrame,
     stravaPath,
+    isActivityStreamFetching,
   } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
 
   const activityLayers = useMemo(() => {
@@ -212,7 +213,7 @@ export default function GlobalMap({
           <Source {...defineLineSource(animatedLineCoordinates)}>
             <Layer {...animatedLineLayerStyle} />
           </Source>
-          {currentPoint && (
+          {currentPoint && !isActivityStreamFetching && (
             <Source {...definePointSource(currentPoint)}>
               <Layer {...pointLayerStyle} />
             </Source>

@@ -25,6 +25,7 @@ export function useRouteAnimation(
     () => getActivityStream(routeId),
     {
       keepPreviousData: true,
+      enabled: animationState === 'playing',
     }
   );
 
