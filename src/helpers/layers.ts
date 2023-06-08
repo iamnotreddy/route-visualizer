@@ -125,31 +125,11 @@ export const generateLineLayer = () => {
   };
 };
 
-// export const findPolygon = (coordinates: Position[]): SourceProps => {
-//   const boundingBox = lineString(coordinates);
-//   return {
-//     type: 'geojson',
-//     data: {
-//       type: 'FeatureCollection',
-//       features: [
-//         {
-//           type: 'Feature',
-//           geometry: {
-//             type: 'Polygon',
-//             coordinates: boundingBox.bbox,
-//           },
-//           properties: {},
-//         },
-//       ],
-//     },
-//   };
-// };
-
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': '#f6f3ee',
-    'line-width': 2,
+    'line-color': 'white',
+    'line-width': 10,
   },
 };
 

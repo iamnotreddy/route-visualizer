@@ -1,4 +1,4 @@
-import VictoryMetricChart from '@/components/VictoryMetricChart';
+import VictoryMetricChart from '@/components/archived/VictoryMetricChart';
 
 import { formatTime, metersToMiles } from '@/helpers/helpers';
 import { RoutePoint, StravaRouteStream } from '@/helpers/types';

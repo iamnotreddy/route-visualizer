@@ -16,8 +16,10 @@ import Map, {
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import MapActivityList from '@/components/ActivityList';
+import AnimationControl from '@/components/AnimationControl';
 import Button from '@/components/buttons/Button';
-import MapActivityList from '@/components/MapActivityList';
+import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 
 import {
   findGlobalMapViewState,
@@ -28,9 +30,12 @@ import {
   findRouteLineString,
 } from '@/helpers/initialValues';
 import {
+  animatedLineLayerStyle,
+  defineLineSource,
   definePointSource,
   endPointLayerStyle,
   mapConfig,
+  pointLayerStyle,
   skyLayer,
   skySource,
   startPointLayerStyle,
@@ -64,7 +69,13 @@ export default function GlobalMap({
   const [startPoint, setStartPoint] = useState<Position>();
   const [endPoint, setEndPoint] = useState<Position>();
 
+  const [activityNumber, setActivityNumber] = useState(activities.length);
+  const [animationState, setAnimationState] = useState<'playing' | 'paused'>(
+    'paused'
+  );
+
   const mapRef = useRef<MapRef>(null);
+  const sliderRef = useRef(null);
 
   // initialize drawing of route
   const handleOnMapLoad = () => {
@@ -76,8 +87,6 @@ export default function GlobalMap({
     setViewState(e.viewState);
   };
 
-  const [activityNumber, setActivityNumber] = useState(activities.length);
-
   const props = useSpring({
     val: activityNumber,
     from: { val: 0 },
@@ -86,6 +95,17 @@ export default function GlobalMap({
   useEffect(() => {
     setActivityNumber(activities.length);
   }, [activities]);
+
+  const {
+    animatedLineCoordinates,
+    currentPoint,
+    setCurrentPoint,
+    handleRouteControl,
+    currentFrame,
+    setCurrentFrame,
+    stravaPath,
+    isActivityStreamFetching,
+  } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
 
   const activityLayers = useMemo(() => {
     return routeLineStrings.map((route, index) => {
@@ -190,8 +210,27 @@ export default function GlobalMap({
               <Layer {...endPointLayerStyle} />
             </Source>
           )}
+          <Source {...defineLineSource(animatedLineCoordinates)}>
+            <Layer {...animatedLineLayerStyle} />
+          </Source>
+          {currentPoint && !isActivityStreamFetching && (
+            <Source {...definePointSource(currentPoint)}>
+              <Layer {...pointLayerStyle} />
+            </Source>
+          )}
           {activityLayers}
         </Map>
+        <AnimationControl
+          animationState={animationState}
+          setAnimationState={setAnimationState}
+          routeCoordinates={stravaPath?.latlng}
+          currentFrame={currentFrame}
+          sliderRef={sliderRef}
+          setViewState={setViewState}
+          setCurrentPoint={setCurrentPoint}
+          setCurrentFrame={setCurrentFrame}
+          handleRouteControl={handleRouteControl}
+        />
       </div>
     </div>
   );

@@ -2,12 +2,12 @@ import { animated, useTrail } from '@react-spring/web';
 import { format } from 'date-fns';
 import React, { useState } from 'react';
 
-import ChooseMetricBar from '@/components/ChooseMetricBar';
+import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import {
   DistanceComponent,
   PaceComponent,
   TimeComponent,
-} from '@/components/MetricDisplay';
+} from '@/components/archived/MetricDisplay';
 import Splits from '@/components/Splits';
 
 import { metersToMiles } from '@/helpers/helpers';

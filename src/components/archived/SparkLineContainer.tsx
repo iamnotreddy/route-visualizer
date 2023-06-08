@@ -1,4 +1,4 @@
-import SparklineChart from '@/components/SparklineChart';
+import SparklineChart from '@/components/archived/SparklineChart';
 
 import { DataPoint } from '@/helpers/types';
 
