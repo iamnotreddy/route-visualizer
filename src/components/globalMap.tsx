@@ -19,7 +19,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapActivityList from '@/components/ActivityList';
 import AnimationControl from '@/components/AnimationControl';
 import Button from '@/components/buttons/Button';
-import { useRouteAnimation } from '@/components/hooks/useRouteAnimationGlobal';
+import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 
 import {
   findGlobalMapViewState,
