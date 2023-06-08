@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import GlobalMap from '@/components/globalMap';
 import SignInPage from '@/components/SignInPage';
 
-import { getActivityList } from '@/helpers/getActivityList';
+import { getActivityList } from '@/helpers/fetchingFunctions';
 import { StravaActivity } from '@/helpers/types';
 
 export default function HomePage() {
