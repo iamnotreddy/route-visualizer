@@ -2,15 +2,13 @@ import { Position } from 'geojson';
 import { SkyLayer } from 'mapbox-gl';
 import { LayerProps, SourceProps } from 'react-map-gl';
 
-import { getRandomColor } from '@/helpers/helpers';
-
 // map config
 export const mapConfig = {
   mapStyle: 'mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l',
   terrain: { source: 'mapbox-dem', exaggeration: 4 },
   mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
   maxPitch: 85,
-  style: { width: '80vw', height: '45vw' },
+  style: { width: '100vw', height: '100vh' },
 };
 
 // layer styles
@@ -118,17 +116,10 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
   };
 };
 
-export const generateLineLayer = () => {
-  return {
-    type: 'line',
-    paint: { 'line-color': getRandomColor(), 'line-width': 5 },
-  };
-};
-
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'white',
+    'line-color': 'pink',
     'line-width': 10,
   },
 };
