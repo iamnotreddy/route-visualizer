@@ -52,7 +52,6 @@ type GlobalMapHomePageProps = {
 export default function GlobalMap({
   activities,
   fetchNextPage,
-  isFetchingNextPage,
 }: GlobalMapHomePageProps) {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const { status } = useSession();
@@ -193,7 +192,6 @@ export default function GlobalMap({
           currentActivityId={currentActivity ? currentActivity.id : ''}
           currentActivity={currentActivity}
           setCurrentActivity={setCurrentActivity}
-          isFetchingNextPage={isFetchingNextPage}
           fetchNextPage={fetchNextPage}
           stravaPath={stravaPath}
           animationState={animationState}
