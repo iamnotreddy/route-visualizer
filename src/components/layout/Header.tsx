@@ -19,11 +19,11 @@ export default function Header() {
   }
 
   return (
-    <header className='sticky top-0 z-50 bg-green-900'>
+    <header className='sticky top-0 z-50 rounded-lg  bg-transparent'>
       <div className='border- mx-8 flex h-14 items-center justify-between'>
         <UnstyledLink
           href='/'
-          className='font-sans text-xl text-slate-200 hover:text-blue-200'
+          className='rounded-lg border-white bg-green-800 bg-opacity-80 p-2 font-sans text-3xl text-white hover:text-blue-200'
         >
           RouteMapper
         </UnstyledLink>
@@ -41,7 +41,11 @@ export default function Header() {
                 />
               )}
             </UnstyledLink>
-            {name && <p className='text-sm text-white'>{name}</p>}
+            {name && (
+              <p className='rounded-full bg-slate-400 bg-opacity-60 p-2 text-sm text-black'>
+                {name}
+              </p>
+            )}
           </ul>
         </nav>
       </div>

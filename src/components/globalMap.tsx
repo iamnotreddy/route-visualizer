@@ -1,10 +1,10 @@
-import { animated, useSpring } from '@react-spring/web';
 import {
   FeatureCollection,
   GeoJsonProperties,
   Geometry,
   Position,
 } from 'geojson';
+import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Map, {
   Layer,
@@ -17,9 +17,10 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import MapActivityList from '@/components/ActivityList';
-import AnimationControl from '@/components/AnimationControl';
-import Button from '@/components/buttons/Button';
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
+import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
+import Header from '@/components/layout/Header';
+import SignInPage from '@/components/SignInPage';
 
 import {
   findGlobalMapViewState,
@@ -51,11 +52,21 @@ type GlobalMapHomePageProps = {
 export default function GlobalMap({
   activities,
   fetchNextPage,
-  isFetchingNextPage,
 }: GlobalMapHomePageProps) {
   // eslint-disable-next-line unused-imports/no-unused-vars
+  const { status } = useSession();
+
   const [hasMapLoaded, setHasMapLoaded] = useState(false);
-  const [viewState, setViewState] = useState<ViewState>();
+
+  const [viewState, setViewState] = useState<ViewState>({
+    ...findInitialViewState([
+      [-118.401756, 33.775005],
+      [-118.401747, 33.775007],
+    ]),
+    pitch: 85,
+    zoom: 14,
+    bearing: 90,
+  });
   // the whole route line drawn on the map
   const [routeLineStrings, setRouteLineStrings] = useState(
     [] as Array<{
@@ -69,7 +80,6 @@ export default function GlobalMap({
   const [startPoint, setStartPoint] = useState<Position>();
   const [endPoint, setEndPoint] = useState<Position>();
 
-  const [activityNumber, setActivityNumber] = useState(activities.length);
   const [animationState, setAnimationState] = useState<'playing' | 'paused'>(
     'paused'
   );
@@ -82,20 +92,20 @@ export default function GlobalMap({
     setHasMapLoaded(true);
   };
 
-  // change viewState as camera pans around route
+  // record viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
 
-  const props = useSpring({
-    val: activityNumber,
-    from: { val: 0 },
-  });
+  // hook for splash route animation
+  const {
+    animatedLineCoordinates: splashAnimationedCoordinates,
+    splashRouteCoordinates,
+    handleRouteControl: splashHandleRouteControl,
+    currentFrame: splashCurrentFrame,
+  } = useSplashAnimation(mapRef, 'playing', status);
 
-  useEffect(() => {
-    setActivityNumber(activities.length);
-  }, [activities]);
-
+  // hook for currente route animation
   const {
     animatedLineCoordinates,
     currentPoint,
@@ -128,14 +138,12 @@ export default function GlobalMap({
     });
   }, [currentActivity?.id, routeLineStrings]);
 
+  // decode polylines and construct route geoJSONs
   useEffect(() => {
     if (activities.length > 0) {
       const polyLines: Array<Position[]> = activities.map((activity) =>
         getPolyLineCoordinates(activity)
       );
-      const firstRoute = polyLines[0];
-
-      setViewState(findInitialViewState(firstRoute));
 
       if (!currentActivity) {
         setCurrentActivity(activities[0]);
@@ -161,33 +169,40 @@ export default function GlobalMap({
     }
   }, [currentActivity]);
 
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className='flex max-h-screen w-full'>
-      {activities && (
-        <div className='flex flex-col overflow-y-auto p-4'>
-          <div className='z-30 flex flex-row items-center justify-center space-x-4 border-b-2 border-slate-300 pb-4'>
-            <Button
-              className='w-1/2 items-center border-b-4 border-slate-300 py-4'
-              onClick={fetchNextPage}
-              variant='light'
-              disabled={isFetchingNextPage}
-              isLoading={isFetchingNextPage}
-            >
-              Load More...
-            </Button>
-            <div className='flex flex-col'>
-              <animated.div className='text-center'>
-                {props.val.to((val) => Math.floor(val))}
-              </animated.div>
-              <p>activities loaded</p>
-            </div>
-          </div>
-          <MapActivityList
-            activities={activities}
-            currentActivityId={currentActivity ? currentActivity.id : ''}
-            setCurrentActivity={setCurrentActivity}
-          />
-        </div>
+    <div className='relative flex max-h-screen w-full'>
+      <div className='absolute top-0 left-0 z-20 w-full'>
+        <Header />
+      </div>
+      {status === 'unauthenticated' && hasMapLoaded && (
+        <SignInPage
+          sliderRef={sliderRef}
+          splashRouteCoordinates={splashRouteCoordinates}
+          splashCurrentFrame={splashCurrentFrame}
+          splashHandleRouteControl={splashHandleRouteControl}
+        />
+      )}
+      {activities && status === 'authenticated' && (
+        <MapActivityList
+          activities={activities}
+          currentActivityId={currentActivity ? currentActivity.id : ''}
+          currentActivity={currentActivity}
+          setCurrentActivity={setCurrentActivity}
+          fetchNextPage={fetchNextPage}
+          stravaPath={stravaPath}
+          animationState={animationState}
+          setAnimationState={setAnimationState}
+          currentFrame={currentFrame}
+          sliderRef={sliderRef}
+          setViewState={setViewState}
+          setCurrentPoint={setCurrentPoint}
+          setCurrentFrame={setCurrentFrame}
+          handleRouteControl={handleRouteControl}
+        />
       )}
       <div className='flex-grow-0'>
         <Map
@@ -199,6 +214,9 @@ export default function GlobalMap({
         >
           <Source {...skySource}>
             <Layer {...skyLayer} />
+          </Source>
+          <Source {...defineLineSource(splashAnimationedCoordinates)}>
+            <Layer {...animatedLineLayerStyle} />
           </Source>
           {startPoint && (
             <Source {...definePointSource(startPoint)}>
@@ -220,17 +238,6 @@ export default function GlobalMap({
           )}
           {activityLayers}
         </Map>
-        <AnimationControl
-          animationState={animationState}
-          setAnimationState={setAnimationState}
-          routeCoordinates={stravaPath?.latlng}
-          currentFrame={currentFrame}
-          sliderRef={sliderRef}
-          setViewState={setViewState}
-          setCurrentPoint={setCurrentPoint}
-          setCurrentFrame={setCurrentFrame}
-          handleRouteControl={handleRouteControl}
-        />
       </div>
     </div>
   );

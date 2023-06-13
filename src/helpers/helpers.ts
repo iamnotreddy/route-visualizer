@@ -180,7 +180,6 @@ export const findGlobalMapViewState = (
         Math.log2(512 / (maxLat - minLat)) - 1,
         15
       ),
-      // zoom: 15,
     });
   }
 };
