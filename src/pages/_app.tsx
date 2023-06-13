@@ -5,7 +5,6 @@ import { SessionProvider } from 'next-auth/react';
 
 import '@/styles/globals.css';
 
-import Header from '@/components/layout/Header';
 import Layout from '@/components/layout/Layout';
 
 function MyApp({
@@ -17,7 +16,6 @@ function MyApp({
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
-        <Header />
         <Layout>
           <Component {...pageProps} />
         </Layout>
