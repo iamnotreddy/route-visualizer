@@ -171,6 +171,17 @@ export const findGlobalMapViewState = (
     coordinates: mapCoordinates,
   });
 
+  // Check if the coordinates are valid
+  if (
+    !Number.isFinite(minLng) ||
+    !Number.isFinite(minLat) ||
+    !Number.isFinite(maxLng) ||
+    !Number.isFinite(maxLat)
+  ) {
+    // Handle the error here, such as showing an error message to the user
+    return;
+  }
+
   if (mapRef.current) {
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
