@@ -6,7 +6,12 @@ const {
   NEXT_PUBLIC_STRAVA_CLIENT_SECRET = '',
 } = process.env;
 
-const requestedScope = 'activity:read,activity:write,profile:read_all,read_all';
+const scopes = [
+  'activity:read',
+  'activity:write',
+  'profile:read_all',
+  'read_all',
+];
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,7 +20,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: NEXT_PUBLIC_STRAVA_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: requestedScope,
+          scope: scopes.join(','),
           redirectUri:
             process.env.NODE_ENV === 'production'
               ? 'https://route-visualizer.vercel.app/api/auth/callback/strava'

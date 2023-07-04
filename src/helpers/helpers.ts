@@ -194,3 +194,13 @@ export const findGlobalMapViewState = (
     });
   }
 };
+
+export const getNavStyle = (isSidebarVisible: boolean) => {
+  const expandedStyle =
+    'z-30 flex flex-row items-center justify-center space-x-4 border-b-2 border-slate-400 pb-2';
+
+  const collapsedStyle =
+    'z-30 flex flex-row items-center justify-center space-x-4';
+
+  return isSidebarVisible ? expandedStyle : collapsedStyle;
+};

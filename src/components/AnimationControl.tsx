@@ -1,32 +1,24 @@
-import { Position } from 'geojson';
-import { ChangeEvent, MutableRefObject } from 'react';
-import { ViewState } from 'react-map-gl';
+import { useContext } from 'react';
+
+import { ActivityContext } from '@/components/globalMap';
 
 import { findInitialViewState } from '@/helpers/initialValues';
 
-type AnimationControlProps = {
-  animationState: string;
-  routeCoordinates: Position[] | undefined;
-  currentFrame: number;
-  sliderRef: MutableRefObject<null>;
-  setAnimationState: (animationState: 'paused' | 'playing') => void;
-  setViewState: (viewState: ViewState) => void;
-  setCurrentPoint: (currentPoint: Position) => void;
-  setCurrentFrame: (currentFrame: number) => void;
-  handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
-};
+export default function AnimationControl() {
+  const {
+    animationState,
+    currentFrame,
+    sliderRef,
+    setAnimationState,
+    setViewState,
+    setCurrentPoint,
+    setCurrentFrame,
+    handleRouteControl,
+    stravaPath,
+  } = useContext(ActivityContext);
 
-export default function AnimationControl({
-  animationState,
-  routeCoordinates,
-  currentFrame,
-  sliderRef,
-  setAnimationState,
-  setViewState,
-  setCurrentPoint,
-  setCurrentFrame,
-  handleRouteControl,
-}: AnimationControlProps) {
+  const routeCoordinates = stravaPath?.latlng;
+
   return (
     <>
       <div className='ml-8 flex flex-row space-x-2 '>

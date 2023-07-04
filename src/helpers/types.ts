@@ -1,4 +1,25 @@
 import { Position } from 'geojson';
+import { ChangeEvent, MutableRefObject } from 'react';
+import { ViewState } from 'react-map-gl';
+
+export type ActivityContext = {
+  activities: StravaActivity[];
+  showActivityDetail: boolean;
+  setShowActivityDetail: (showActivityDetail: boolean) => void;
+  currentActivity: StravaActivity | undefined;
+  setCurrentActivity: (activity: StravaActivity) => void;
+  fetchNextPage: () => void;
+  // animation props
+  animationState: string;
+  currentFrame: number;
+  sliderRef: MutableRefObject<null>;
+  setAnimationState: (animationState: 'paused' | 'playing') => void;
+  setViewState: (viewState: ViewState) => void;
+  setCurrentPoint: (currentPoint: Position) => void;
+  setCurrentFrame: (currentFrame: number) => void;
+  handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
+  stravaPath: StravaRouteStream | undefined;
+};
 
 export type ActivityStreamResponse = {
   status: string;
