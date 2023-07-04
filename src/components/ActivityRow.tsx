@@ -10,7 +10,7 @@ import { StravaActivity } from '@/helpers/types';
 
 type MapActivityRowProps = {
   activity: StravaActivity;
-  currentActivityId: string;
+  currentActivityId: string | undefined;
 };
 
 export default function MapActivityRow({

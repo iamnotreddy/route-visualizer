@@ -85,7 +85,7 @@ export const skySource: SourceProps = {
 
 export const lineLayerStyle: LayerProps = {
   type: 'line',
-  paint: { 'line-color': '#004225', 'line-width': 5 },
+  paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
 export const polylineLayerStyle: LayerProps = {
@@ -119,8 +119,16 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'pink',
-    'line-width': 10,
+    'line-color': 'green',
+    'line-width': 3,
+  },
+};
+
+export const singleLineLayerStyle: LayerProps = {
+  type: 'line',
+  paint: {
+    'line-color': 'black',
+    'line-width': 4,
   },
 };
 

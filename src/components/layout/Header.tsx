@@ -30,21 +30,21 @@ export default function Header() {
 
         <nav>
           <ul className='flex items-center space-x-4'>
-            <UnstyledLink href='/' onClick={() => signOut()}>
-              {session && (
-                <Image
-                  className='rounded-full'
-                  src={imageLink}
-                  alt='profile picture'
-                  width={45}
-                  height={45}
-                />
-              )}
-            </UnstyledLink>
             {name && (
-              <p className='rounded-full bg-slate-400 bg-opacity-60 p-2 text-sm text-black'>
-                {name}
-              </p>
+              <div className='flex flex-row items-center justify-center space-x-2 rounded-full bg-slate-400 bg-opacity-60 px-2 text-sm text-black'>
+                <UnstyledLink href='/' onClick={() => signOut()}>
+                  {session && (
+                    <Image
+                      className='rounded-full'
+                      src={imageLink}
+                      alt='profile picture'
+                      width={45}
+                      height={45}
+                    />
+                  )}
+                </UnstyledLink>
+                <p>{name}</p>
+              </div>
             )}
           </ul>
         </nav>
