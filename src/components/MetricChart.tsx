@@ -36,7 +36,7 @@ export default function MetricChart() {
 
   type FillStylesKeys = keyof typeof fillStyles;
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('');
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
