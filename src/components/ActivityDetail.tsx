@@ -12,9 +12,35 @@ import {
 import { metersToMiles } from '@/helpers/helpers';
 
 export const ActivityDetail = () => {
-  const { currentActivity } = useContext(ActivityContext);
+  const { currentActivity, currentFrame, stravaPath } =
+    useContext(ActivityContext);
 
   if (currentActivity) {
+    const distance =
+      stravaPath && currentFrame > 20
+        ? metersToMiles(stravaPath?.distance[currentFrame])
+        : metersToMiles(currentActivity.distance);
+
+    const movingTime =
+      stravaPath && currentFrame > 20
+        ? convertPaceValueForDisplay(stravaPath.time[currentFrame] / 60)
+        : convertPaceValueForDisplay(currentActivity.moving_time / 60);
+
+    const pace =
+      stravaPath && currentFrame > 20
+        ? convertPaceValueForDisplay(stravaPath.time[currentFrame] / 60)
+        : convertPaceValueForDisplay(
+            generatePacePoint(
+              currentActivity.moving_time,
+              currentActivity.distance
+            )
+          );
+
+    const heartRate =
+      stravaPath && currentFrame > 20
+        ? stravaPath.heartRate[currentFrame]
+        : currentActivity.average_heartrate;
+
     return (
       <div className='m-4 flex flex-col space-y-2'>
         <h1 className='text-xl'>{currentActivity.name}</h1>
@@ -27,35 +53,20 @@ export const ActivityDetail = () => {
         </div>
         <div className='grid grid-cols-2 gap-2'>
           <div className='flex flex-col items-center space-y-2 rounded-lg border-2 border-slate-400 py-2'>
-            <p className='text-xl  text-slate-500'>distance</p>
-            <p className='font-light'>
-              {`${metersToMiles(currentActivity.distance)}mi`}
-            </p>
+            <p className='text-sm  text-slate-800'>distance</p>
+            <p className='text-xl'>{`${distance}mi`}</p>
           </div>
           <div className='flex flex-col items-center space-y-2 rounded-lg border-2 border-slate-400 py-2'>
-            <p className='text-xl  text-slate-500'>moving time</p>
-            <p className='font-light'>
-              {`${convertPaceValueForDisplay(
-                currentActivity.moving_time / 60
-              )}`}
-            </p>
+            <p className='text-sm  text-slate-800'>moving time</p>
+            <p className='text-xl'>{`${movingTime}`}</p>
           </div>
           <div className='flex flex-col items-center space-y-2 rounded-lg border-2 border-slate-400 py-2'>
-            <p className='text-xl  text-slate-500'>pace</p>
-            <p className='font-light'>
-              {`${convertPaceValueForDisplay(
-                generatePacePoint(
-                  currentActivity.moving_time,
-                  currentActivity.distance
-                )
-              )}`}
-            </p>
+            <p className='text-sm  text-slate-800'>pace</p>
+            <p className='text-xl'>{pace}</p>
           </div>
           <div className='flex flex-col items-center space-y-2 rounded-lg border-2 border-slate-400 py-2'>
-            <p className='text-xl  text-slate-500'>heart rate</p>
-            <p className='font-light'>
-              {`${Math.floor(currentActivity.average_heartrate)}bpm`}
-            </p>
+            <p className='text-sm  text-slate-800'>heart rate</p>
+            <p className='text-xl'>{`${heartRate ?? 0}bpm`}</p>
           </div>
         </div>
 
@@ -68,6 +79,5 @@ export const ActivityDetail = () => {
     );
   }
 
-  // return Loading text if currentActivity not set
-  return <div>Loading...</div>;
+  return <div>No Activity Loaded...</div>;
 };

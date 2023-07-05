@@ -24,7 +24,6 @@ export function useRouteAnimation(
     ['activityStream', routeId],
     () => getActivityStream(routeId),
     {
-      keepPreviousData: true,
       enabled: animationState === 'playing',
     }
   );
@@ -43,7 +42,6 @@ export function useRouteAnimation(
         ]);
       } catch {
         alert('Invalid Lat/Lng coordinates');
-        throw new Error('Invalid Lat/Lng coordinates');
       }
 
       setCurrentFrame(inputFrame);
@@ -107,7 +105,7 @@ export function useRouteAnimation(
         setCurrentPoint(routeCoordinates[currentFrame]);
       }
     } catch {
-      throw new Error('activity has invalid lat/lng coordinates');
+      alert('activity has invalid lat/lng coordinates');
     }
   }, [currentFrame, mapRef, stravaPath]);
 

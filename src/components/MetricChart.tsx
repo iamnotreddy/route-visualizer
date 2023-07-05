@@ -2,11 +2,8 @@ import { ParentSize } from '@visx/responsive';
 import {
   AnimatedAreaSeries,
   AnimatedAxis,
-  AnimatedLineSeries,
   Annotation,
   AnnotationCircleSubject,
-  AnnotationConnector,
-  AnnotationLabel,
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
@@ -15,10 +12,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import { ActivityContext } from '@/components/globalMap';
 
-import {
-  convertPaceValueForDisplay,
-  generatePace,
-} from '@/helpers/chartHelpers';
+import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
 
@@ -68,85 +62,70 @@ export default function MetricChart() {
 
   if (areaSeries) {
     return (
-      <div className='flex flex-row rounded-xl border-2 border-slate-400 p-2'>
-        <div className='border-4 border-blue-400'>
-          <ChooseMetricBar
-            setCurrentMetric={setAreaSeriesMetric}
-            currentMetric={areaSeriesMetric}
-            orientation='vertical'
-          />
-        </div>
-        <div className='border-4 border-orange-400'>
-          <ParentSize>
-            {(parent) => {
-              return (
-                <div>
-                  <XYChart
-                    captureEvents={true}
-                    width={parent.width}
-                    height={parent.height}
-                    xScale={{
-                      type: 'linear',
-                      domain: [0, areaSeries.length - 1],
-                      zero: false,
-                      nice: true,
-                    }}
-                    yScale={{
-                      type: 'linear',
-                      domain: calculateDomain(areaSeries),
-                      zero: false,
-                      nice: true,
-                    }}
-                    onPointerMove={(e: EventHandlerParams<DataPoint>) =>
-                      setCurrentFrame(e.datum.x)
-                    }
-                  >
-                    <AnimatedAxis orientation='left' numTicks={3} />
-                    <AnimatedAreaSeries
-                      dataKey='area'
-                      data={areaSeries}
-                      {...accessors}
-                      fillOpacity={0.6}
-                      fill={currentFillColor}
-                    />
-                    <AnimatedLineSeries
-                      dataKey='area'
-                      data={areaSeries}
-                      {...accessors}
-                      stroke='#334155'
-                    />
-                    <Annotation
-                      dataKey='area'
-                      datum={areaSeries[currentFrame]}
-                      {...accessors}
-                      dx={50}
-                      dy={-50}
+      <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
+        <ChooseMetricBar
+          setCurrentMetric={setAreaSeriesMetric}
+          currentMetric={areaSeriesMetric}
+          orientation='horizontal'
+        />
+        {areaSeries[0] ? (
+          <div style={{ width: '25vw', height: '15vh' }}>
+            <ParentSize>
+              {(parent) => {
+                return (
+                  <div>
+                    <XYChart
+                      captureEvents={true}
+                      width={parent.width}
+                      height={parent.height}
+                      margin={{ top: 10, bottom: 10, left: 30, right: 0 }}
+                      xScale={{
+                        type: 'linear',
+                        domain: [0, areaSeries.length - 1],
+                        zero: false,
+                      }}
+                      yScale={{
+                        type: 'linear',
+                        domain: calculateDomain(areaSeries),
+                        zero: false,
+                      }}
+                      onPointerMove={(e: EventHandlerParams<DataPoint>) =>
+                        setCurrentFrame(e.datum.x)
+                      }
                     >
-                      <AnnotationLabel
-                        title={areaSeriesMetric}
-                        subtitle={
-                          areaSeriesMetric == 'pace'
-                            ? convertPaceValueForDisplay(
-                                areaSeries[currentFrame].y
-                              )
-                            : areaSeries[currentFrame].y.toString()
-                        }
-                        subtitleFontWeight={2}
-                        showAnchorLine={false}
-                        backgroundFill='rgba(0,150,150,0.1)'
+                      <AnimatedAxis orientation='left' numTicks={4} />
+
+                      <AnimatedAreaSeries
+                        dataKey='area'
+                        data={areaSeries}
+                        {...accessors}
+                        fillOpacity={0.6}
+                        fill={currentFillColor}
+                        lineProps={{
+                          stroke: 'black',
+                          strokeWidth: 1.5,
+                        }}
                       />
                       <AnnotationCircleSubject radius={4} stroke='green' />
-                      <AnnotationConnector />
-                    </Annotation>
-                  </XYChart>
-                </div>
-              );
-            }}
-          </ParentSize>
-        </div>
+
+                      <Annotation
+                        dataKey='area'
+                        datum={areaSeries[currentFrame]}
+                      >
+                        <AnnotationCircleSubject radius={4} stroke='black' />
+                      </Annotation>
+                    </XYChart>
+                  </div>
+                );
+              }}
+            </ParentSize>
+          </div>
+        ) : (
+          <div className='flex items-center justify-center text-xs'>{`no ${areaSeriesMetric} data recorded`}</div>
+        )}
       </div>
     );
   }
 
-  return <div>hello.</div>;
+  return <div>.</div>;
 }
