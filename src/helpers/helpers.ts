@@ -7,6 +7,7 @@ import { MapRef } from 'react-map-gl';
 import {
   ActivityStream,
   DataPoint,
+  PolylineObj,
   RoutePoint,
   StravaActivity,
   StravaRouteStream,
@@ -155,20 +156,40 @@ export const transformActivityList = (
   return transformedActivities;
 };
 
-export const getPolyLineCoordinates = (activity: StravaActivity) => {
-  const decodedPolyLine = polyline.decode(activity.map.summary_polyline);
+export const getPolyLineCoordinates = (polyLine: string) => {
+  // to-do: add some validation
+  const decodedPolyLine = polyline.decode(polyLine);
   const mapSourceCoordinates = decodedPolyLine.map(([lng, lat]) => [lat, lng]);
   return mapSourceCoordinates;
 };
 
+export const getCurrentRouteCoordinates = (
+  polylineObjects: PolylineObj[],
+  currentActivityId: string
+) => {
+  const currentLineString = polylineObjects.find(
+    (e) => e.routeId === currentActivityId
+  );
+
+  let coordinates;
+
+  if (currentLineString) {
+    const objType = currentLineString.geoJsonObject.features[0];
+    if (objType.geometry.type === 'LineString') {
+      coordinates = objType.geometry.coordinates;
+    }
+  }
+
+  return coordinates ?? [];
+};
+
 export const findGlobalMapViewState = (
-  activity: StravaActivity,
+  routeCoordinates: number[][],
   mapRef: RefObject<MapRef>
 ) => {
-  const mapCoordinates = getPolyLineCoordinates(activity);
   const [minLng, minLat, maxLng, maxLat] = bbox({
     type: 'LineString',
-    coordinates: mapCoordinates,
+    coordinates: routeCoordinates,
   });
 
   // Check if the coordinates are valid

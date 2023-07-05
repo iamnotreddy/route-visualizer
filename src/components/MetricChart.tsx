@@ -10,29 +10,23 @@ import {
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
+import { ActivityContext } from '@/components/globalMap';
 
 import {
   convertPaceValueForDisplay,
   generatePace,
 } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
-import { DataPoint, StravaRouteStream } from '@/helpers/types';
+import { DataPoint } from '@/helpers/types';
 
-type ChartProps = {
-  currentFrame: number;
-  setCurrentFrame: (newValue: number) => void;
-  stravaPath: StravaRouteStream | undefined;
-};
-
-export default function MetricChart({
-  currentFrame,
-  setCurrentFrame,
-  stravaPath,
-}: ChartProps) {
+export default function MetricChart() {
   // Define the dimensions and margins of the chart
+
+  const { currentFrame, setCurrentFrame, stravaPath } =
+    useContext(ActivityContext);
 
   const accessors = {
     xAccessor: (d: DataPoint) => (d ? d.x : 0),
@@ -62,29 +56,30 @@ export default function MetricChart({
 
       if (areaSeriesMetric == 'heartRate') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
-      } else if (areaSeriesMetric == 'elevation') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       } else if (areaSeriesMetric == 'pace') {
         setAreaSeries(paceArray);
       } else if (areaSeriesMetric == 'grade') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
+      } else {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       }
     }
   }, [areaSeriesMetric, stravaPath]);
 
-  return (
-    <div className='flex flex-row items-center space-x-2 rounded-xl border-2 border-slate-400 p-2'>
-      <ChooseMetricBar
-        setCurrentMetric={setAreaSeriesMetric}
-        currentMetric={areaSeriesMetric}
-        orientation='vertical'
-      />
-
-      {areaSeries && areaSeriesMetric && (
-        <div style={{ width: '20vw', height: '20vh' }}>
+  if (areaSeries) {
+    return (
+      <div className='flex flex-row rounded-xl border-2 border-slate-400 p-2'>
+        <div className='border-4 border-blue-400'>
+          <ChooseMetricBar
+            setCurrentMetric={setAreaSeriesMetric}
+            currentMetric={areaSeriesMetric}
+            orientation='vertical'
+          />
+        </div>
+        <div className='border-4 border-orange-400'>
           <ParentSize>
-            {(parent) =>
-              areaSeries && (
+            {(parent) => {
+              return (
                 <div>
                   <XYChart
                     captureEvents={true}
@@ -145,11 +140,13 @@ export default function MetricChart({
                     </Annotation>
                   </XYChart>
                 </div>
-              )
-            }
+              );
+            }}
           </ParentSize>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  return <div>hello.</div>;
 }

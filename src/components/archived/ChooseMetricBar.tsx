@@ -20,8 +20,8 @@ export default function ChooseMetricBar({
 }: ChooseMetricBarProps) {
   const tailwindStyle =
     orientation == 'vertical'
-      ? 'flex-col items-center space-y-2'
-      : 'flex-row items-center space-x-2';
+      ? 'flex-col space-y-2'
+      : 'flex-row space-x-2 justify-center';
 
   const heroIconPaths: Icon[] = [
     {

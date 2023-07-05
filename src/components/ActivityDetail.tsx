@@ -12,8 +12,7 @@ import {
 import { metersToMiles } from '@/helpers/helpers';
 
 export const ActivityDetail = () => {
-  const { currentActivity, stravaPath, currentFrame, setCurrentFrame } =
-    useContext(ActivityContext);
+  const { currentActivity } = useContext(ActivityContext);
 
   if (currentActivity) {
     return (
@@ -60,13 +59,8 @@ export const ActivityDetail = () => {
           </div>
         </div>
 
-        {stravaPath && (
-          <MetricChart
-            currentFrame={currentFrame}
-            setCurrentFrame={setCurrentFrame}
-            stravaPath={stravaPath}
-          />
-        )}
+        <MetricChart />
+
         <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
           <AnimationControl />
         </div>
