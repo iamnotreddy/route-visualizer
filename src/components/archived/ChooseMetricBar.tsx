@@ -20,8 +20,8 @@ export default function ChooseMetricBar({
 }: ChooseMetricBarProps) {
   const tailwindStyle =
     orientation == 'vertical'
-      ? 'flex-col items-center space-y-2'
-      : 'flex-row items-center space-x-2';
+      ? 'flex-col space-y-2'
+      : 'flex-row justify-left space-x-2';
 
   const heroIconPaths: Icon[] = [
     {
@@ -30,16 +30,16 @@ export default function ChooseMetricBar({
       baseClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-pink-300',
       selectedClass:
-        'h-5 w-5 sm:h-7 sm:w-7 fill-pink-300 stroke-zinc-700 stroke-2 hover:scale-150',
+        'h-3 w-3 sm:h-5 sm:w-5 fill-pink-300 stroke-zinc-700 stroke-2 hover:scale-150',
     },
 
     {
       name: 'pace',
       path: 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z',
       baseClass:
-        'h-3 w-3 sm:h-5 sm:w-5  fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-emerald-600',
+        'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-emerald-600',
       selectedClass:
-        'h-5 w-5 sm:h-7 sm:w-7 fill-emerald-600 stroke-zinc-700 stroke-2 hover:scale-150',
+        'h-3 w-3 sm:h-5 sm:w-5 fill-emerald-600 stroke-zinc-700 stroke-2 hover:scale-150',
     },
 
     {
@@ -48,15 +48,15 @@ export default function ChooseMetricBar({
       baseClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-purple-300',
       selectedClass:
-        'h-5 w-5 sm:h-7 fill-purple-300 stroke-zinc-700 stroke-2 hover:scale-150',
+        'h-3 w-3 sm:h-5 sm:w-5 fill-purple-300 stroke-zinc-700 stroke-2 hover:scale-150',
     },
     {
       name: 'grade',
       path: 'M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z',
       baseClass:
-        'h-3 w-3 sm:h-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-amber-500',
+        'h-3 w-3 sm:h-5 sm:w-5  fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-amber-500',
       selectedClass:
-        'h-5 w-5 sm:h-7 fill-amber-500 stroke-zinc-700 stroke-2 hover:scale-150',
+        'h-3 w-3 sm:h-5 sm:w-5 fill-amber-500 stroke-zinc-700 stroke-2 hover:scale-150',
     },
   ];
 
@@ -80,7 +80,7 @@ export default function ChooseMetricBar({
   };
 
   return (
-    <div className={`flex ${tailwindStyle}`}>
+    <div className={`flex ${tailwindStyle}  `}>
       {heroIconPaths.map((icon) => {
         return (
           <button

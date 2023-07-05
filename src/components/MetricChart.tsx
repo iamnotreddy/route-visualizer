@@ -2,37 +2,25 @@ import { ParentSize } from '@visx/responsive';
 import {
   AnimatedAreaSeries,
   AnimatedAxis,
-  AnimatedLineSeries,
   Annotation,
   AnnotationCircleSubject,
-  AnnotationConnector,
-  AnnotationLabel,
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
+import { ActivityContext } from '@/components/globalMap';
 
-import {
-  convertPaceValueForDisplay,
-  generatePace,
-} from '@/helpers/chartHelpers';
+import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
-import { DataPoint, StravaRouteStream } from '@/helpers/types';
+import { DataPoint } from '@/helpers/types';
 
-type ChartProps = {
-  currentFrame: number;
-  setCurrentFrame: (newValue: number) => void;
-  stravaPath: StravaRouteStream | undefined;
-};
-
-export default function MetricChart({
-  currentFrame,
-  setCurrentFrame,
-  stravaPath,
-}: ChartProps) {
+export default function MetricChart() {
   // Define the dimensions and margins of the chart
+
+  const { currentFrame, setCurrentFrame, stravaPath } =
+    useContext(ActivityContext);
 
   const accessors = {
     xAccessor: (d: DataPoint) => (d ? d.x : 0),
@@ -48,7 +36,7 @@ export default function MetricChart({
 
   type FillStylesKeys = keyof typeof fillStyles;
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('');
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
@@ -62,94 +50,82 @@ export default function MetricChart({
 
       if (areaSeriesMetric == 'heartRate') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
-      } else if (areaSeriesMetric == 'elevation') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       } else if (areaSeriesMetric == 'pace') {
         setAreaSeries(paceArray);
       } else if (areaSeriesMetric == 'grade') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
+      } else {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       }
     }
   }, [areaSeriesMetric, stravaPath]);
 
-  return (
-    <div className='flex flex-row items-center space-x-2 rounded-xl border-2 border-slate-400 p-2'>
-      <ChooseMetricBar
-        setCurrentMetric={setAreaSeriesMetric}
-        currentMetric={areaSeriesMetric}
-        orientation='vertical'
-      />
-
-      {areaSeries && areaSeriesMetric && (
-        <div style={{ width: '20vw', height: '20vh' }}>
-          <ParentSize>
-            {(parent) =>
-              areaSeries && (
-                <div>
-                  <XYChart
-                    captureEvents={true}
-                    width={parent.width}
-                    height={parent.height}
-                    xScale={{
-                      type: 'linear',
-                      domain: [0, areaSeries.length - 1],
-                      zero: false,
-                      nice: true,
-                    }}
-                    yScale={{
-                      type: 'linear',
-                      domain: calculateDomain(areaSeries),
-                      zero: false,
-                      nice: true,
-                    }}
-                    onPointerMove={(e: EventHandlerParams<DataPoint>) =>
-                      setCurrentFrame(e.datum.x)
-                    }
-                  >
-                    <AnimatedAxis orientation='left' numTicks={3} />
-                    <AnimatedAreaSeries
-                      dataKey='area'
-                      data={areaSeries}
-                      {...accessors}
-                      fillOpacity={0.6}
-                      fill={currentFillColor}
-                    />
-                    <AnimatedLineSeries
-                      dataKey='area'
-                      data={areaSeries}
-                      {...accessors}
-                      stroke='#334155'
-                    />
-                    <Annotation
-                      dataKey='area'
-                      datum={areaSeries[currentFrame]}
-                      {...accessors}
-                      dx={50}
-                      dy={-50}
+  if (areaSeries) {
+    return (
+      <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
+        <ChooseMetricBar
+          setCurrentMetric={setAreaSeriesMetric}
+          currentMetric={areaSeriesMetric}
+          orientation='horizontal'
+        />
+        {areaSeries[0] ? (
+          <div style={{ width: '25vw', height: '15vh' }}>
+            <ParentSize>
+              {(parent) => {
+                return (
+                  <div>
+                    <XYChart
+                      captureEvents={true}
+                      width={parent.width}
+                      height={parent.height}
+                      margin={{ top: 10, bottom: 10, left: 30, right: 0 }}
+                      xScale={{
+                        type: 'linear',
+                        domain: [0, areaSeries.length - 1],
+                        zero: false,
+                      }}
+                      yScale={{
+                        type: 'linear',
+                        domain: calculateDomain(areaSeries),
+                        zero: false,
+                      }}
+                      onPointerMove={(e: EventHandlerParams<DataPoint>) =>
+                        setCurrentFrame(e.datum.x)
+                      }
                     >
-                      <AnnotationLabel
-                        title={areaSeriesMetric}
-                        subtitle={
-                          areaSeriesMetric == 'pace'
-                            ? convertPaceValueForDisplay(
-                                areaSeries[currentFrame].y
-                              )
-                            : areaSeries[currentFrame].y.toString()
-                        }
-                        subtitleFontWeight={2}
-                        showAnchorLine={false}
-                        backgroundFill='rgba(0,150,150,0.1)'
+                      <AnimatedAxis orientation='left' numTicks={4} />
+
+                      <AnimatedAreaSeries
+                        dataKey='area'
+                        data={areaSeries}
+                        {...accessors}
+                        fillOpacity={0.6}
+                        fill={currentFillColor}
+                        lineProps={{
+                          stroke: 'black',
+                          strokeWidth: 1.5,
+                        }}
                       />
                       <AnnotationCircleSubject radius={4} stroke='green' />
-                      <AnnotationConnector />
-                    </Annotation>
-                  </XYChart>
-                </div>
-              )
-            }
-          </ParentSize>
-        </div>
-      )}
-    </div>
-  );
+
+                      <Annotation
+                        dataKey='area'
+                        datum={areaSeries[currentFrame]}
+                      >
+                        <AnnotationCircleSubject radius={4} stroke='black' />
+                      </Annotation>
+                    </XYChart>
+                  </div>
+                );
+              }}
+            </ParentSize>
+          </div>
+        ) : (
+          <div className='flex items-center justify-center text-xs'>{`no ${areaSeriesMetric} data recorded`}</div>
+        )}
+      </div>
+    );
+  }
+
+  return <div>.</div>;
 }

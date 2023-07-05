@@ -1,14 +1,11 @@
-import {
-  FeatureCollection,
-  GeoJsonProperties,
-  Geometry,
-  Position,
-} from 'geojson';
+import { Position } from 'geojson';
 import { useSession } from 'next-auth/react';
 import {
   ChangeEvent,
   createContext,
+  Dispatch,
   MutableRefObject,
+  SetStateAction,
   useEffect,
   useMemo,
   useRef,
@@ -32,6 +29,7 @@ import SignInPage from '@/components/SignInPage';
 
 import {
   findGlobalMapViewState,
+  getCurrentRouteCoordinates,
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
 import {
@@ -50,7 +48,11 @@ import {
   skySource,
   startPointLayerStyle,
 } from '@/helpers/layers';
-import { StravaActivity, StravaRouteStream } from '@/helpers/types';
+import {
+  PolylineObj,
+  StravaActivity,
+  StravaRouteStream,
+} from '@/helpers/types';
 
 type GlobalMapHomePageProps = {
   activities: StravaActivity[];
@@ -61,9 +63,9 @@ type GlobalMapHomePageProps = {
 type ActivityContext = {
   activities: StravaActivity[];
   showActivityDetail: boolean;
-  setShowActivityDetail: (showActivityDetail: boolean) => void;
+  setShowActivityDetail: Dispatch<SetStateAction<boolean>>;
   currentActivity: StravaActivity | undefined;
-  setCurrentActivity: (activity: StravaActivity) => void;
+  setCurrentActivity: Dispatch<SetStateAction<StravaActivity | undefined>>;
   fetchNextPage: () => void;
   // animation props
   animationState: string;
@@ -89,21 +91,11 @@ export default function GlobalMap({
   const [hasMapLoaded, setHasMapLoaded] = useState(false);
   const [showActivityDetail, setShowActivityDetail] = useState(false);
 
-  const [viewState, setViewState] = useState<ViewState>({
-    ...findInitialViewState([
-      [-118.401756, 33.775005],
-      [-118.401747, 33.775007],
-    ]),
-    pitch: 85,
-    zoom: 14,
-    bearing: 90,
-  });
-  // the whole route line drawn on the map
+  const [viewState, setViewState] = useState<ViewState>();
+
+  // array of all fetched activities' geojson objects
   const [routeLineStrings, setRouteLineStrings] = useState(
-    [] as Array<{
-      routeId: string;
-      geoJsonObject: FeatureCollection<Geometry, GeoJsonProperties>;
-    }>
+    [] as Array<PolylineObj>
   );
 
   const [currentActivity, setCurrentActivity] = useState<StravaActivity>();
@@ -121,6 +113,18 @@ export default function GlobalMap({
   // initialize drawing of route
   const handleOnMapLoad = () => {
     setHasMapLoaded(true);
+
+    const intialSplashViewState = {
+      ...findInitialViewState([
+        [-118.401756, 33.775005],
+        [-118.401747, 33.775007],
+      ]),
+      pitch: 85,
+      zoom: 14,
+      bearing: 90,
+    };
+
+    setViewState(intialSplashViewState);
   };
 
   // record viewState as camera pans around route
@@ -136,7 +140,7 @@ export default function GlobalMap({
     currentFrame: splashCurrentFrame,
   } = useSplashAnimation(mapRef, 'playing', status);
 
-  // hook for currente route animation
+  // hook for current route animation
   const {
     animatedLineCoordinates,
     currentPoint,
@@ -147,6 +151,43 @@ export default function GlobalMap({
     stravaPath,
     isActivityStreamFetching,
   } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
+
+  const contextValues = {
+    activities,
+    currentActivity,
+    setCurrentActivity,
+    fetchNextPage,
+    stravaPath,
+    animationState,
+    setAnimationState,
+    currentFrame,
+    sliderRef,
+    setViewState,
+    setCurrentPoint,
+    setCurrentFrame,
+    handleRouteControl,
+    showActivityDetail,
+    setShowActivityDetail,
+  };
+
+  // decode polylines and construct route geoJSONs
+  useEffect(() => {
+    if (activities.length > 0) {
+      const polyLines: Array<Position[]> = activities.map((activity) =>
+        getPolyLineCoordinates(activity.map.summary_polyline)
+      );
+
+      const lineStringsObject = polyLines.map((polyLine, index) => {
+        return {
+          routeId: activities[index].id,
+          geoJsonObject: findRouteLineString(polyLine),
+        };
+      });
+
+      setRouteLineStrings(lineStringsObject);
+      setCurrentActivity(activities[0]);
+    }
+  }, [activities]);
 
   const activityLayers = useMemo(() => {
     if (!showActivityDetail)
@@ -171,53 +212,15 @@ export default function GlobalMap({
       });
   }, [currentActivity?.id, routeLineStrings, showActivityDetail]);
 
-  const contextValues = {
-    activities,
-    currentActivity,
-    setCurrentActivity,
-    fetchNextPage,
-    stravaPath,
-    animationState,
-    setAnimationState,
-    currentFrame,
-    sliderRef,
-    setViewState,
-    setCurrentPoint,
-    setCurrentFrame,
-    handleRouteControl,
-    showActivityDetail,
-    setShowActivityDetail,
-  };
-
-  // decode polylines and construct route geoJSONs
-  useEffect(() => {
-    if (activities.length > 0) {
-      const polyLines: Array<Position[]> = activities.map((activity) =>
-        getPolyLineCoordinates(activity)
-      );
-
-      if (!currentActivity) {
-        setCurrentActivity(activities[0]);
-      }
-
-      const lineStringsObject = polyLines.map((polyLine, index) => {
-        return {
-          routeId: activities[index].id,
-          geoJsonObject: findRouteLineString(polyLine),
-        };
-      });
-
-      setRouteLineStrings(lineStringsObject);
-    }
-  }, [activities, currentActivity]);
-
   // set first activity on map
   useEffect(() => {
     if (currentActivity) {
-      const polyLine = getPolyLineCoordinates(currentActivity);
+      const polyLine = getPolyLineCoordinates(
+        currentActivity.map.summary_polyline
+      );
       setStartPoint(polyLine[0]);
       setEndPoint(polyLine[polyLine.length - 1]);
-      findGlobalMapViewState(currentActivity, mapRef);
+      findGlobalMapViewState(polyLine, mapRef);
     }
   }, [currentActivity]);
 
@@ -251,9 +254,32 @@ export default function GlobalMap({
             <Source {...skySource}>
               <Layer {...skyLayer} />
             </Source>
-            <Source {...defineLineSource(splashAnimationedCoordinates)}>
-              <Layer {...animatedLineLayerStyle} />
-            </Source>
+
+            {splashAnimationedCoordinates && (
+              <Source {...defineLineSource(splashAnimationedCoordinates)}>
+                <Layer {...animatedLineLayerStyle} />
+              </Source>
+            )}
+
+            {animatedLineCoordinates && (
+              <Source {...defineLineSource(animatedLineCoordinates)}>
+                <Layer {...animatedLineLayerStyle} />
+              </Source>
+            )}
+
+            {currentActivity && (
+              <Source
+                {...defineLineSource(
+                  getCurrentRouteCoordinates(
+                    routeLineStrings,
+                    currentActivity.id
+                  )
+                )}
+              >
+                <Layer {...singleLineLayerStyle} />
+              </Source>
+            )}
+
             {startPoint && (
               <Source {...definePointSource(startPoint)}>
                 <Layer {...startPointLayerStyle} />
@@ -264,19 +290,12 @@ export default function GlobalMap({
                 <Layer {...endPointLayerStyle} />
               </Source>
             )}
-            <Source {...defineLineSource(animatedLineCoordinates)}>
-              <Layer {...animatedLineLayerStyle} />
-            </Source>
-            {showActivityDetail && animationState === 'paused' && (
-              <Source {...defineLineSource(stravaPath?.latlng ?? [])}>
-                <Layer {...singleLineLayerStyle} />
-              </Source>
-            )}
             {currentPoint && !isActivityStreamFetching && showActivityDetail && (
               <Source {...definePointSource(currentPoint)}>
                 <Layer {...pointLayerStyle} />
               </Source>
             )}
+
             {activityLayers}
           </Map>
         </div>

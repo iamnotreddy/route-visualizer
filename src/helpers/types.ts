@@ -1,4 +1,9 @@
-import { Position } from 'geojson';
+import {
+  FeatureCollection,
+  GeoJsonProperties,
+  Geometry,
+  Position,
+} from 'geojson';
 import { ChangeEvent, MutableRefObject } from 'react';
 import { ViewState } from 'react-map-gl';
 
@@ -169,4 +174,9 @@ export type StravaActivityAthlete = {
 export type DataPoint = {
   x: number;
   y: number;
+};
+
+export type PolylineObj = {
+  routeId: string;
+  geoJsonObject: FeatureCollection<Geometry, GeoJsonProperties>;
 };

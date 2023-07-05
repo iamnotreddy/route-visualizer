@@ -119,8 +119,8 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'green',
-    'line-width': 3,
+    'line-color': 'red',
+    'line-width': 4,
   },
 };
 

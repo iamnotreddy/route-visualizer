@@ -25,19 +25,25 @@ export default function ActivityList() {
     setShowActivityDetail,
   } = useContext(ActivityContext);
 
+  const handleShowActivityDetail = () => {
+    setShowActivityDetail((prev) => {
+      if (prev) {
+        setCurrentActivity(undefined);
+        return !prev;
+      }
+      return !prev;
+    });
+  };
+
   return (
     <div
-      className='absolute top-20 left-0 z-20 ml-4 flex max-h-screen flex-col overflow-y-auto rounded-2xl border-2 border-black bg-gray-200 bg-opacity-70 p-4'
+      className='absolute top-20 left-0 z-20 ml-4 flex max-h-screen flex-col overflow-y-auto rounded-2xl border-2 border-black bg-slate-200 bg-opacity-90 p-4'
       style={{ maxHeight: '80vh' }}
     >
       <div className={getNavStyle(isSidebarVisible)}>
         {/* chevron to link back to list */}
         {showActivityDetail && (
-          <button
-            onClick={() => {
-              setShowActivityDetail(false);
-            }}
-          >
+          <button onClick={handleShowActivityDetail}>
             <ChevronIcon />
           </button>
         )}

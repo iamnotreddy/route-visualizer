@@ -24,7 +24,6 @@ export function useRouteAnimation(
     ['activityStream', routeId],
     () => getActivityStream(routeId),
     {
-      keepPreviousData: true,
       enabled: animationState === 'playing',
     }
   );
@@ -34,12 +33,16 @@ export function useRouteAnimation(
     const inputFrame = parseInt(e.target.value);
     const routeCoordinates = stravaPath?.latlng;
 
-    if (mapRef.current && routeCoordinates && routeCoordinates[inputFrame]) {
+    if (mapRef.current && routeCoordinates) {
       // pan camera towards next frame
-      mapRef.current.panTo([
-        routeCoordinates[inputFrame][0],
-        routeCoordinates[inputFrame][1],
-      ]);
+      try {
+        mapRef.current.panTo([
+          routeCoordinates[inputFrame][0],
+          routeCoordinates[inputFrame][1],
+        ]);
+      } catch {
+        alert('Invalid Lat/Lng coordinates');
+      }
 
       setCurrentFrame(inputFrame);
 
@@ -90,15 +93,19 @@ export function useRouteAnimation(
   }, [animationState, stravaPath]);
 
   useEffect(() => {
-    if (mapRef.current && stravaPath) {
-      const routeCoordinates = stravaPath.latlng;
+    try {
+      if (mapRef.current && stravaPath) {
+        const routeCoordinates = stravaPath.latlng;
 
-      mapRef.current.panTo([
-        routeCoordinates[currentFrame][0],
-        routeCoordinates[currentFrame][1],
-      ]);
-      setAnimatedLineCoordinates(routeCoordinates.slice(0, currentFrame + 1));
-      setCurrentPoint(routeCoordinates[currentFrame]);
+        mapRef.current.panTo([
+          routeCoordinates[currentFrame][0],
+          routeCoordinates[currentFrame][1],
+        ]);
+        setAnimatedLineCoordinates(routeCoordinates.slice(0, currentFrame + 1));
+        setCurrentPoint(routeCoordinates[currentFrame]);
+      }
+    } catch {
+      alert('activity has invalid lat/lng coordinates');
     }
   }, [currentFrame, mapRef, stravaPath]);
 
