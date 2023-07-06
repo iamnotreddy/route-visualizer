@@ -28,12 +28,14 @@ export const ActivityDetail = () => {
 
     const pace =
       stravaPath && currentFrame > 20
-        ? convertPaceValueForDisplay(stravaPath.time[currentFrame] / 60)
-        : convertPaceValueForDisplay(
+        ? convertPaceValueForDisplay(
             generatePacePoint(
-              currentActivity.moving_time,
-              currentActivity.distance
+              stravaPath.time[currentFrame],
+              stravaPath.distance[currentFrame]
             )
+          )
+        : convertPaceValueForDisplay(
+            currentActivity.moving_time / currentActivity.distance
           );
 
     const heartRate =
@@ -66,7 +68,7 @@ export const ActivityDetail = () => {
           </div>
           <div className='flex flex-col items-center space-y-2 rounded-lg border-2 border-slate-400 py-2'>
             <p className='text-sm  text-slate-800'>heart rate</p>
-            <p className='text-xl'>{`${heartRate ?? 0}bpm`}</p>
+            <p className='text-xl'>{`${Math.floor(heartRate) ?? 0}bpm`}</p>
           </div>
         </div>
 

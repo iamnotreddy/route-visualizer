@@ -1,8 +1,8 @@
 import { ParentSize } from '@visx/responsive';
 import {
+  AnimatedAnnotation,
   AnimatedAreaSeries,
   AnimatedAxis,
-  Annotation,
   AnnotationCircleSubject,
   EventHandlerParams,
   XYChart,
@@ -102,18 +102,21 @@ export default function MetricChart() {
                         fillOpacity={0.6}
                         fill={currentFillColor}
                         lineProps={{
-                          stroke: 'black',
+                          stroke: 'slate',
                           strokeWidth: 1.5,
                         }}
                       />
-                      <AnnotationCircleSubject radius={4} stroke='green' />
 
-                      <Annotation
+                      <AnimatedAnnotation
                         dataKey='area'
                         datum={areaSeries[currentFrame]}
                       >
-                        <AnnotationCircleSubject radius={4} stroke='black' />
-                      </Annotation>
+                        <AnnotationCircleSubject
+                          className=''
+                          radius={3}
+                          stroke='black'
+                        />
+                      </AnimatedAnnotation>
                     </XYChart>
                   </div>
                 );
