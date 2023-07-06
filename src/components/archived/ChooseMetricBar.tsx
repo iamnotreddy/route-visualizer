@@ -21,7 +21,7 @@ export default function ChooseMetricBar({
   const tailwindStyle =
     orientation == 'vertical'
       ? 'flex-col space-y-2'
-      : 'flex-row justify-left space-x-2';
+      : 'flex-row justify-center space-x-2';
 
   const heroIconPaths: Icon[] = [
     {

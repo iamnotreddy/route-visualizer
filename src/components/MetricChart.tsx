@@ -9,15 +9,14 @@ import {
 } from '@visx/xychart';
 import React, { useContext, useEffect, useState } from 'react';
 
-import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import { ActivityContext } from '@/components/GlobalMap';
 
 import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
 
-export default function MetricChart() {
-  // Define the dimensions and margins of the chart
+export default function MetricChart(props: { areaSeriesMetric: string }) {
+  const { areaSeriesMetric } = props;
 
   const { currentFrame, setCurrentFrame, stravaPath } =
     useContext(ActivityContext);
@@ -36,7 +35,6 @@ export default function MetricChart() {
 
   type FillStylesKeys = keyof typeof fillStyles;
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
@@ -63,22 +61,20 @@ export default function MetricChart() {
   if (areaSeries) {
     return (
       <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
-        <ChooseMetricBar
-          setCurrentMetric={setAreaSeriesMetric}
-          currentMetric={areaSeriesMetric}
-          orientation='horizontal'
-        />
         {areaSeries[0] ? (
           <div style={{ width: '25vw', height: '15vh' }}>
             <ParentSize>
               {(parent) => {
                 return (
                   <div>
+                    <p className='text-center text-xs font-semibold text-slate-800'>
+                      {areaSeriesMetric}
+                    </p>
                     <XYChart
                       captureEvents={true}
                       width={parent.width}
                       height={parent.height}
-                      margin={{ top: 10, bottom: 10, left: 30, right: 0 }}
+                      margin={{ top: 10, bottom: 15, left: 30, right: 0 }}
                       xScale={{
                         type: 'linear',
                         domain: [0, areaSeries.length - 1],
@@ -130,5 +126,5 @@ export default function MetricChart() {
     );
   }
 
-  return <div>.</div>;
+  return <div></div>;
 }

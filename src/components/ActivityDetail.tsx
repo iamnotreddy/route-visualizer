@@ -1,7 +1,8 @@
 import { format, parseISO } from 'date-fns';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
+import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import { ActivityContext } from '@/components/GlobalMap';
 import MetricChart from '@/components/MetricChart';
 
@@ -14,6 +15,8 @@ import { metersToMiles } from '@/helpers/helpers';
 export const ActivityDetail = () => {
   const { currentActivity, currentFrame, stravaPath } =
     useContext(ActivityContext);
+
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
 
   if (currentActivity) {
     const distance =
@@ -74,7 +77,15 @@ export const ActivityDetail = () => {
           </div>
         </div>
 
-        <MetricChart />
+        <div className='pt-4'>
+          <ChooseMetricBar
+            setCurrentMetric={setAreaSeriesMetric}
+            currentMetric={areaSeriesMetric}
+            orientation='horizontal'
+          />
+        </div>
+
+        <MetricChart areaSeriesMetric={areaSeriesMetric} />
 
         <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
           <AnimationControl />

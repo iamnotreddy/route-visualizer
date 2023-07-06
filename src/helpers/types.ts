@@ -115,6 +115,13 @@ export type ActivityStream =
       series_type: string;
       original_size: number;
       resolution: string;
+    }
+  | {
+      type: 'cadence';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
     };
 
 export type RoutePoint = {
