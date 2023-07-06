@@ -72,7 +72,7 @@ type ActivityContext = {
   currentFrame: number;
   sliderRef: MutableRefObject<null>;
   setAnimationState: (animationState: 'paused' | 'playing') => void;
-  setViewState: (viewState: ViewState) => void;
+  setViewState: Dispatch<SetStateAction<ViewState | undefined>>;
   setCurrentPoint: (currentPoint: Position) => void;
   setCurrentFrame: (currentFrame: number) => void;
   handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -113,18 +113,6 @@ export default function GlobalMap({
   // initialize drawing of route
   const handleOnMapLoad = () => {
     setHasMapLoaded(true);
-
-    const intialSplashViewState = {
-      ...findInitialViewState([
-        [-118.401756, 33.775005],
-        [-118.401747, 33.775007],
-      ]),
-      pitch: 85,
-      zoom: 14,
-      bearing: 90,
-    };
-
-    setViewState(intialSplashViewState);
   };
 
   // record viewState as camera pans around route
@@ -169,6 +157,12 @@ export default function GlobalMap({
     showActivityDetail,
     setShowActivityDetail,
   };
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      setViewState({ ...findInitialViewState(splashRouteCoordinates) });
+    }
+  }, [splashRouteCoordinates, status]);
 
   // decode polylines and construct route geoJSONs
   useEffect(() => {
@@ -261,7 +255,7 @@ export default function GlobalMap({
               </Source>
             )}
 
-            {animatedLineCoordinates && (
+            {animatedLineCoordinates && currentActivity && (
               <Source {...defineLineSource(animatedLineCoordinates)}>
                 <Layer {...animatedLineLayerStyle} />
               </Source>

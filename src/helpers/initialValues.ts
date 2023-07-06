@@ -1,4 +1,3 @@
-import { bearing } from '@turf/turf';
 import {
   FeatureCollection,
   GeoJsonProperties,
@@ -26,22 +25,19 @@ export const findRouteLineString = (coordinates: Position[]) => {
 
 export const findInitialViewState = (coordinates: Position[]) => {
   const initialPoint = coordinates[0];
-  const finalPoint = coordinates[coordinates.length - 1];
 
   return {
     latitude: initialPoint[1],
     longitude: initialPoint[0],
-    zoom: 15,
-    bearing: bearing(initialPoint, finalPoint),
-    pitch: 45,
-    padding: {
-      top: 1,
-      bottom: 1,
-      left: 1,
-      right: 1,
-    },
+    zoom: 14,
+    bearing: 80,
+    pitch: 80,
   } as ViewState;
 };
+
+// export const followViewState = () => {
+
+// }
 
 export const findInitialMetricPoint = (path: StravaRouteStream) => {
   return {

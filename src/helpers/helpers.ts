@@ -203,15 +203,20 @@ export const findGlobalMapViewState = (
     return;
   }
 
+  const width = maxLng - minLng;
+  const height = maxLat - minLat;
+  const padding = 0.1;
+  const zoomLng = Math.log2((512 - padding * 512) / width);
+  const zoomLat = Math.log2((512 - padding * 512) / height);
+
+  const zoom = Math.min(zoomLng, zoomLat, 14); // Adjust the maximum zoom as needed
+
   if (mapRef.current) {
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       duration: 5000,
-      zoom: Math.min(
-        Math.log2(512 / (maxLng - minLng)) - 1,
-        Math.log2(512 / (maxLat - minLat)) - 1,
-        15
-      ),
+      zoom: zoom,
+      pitch: 60,
     });
   }
 };
