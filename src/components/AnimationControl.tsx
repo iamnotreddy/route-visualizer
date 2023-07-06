@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { ActivityContext } from '@/components/globalMap';
+import { ActivityContext } from '@/components/GlobalMap';
 
 import { findInitialViewState } from '@/helpers/initialValues';
 

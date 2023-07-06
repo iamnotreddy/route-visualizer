@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 
 import { ActivityDetail } from '@/components/ActivityDetail';
 import MapActivityRow from '@/components/ActivityRow';
-import { ActivityContext } from '@/components/globalMap';
+import { ActivityContext } from '@/components/GlobalMap';
 import {
   ActivityNumberCircle,
   ChevronIcon,
@@ -37,7 +37,7 @@ export default function ActivityList() {
 
   return (
     <div
-      className='absolute top-20 left-0 z-20 ml-4 flex max-h-screen flex-col overflow-y-auto rounded-2xl border-2 border-black bg-slate-200 bg-opacity-90 p-4'
+      className='absolute top-20 left-0 z-20 ml-4 flex max-h-screen flex-col overflow-y-auto rounded-xl border-2 border-black bg-slate-200 bg-opacity-90 p-4'
       style={{ maxHeight: '80vh' }}
     >
       <div className={getNavStyle(isSidebarVisible)}>
@@ -67,10 +67,10 @@ export default function ActivityList() {
         </div>
       </div>
       {isSidebarVisible && !showActivityDetail && (
-        <div className='flex flex-col space-y-8 overflow-auto'>
+        <div className='flex flex-col space-y-2 overflow-auto'>
           {activities.map((activity) => (
             <div
-              className='hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'
+              className='hover:rounded-lg hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'
               key={activity.id}
               onClick={() => {
                 setShowActivityDetail(true);

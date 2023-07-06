@@ -10,7 +10,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 
 import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
-import { ActivityContext } from '@/components/globalMap';
+import { ActivityContext } from '@/components/GlobalMap';
 
 import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
