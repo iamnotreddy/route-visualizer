@@ -86,7 +86,9 @@ export default function ActivityList() {
         </div>
       )}
 
-      {showActivityDetail && currentActivity && <ActivityDetail />}
+      {isSidebarVisible && showActivityDetail && currentActivity && (
+        <ActivityDetail />
+      )}
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function MetricChart(props: {
 }) {
   const { areaSeriesMetric, lockChartHover } = props;
 
-  const { currentFrame, setCurrentFrame, stravaPath } =
+  const { currentFrame, setCurrentFrame, stravaPath, animationState } =
     useContext(ActivityContext);
 
   const accessors = {
@@ -43,7 +43,7 @@ export default function MetricChart(props: {
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
 
   const handleOnPointerMove = (e: EventHandlerParams<DataPoint>) => {
-    if (!lockChartHover) {
+    if (!lockChartHover && animationState != 'playing') {
       setCurrentFrame(e.datum.x);
     }
   };
