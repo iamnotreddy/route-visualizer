@@ -67,6 +67,7 @@ type ActivityContext = {
   currentActivity: StravaActivity | undefined;
   setCurrentActivity: Dispatch<SetStateAction<StravaActivity | undefined>>;
   fetchNextPage: () => void;
+  isFetchingNextPage: boolean;
   // animation props
   animationState: string;
   currentFrame: number;
@@ -86,6 +87,7 @@ export const ActivityContext = createContext<ActivityContext>(
 export default function GlobalMap({
   activities,
   fetchNextPage,
+  isFetchingNextPage,
 }: GlobalMapHomePageProps) {
   const { status } = useSession();
   const [hasMapLoaded, setHasMapLoaded] = useState(false);
@@ -145,6 +147,7 @@ export default function GlobalMap({
     currentActivity,
     setCurrentActivity,
     fetchNextPage,
+    isFetchingNextPage,
     stravaPath,
     animationState,
     setAnimationState,

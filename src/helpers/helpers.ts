@@ -31,29 +31,33 @@ export const transformActivityStreamResponse = (
     velocity_smooth: [],
     grade_smooth: [],
     altitude: [],
+    cadence: [],
   };
 
   data.map((activity) => {
-    if (activity.type == 'latlng') {
+    if (activity.type === 'latlng') {
       transformed.latlng = reverseLatLng(activity.data);
     }
-    if (activity.type == 'heartrate') {
+    if (activity.type === 'heartrate') {
       transformed.heartRate = activity.data;
     }
-    if (activity.type == 'distance') {
+    if (activity.type === 'distance') {
       transformed.distance = activity.data;
     }
-    if (activity.type == 'time') {
+    if (activity.type === 'time') {
       transformed.time = activity.data;
     }
-    if (activity.type == 'velocity_smooth') {
+    if (activity.type === 'velocity_smooth') {
       transformed.velocity_smooth = activity.data;
     }
-    if (activity.type == 'grade_smooth') {
+    if (activity.type === 'grade_smooth') {
       transformed.grade_smooth = activity.data;
     }
-    if (activity.type == 'altitude') {
+    if (activity.type === 'altitude') {
       transformed.altitude = activity.data;
+    }
+    if (activity.type === 'cadence') {
+      transformed.cadence = activity.data;
     }
   });
 
@@ -223,7 +227,7 @@ export const findGlobalMapViewState = (
 
 export const getNavStyle = (isSidebarVisible: boolean) => {
   const expandedStyle =
-    'z-30 flex flex-row items-center justify-center space-x-4';
+    'z-30 flex flex-row items-center justify-left space-x-4';
 
   const collapsedStyle =
     'z-30 flex flex-row items-center justify-center space-x-4';

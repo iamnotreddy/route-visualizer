@@ -2,7 +2,7 @@ import { format, parseISO } from 'date-fns';
 import { useContext, useState } from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
-import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
+import ChooseMetricBar from '@/components/ChooseMetricBar';
 import { ActivityContext } from '@/components/GlobalMap';
 import { LockIcon, UnlockIcon } from '@/components/icons';
 import MetricChart from '@/components/MetricChart';
@@ -17,7 +17,7 @@ export const ActivityDetail = () => {
   const { currentActivity, currentFrame, stravaPath } =
     useContext(ActivityContext);
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
+  const [areaSeriesMetric, setAreaSeriesMetric] = useState('elevation');
   const [lockChartHover, setLockChartHover] = useState(true);
 
   if (!currentActivity) {

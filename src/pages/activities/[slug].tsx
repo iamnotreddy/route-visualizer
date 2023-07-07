@@ -27,8 +27,8 @@ import {
   Trail,
 } from '@/components/archived/ActivityOverview';
 import AnimationControl from '@/components/archived/AnimationControl';
-import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import VisXLineChart from '@/components/archived/VisXLineChart';
+import ChooseMetricBar from '@/components/ChooseMetricBar';
 import { useRouteAnimation } from '@/components/hooks/archived/useRouteAnimation';
 
 import { generatePace } from '@/helpers/chartHelpers';

@@ -34,6 +34,7 @@ export default function MetricChart(props: {
     pace: '#059669',
     elevation: '#d8b4fe',
     grade: '#f59e0b',
+    cadence: '#f59e0b',
   };
 
   type FillStylesKeys = keyof typeof fillStyles;
@@ -55,13 +56,19 @@ export default function MetricChart(props: {
         transformMetricToDataPoint(stravaPath.distance)
       );
 
-      if (areaSeriesMetric == 'heartRate') {
+      if (areaSeriesMetric === 'heartRate') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
-      } else if (areaSeriesMetric == 'pace') {
+      }
+      if (areaSeriesMetric === 'cadence') {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.cadence));
+      }
+      if (areaSeriesMetric === 'pace') {
         setAreaSeries(paceArray);
-      } else if (areaSeriesMetric == 'grade') {
+      }
+      if (areaSeriesMetric === 'grade') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
-      } else {
+      }
+      if (areaSeriesMetric === 'elevation') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       }
     }
