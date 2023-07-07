@@ -28,37 +28,41 @@ export default function MapActivityRow({
       className={
         currentActivityId === activity.id
           ? 'border-2 border-green-800 bg-green-500 bg-opacity-5'
-          : 'border-t-2 border-slate-300'
+          : 'border-t-2 border-slate-400'
       }
     >
       <div className='flex flex-row space-x-4'>
         <div className='flex flex-col p-2'>
-          <div className='text-lg font-semibold'>{activity.name}</div>
-          <p className='text-slate-600 md:text-sm'>{formattedActivityDate}</p>
+          <div className='text-lg font-light text-slate-800'>
+            {activity.name}
+          </div>
+          <p className='text-sm font-light text-slate-600'>
+            {formattedActivityDate}
+          </p>
         </div>
       </div>
       <div className='flex flex-row space-x-4 px-2'>
         <div className='flex flex-col items-center justify-center'>
-          <p className='text-base font-light text-slate-700'>distance</p>
+          <p className='text-base font-light text-slate-500'>distance</p>
           <div className='flex flex-row items-center space-x-1'>
-            <p className='text-xl'>{distanceFormatted}</p>
+            <p className='text-xl font-light'>{distanceFormatted}</p>
             <p className='text-xs'>mi</p>
           </div>
         </div>
         <div className='flex flex-col items-center justify-center'>
-          <p className='text-base font-light text-slate-700'>time</p>
+          <p className='text-base font-light text-slate-500'>time</p>
           <div className='flex flex-row space-x-2'>
-            <p className='text-xl'>
+            <p className='text-xl font-light'>
               {convertPaceValueForDisplay(activity.moving_time / 60)}
             </p>
           </div>
         </div>
 
         <div className='flex flex-col items-center justify-center'>
-          <p className='text-base font-light text-slate-700'>elevation Δ</p>
+          <p className='text-base font-light text-slate-500'>elevation Δ</p>
           <div className='flex flex-row items-center space-x-2'>
             <div className='flex flex-row items-center justify-center space-x-1'>
-              <p className='text-xl'>{Math.floor(elevationGain)}</p>
+              <p className='text-xl font-light'>{Math.floor(elevationGain)}</p>
               <p className='text-xs'>ft</p>
             </div>
           </div>

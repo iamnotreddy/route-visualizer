@@ -87,6 +87,7 @@ export default function AnimationControl() {
         </button>
 
         <input
+          className=' accent-slate-200'
           ref={sliderRef}
           type='range'
           min={0}
