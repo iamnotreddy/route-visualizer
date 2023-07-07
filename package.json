@@ -58,8 +58,7 @@
     "react-router-dom": "^6.4.1",
     "resize-observer-polyfill": "^1.5.1",
     "tailwind-merge": "^1.6.0",
-    "use-resize-observer": "^9.1.0",
-    "victory": "^36.6.7"
+    "use-resize-observer": "^9.1.0"
   },
   "peerDependencies": {
     "react-spring/web": "^8.x"
