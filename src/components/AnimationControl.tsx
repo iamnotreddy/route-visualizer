@@ -21,7 +21,7 @@ export default function AnimationControl() {
 
   return (
     <>
-      <div className='ml-8 flex flex-row space-x-2 '>
+      <div className='flex flex-row items-center space-x-2 py-2 px-4'>
         <button
           onClick={() => {
             setAnimationState('playing');
@@ -31,7 +31,9 @@ export default function AnimationControl() {
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
             fill='currentColor'
-            className='h-6 w-6 hover:scale-125'
+            className={`h-6 w-6 hover:scale-125 ${
+              !stravaPath ? 'animate-pulse' : ''
+            }`}
           >
             <path
               fill-rule='evenodd'
@@ -85,11 +87,11 @@ export default function AnimationControl() {
         </button>
 
         <input
-          className='w-1/2 rounded-xl border-2 border-black bg-slate-100 py-2 px-4 hover:scale-y-125'
+          className=' accent-slate-200'
           ref={sliderRef}
           type='range'
           min={0}
-          max={routeCoordinates ? routeCoordinates.length - 1 : 0}
+          max={routeCoordinates ? Math.max(routeCoordinates.length - 1, 1) : 0}
           value={currentFrame}
           onChange={handleRouteControl}
           disabled={animationState == 'playing'}

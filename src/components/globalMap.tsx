@@ -41,6 +41,7 @@ import {
   defineLineSource,
   definePointSource,
   endPointLayerStyle,
+  getPolylineLayerStyle,
   mapConfig,
   pointLayerStyle,
   singleLineLayerStyle,
@@ -67,12 +68,13 @@ type ActivityContext = {
   currentActivity: StravaActivity | undefined;
   setCurrentActivity: Dispatch<SetStateAction<StravaActivity | undefined>>;
   fetchNextPage: () => void;
+  isFetchingNextPage: boolean;
   // animation props
   animationState: string;
   currentFrame: number;
   sliderRef: MutableRefObject<null>;
   setAnimationState: (animationState: 'paused' | 'playing') => void;
-  setViewState: (viewState: ViewState) => void;
+  setViewState: Dispatch<SetStateAction<ViewState | undefined>>;
   setCurrentPoint: (currentPoint: Position) => void;
   setCurrentFrame: (currentFrame: number) => void;
   handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -86,6 +88,7 @@ export const ActivityContext = createContext<ActivityContext>(
 export default function GlobalMap({
   activities,
   fetchNextPage,
+  isFetchingNextPage,
 }: GlobalMapHomePageProps) {
   const { status } = useSession();
   const [hasMapLoaded, setHasMapLoaded] = useState(false);
@@ -113,18 +116,6 @@ export default function GlobalMap({
   // initialize drawing of route
   const handleOnMapLoad = () => {
     setHasMapLoaded(true);
-
-    const intialSplashViewState = {
-      ...findInitialViewState([
-        [-118.401756, 33.775005],
-        [-118.401747, 33.775007],
-      ]),
-      pitch: 85,
-      zoom: 14,
-      bearing: 90,
-    };
-
-    setViewState(intialSplashViewState);
   };
 
   // record viewState as camera pans around route
@@ -157,6 +148,7 @@ export default function GlobalMap({
     currentActivity,
     setCurrentActivity,
     fetchNextPage,
+    isFetchingNextPage,
     stravaPath,
     animationState,
     setAnimationState,
@@ -169,6 +161,12 @@ export default function GlobalMap({
     showActivityDetail,
     setShowActivityDetail,
   };
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      setViewState({ ...findInitialViewState(splashRouteCoordinates) });
+    }
+  }, [splashRouteCoordinates, status]);
 
   // decode polylines and construct route geoJSONs
   useEffect(() => {
@@ -195,17 +193,11 @@ export default function GlobalMap({
         return (
           <Source key={index} type='geojson' data={route.geoJsonObject}>
             <Layer
-              id={`layer${index}`}
-              {...{
-                type: 'line',
-                paint: {
-                  'line-color':
-                    route.routeId === currentActivity?.id ? 'green' : 'purple',
-                  'line-width': route.routeId === currentActivity?.id ? 3 : 0.5,
-                  'line-opacity':
-                    route.routeId === currentActivity?.id ? 1 : 0.5,
-                },
-              }}
+              {...getPolylineLayerStyle(
+                index,
+                route.routeId,
+                currentActivity?.id
+              )}
             />
           </Source>
         );
@@ -261,7 +253,7 @@ export default function GlobalMap({
               </Source>
             )}
 
-            {animatedLineCoordinates && (
+            {animatedLineCoordinates && currentActivity && (
               <Source {...defineLineSource(animatedLineCoordinates)}>
                 <Layer {...animatedLineLayerStyle} />
               </Source>

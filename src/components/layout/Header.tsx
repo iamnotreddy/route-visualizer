@@ -25,7 +25,7 @@ export default function Header() {
           href='/'
           className='rounded-lg border-white bg-green-800 bg-opacity-80 p-2 font-sans text-3xl text-white hover:text-blue-200'
         >
-          RouteMapper
+          [name]
         </UnstyledLink>
 
         <nav>

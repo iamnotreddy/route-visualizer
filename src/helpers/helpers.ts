@@ -31,29 +31,33 @@ export const transformActivityStreamResponse = (
     velocity_smooth: [],
     grade_smooth: [],
     altitude: [],
+    cadence: [],
   };
 
   data.map((activity) => {
-    if (activity.type == 'latlng') {
+    if (activity.type === 'latlng') {
       transformed.latlng = reverseLatLng(activity.data);
     }
-    if (activity.type == 'heartrate') {
+    if (activity.type === 'heartrate') {
       transformed.heartRate = activity.data;
     }
-    if (activity.type == 'distance') {
+    if (activity.type === 'distance') {
       transformed.distance = activity.data;
     }
-    if (activity.type == 'time') {
+    if (activity.type === 'time') {
       transformed.time = activity.data;
     }
-    if (activity.type == 'velocity_smooth') {
+    if (activity.type === 'velocity_smooth') {
       transformed.velocity_smooth = activity.data;
     }
-    if (activity.type == 'grade_smooth') {
+    if (activity.type === 'grade_smooth') {
       transformed.grade_smooth = activity.data;
     }
-    if (activity.type == 'altitude') {
+    if (activity.type === 'altitude') {
       transformed.altitude = activity.data;
+    }
+    if (activity.type === 'cadence') {
+      transformed.cadence = activity.data;
     }
   });
 
@@ -203,22 +207,27 @@ export const findGlobalMapViewState = (
     return;
   }
 
+  const width = maxLng - minLng;
+  const height = maxLat - minLat;
+  const padding = 0.1;
+  const zoomLng = Math.log2((512 - padding * 512) / width);
+  const zoomLat = Math.log2((512 - padding * 512) / height);
+
+  const zoom = Math.min(zoomLng, zoomLat, 14); // Adjust the maximum zoom as needed
+
   if (mapRef.current) {
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       duration: 5000,
-      zoom: Math.min(
-        Math.log2(512 / (maxLng - minLng)) - 1,
-        Math.log2(512 / (maxLat - minLat)) - 1,
-        15
-      ),
+      zoom: zoom,
+      pitch: 60,
     });
   }
 };
 
 export const getNavStyle = (isSidebarVisible: boolean) => {
   const expandedStyle =
-    'z-30 flex flex-row items-center justify-center space-x-4 border-b-2 border-slate-400 pb-2';
+    'z-30 flex flex-row items-center justify-left space-x-4';
 
   const collapsedStyle =
     'z-30 flex flex-row items-center justify-center space-x-4';

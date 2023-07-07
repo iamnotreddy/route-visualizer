@@ -1,25 +1,27 @@
 import { ParentSize } from '@visx/responsive';
 import {
+  AnimatedAnnotation,
   AnimatedAreaSeries,
   AnimatedAxis,
-  Annotation,
   AnnotationCircleSubject,
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
 import React, { useContext, useEffect, useState } from 'react';
 
-import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import { ActivityContext } from '@/components/globalMap';
 
 import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
 
-export default function MetricChart() {
-  // Define the dimensions and margins of the chart
+export default function MetricChart(props: {
+  areaSeriesMetric: string;
+  lockChartHover: boolean;
+}) {
+  const { areaSeriesMetric, lockChartHover } = props;
 
-  const { currentFrame, setCurrentFrame, stravaPath } =
+  const { currentFrame, setCurrentFrame, stravaPath, animationState } =
     useContext(ActivityContext);
 
   const accessors = {
@@ -32,14 +34,20 @@ export default function MetricChart() {
     pace: '#059669',
     elevation: '#d8b4fe',
     grade: '#f59e0b',
+    cadence: '#f59e0b',
   };
 
   type FillStylesKeys = keyof typeof fillStyles;
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
+
+  const handleOnPointerMove = (e: EventHandlerParams<DataPoint>) => {
+    if (!lockChartHover && animationState != 'playing') {
+      setCurrentFrame(e.datum.x);
+    }
+  };
 
   useEffect(() => {
     if (stravaPath) {
@@ -48,13 +56,19 @@ export default function MetricChart() {
         transformMetricToDataPoint(stravaPath.distance)
       );
 
-      if (areaSeriesMetric == 'heartRate') {
+      if (areaSeriesMetric === 'heartRate') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
-      } else if (areaSeriesMetric == 'pace') {
+      }
+      if (areaSeriesMetric === 'cadence') {
+        setAreaSeries(transformMetricToDataPoint(stravaPath.cadence));
+      }
+      if (areaSeriesMetric === 'pace') {
         setAreaSeries(paceArray);
-      } else if (areaSeriesMetric == 'grade') {
+      }
+      if (areaSeriesMetric === 'grade') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
-      } else {
+      }
+      if (areaSeriesMetric === 'elevation') {
         setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
       }
     }
@@ -63,22 +77,20 @@ export default function MetricChart() {
   if (areaSeries) {
     return (
       <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
-        <ChooseMetricBar
-          setCurrentMetric={setAreaSeriesMetric}
-          currentMetric={areaSeriesMetric}
-          orientation='horizontal'
-        />
         {areaSeries[0] ? (
           <div style={{ width: '25vw', height: '15vh' }}>
             <ParentSize>
               {(parent) => {
                 return (
                   <div>
+                    <p className='text-center text-xs font-semibold text-slate-800'>
+                      {areaSeriesMetric}
+                    </p>
                     <XYChart
                       captureEvents={true}
                       width={parent.width}
                       height={parent.height}
-                      margin={{ top: 10, bottom: 10, left: 30, right: 0 }}
+                      margin={{ top: 10, bottom: 15, left: 30, right: 0 }}
                       xScale={{
                         type: 'linear',
                         domain: [0, areaSeries.length - 1],
@@ -89,9 +101,7 @@ export default function MetricChart() {
                         domain: calculateDomain(areaSeries),
                         zero: false,
                       }}
-                      onPointerMove={(e: EventHandlerParams<DataPoint>) =>
-                        setCurrentFrame(e.datum.x)
-                      }
+                      onPointerMove={handleOnPointerMove}
                     >
                       <AnimatedAxis orientation='left' numTicks={4} />
 
@@ -102,18 +112,21 @@ export default function MetricChart() {
                         fillOpacity={0.6}
                         fill={currentFillColor}
                         lineProps={{
-                          stroke: 'black',
+                          stroke: 'slate',
                           strokeWidth: 1.5,
                         }}
                       />
-                      <AnnotationCircleSubject radius={4} stroke='green' />
 
-                      <Annotation
+                      <AnimatedAnnotation
                         dataKey='area'
                         datum={areaSeries[currentFrame]}
                       >
-                        <AnnotationCircleSubject radius={4} stroke='black' />
-                      </Annotation>
+                        <AnnotationCircleSubject
+                          className=''
+                          radius={3}
+                          stroke='black'
+                        />
+                      </AnimatedAnnotation>
                     </XYChart>
                   </div>
                 );
@@ -127,5 +140,5 @@ export default function MetricChart() {
     );
   }
 
-  return <div>.</div>;
+  return <div></div>;
 }

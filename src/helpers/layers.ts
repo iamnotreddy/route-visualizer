@@ -17,10 +17,10 @@ export const pointLayerStyle: LayerProps = {
   id: 'point',
   type: 'circle',
   paint: {
-    'circle-radius': 4,
-    'circle-color': '#f6f3ee',
-    'circle-stroke-width': 2,
-    'circle-stroke-color': 'black',
+    'circle-radius': 8,
+    'circle-color': '#C75E00',
+    'circle-stroke-width': 1,
+    'circle-stroke-color': 'white',
   },
 };
 
@@ -28,10 +28,10 @@ export const startPointLayerStyle: LayerProps = {
   id: 'startPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 4,
+    'circle-radius': 6,
     'circle-color': '#097200',
     'circle-stroke-width': 2,
-    'circle-stroke-color': 'black',
+    'circle-stroke-color': 'white',
   },
 };
 
@@ -39,10 +39,10 @@ export const endPointLayerStyle: LayerProps = {
   id: 'endPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 4,
-    'circle-color': '#FF8700',
+    'circle-radius': 6,
+    'circle-color': '#6F1400',
     'circle-stroke-width': 2,
-    'circle-stroke-color': 'black',
+    'circle-stroke-color': 'white',
   },
 };
 
@@ -88,13 +88,32 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
-export const polylineLayerStyle: LayerProps = {
-  id: 'polyline',
-  type: 'line',
-  paint: {
-    'line-color': '#004225',
-    'line-width': 3,
-  },
+export const getPolylineLayerStyle = (
+  index: number,
+  routeId: string,
+  currentActivityId: string | undefined
+): LayerProps => {
+  if (currentActivityId && routeId === currentActivityId) {
+    return {
+      id: `layer${index}`,
+      type: 'line',
+      paint: {
+        'line-color': 'red',
+        'line-width': 8,
+        'line-opacity': 1,
+      },
+    };
+  }
+
+  return {
+    id: `layer${index}`,
+    type: 'line',
+    paint: {
+      'line-color': 'red',
+      'line-width': 10,
+      'line-opacity': 0.7,
+    },
+  };
 };
 
 export const defineLineSource = (coordinates: Position[]): SourceProps => {
@@ -119,7 +138,7 @@ export const defineLineSource = (coordinates: Position[]): SourceProps => {
 export const animatedLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'red',
+    'line-color': '#fa8775',
     'line-width': 4,
   },
 };
@@ -127,8 +146,9 @@ export const animatedLineLayerStyle: LayerProps = {
 export const singleLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {
-    'line-color': 'black',
-    'line-width': 4,
+    'line-color': '#6c5dd2',
+    'line-width': 3,
+    'line-opacity': 0.8,
   },
 };
 

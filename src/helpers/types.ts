@@ -115,6 +115,13 @@ export type ActivityStream =
       series_type: string;
       original_size: number;
       resolution: string;
+    }
+  | {
+      type: 'cadence';
+      data: number[];
+      series_type: string;
+      original_size: number;
+      resolution: string;
     };
 
 export type RoutePoint = {
@@ -125,6 +132,7 @@ export type RoutePoint = {
   grade_smooth?: number;
   velocity_smooth?: number;
   altitude?: number;
+  cadence?: number;
 };
 
 // strava data mappers
@@ -144,6 +152,7 @@ export type StravaRouteStream = {
   velocity_smooth: number[];
   grade_smooth: number[];
   altitude: number[];
+  cadence: number[];
 };
 
 // Strava Endpoint Types
