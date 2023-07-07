@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 
 import { ActivityDetail } from '@/components/ActivityDetail';
 import MapActivityRow from '@/components/ActivityRow';
-import { ActivityContext } from '@/components/GlobalMap';
+import { ActivityContext } from '@/components/globalMap';
 import {
   ActivityNumberCircle,
   ChevronIcon,

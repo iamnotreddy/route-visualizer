@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
 import ChooseMetricBar from '@/components/ChooseMetricBar';
-import { ActivityContext } from '@/components/GlobalMap';
+import { ActivityContext } from '@/components/globalMap';
 import { LockIcon, UnlockIcon } from '@/components/icons';
 import MetricChart from '@/components/MetricChart';
 

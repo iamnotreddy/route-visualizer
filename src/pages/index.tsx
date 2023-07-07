@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import GlobalMap from '@/components/GlobalMap';
+import GlobalMap from '@/components/globalMap';
 
 import { getActivityList } from '@/helpers/fetchingFunctions';
 import { StravaActivity } from '@/helpers/types';

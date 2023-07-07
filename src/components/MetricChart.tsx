@@ -9,7 +9,7 @@ import {
 } from '@visx/xychart';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { ActivityContext } from '@/components/GlobalMap';
+import { ActivityContext } from '@/components/globalMap';
 
 import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
