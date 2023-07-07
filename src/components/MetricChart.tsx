@@ -15,8 +15,11 @@ import { generatePace } from '@/helpers/chartHelpers';
 import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
 
-export default function MetricChart(props: { areaSeriesMetric: string }) {
-  const { areaSeriesMetric } = props;
+export default function MetricChart(props: {
+  areaSeriesMetric: string;
+  lockChartHover: boolean;
+}) {
+  const { areaSeriesMetric, lockChartHover } = props;
 
   const { currentFrame, setCurrentFrame, stravaPath } =
     useContext(ActivityContext);
@@ -38,6 +41,12 @@ export default function MetricChart(props: { areaSeriesMetric: string }) {
   const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
 
   const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
+
+  const handleOnPointerMove = (e: EventHandlerParams<DataPoint>) => {
+    if (!lockChartHover) {
+      setCurrentFrame(e.datum.x);
+    }
+  };
 
   useEffect(() => {
     if (stravaPath) {
@@ -85,9 +94,7 @@ export default function MetricChart(props: { areaSeriesMetric: string }) {
                         domain: calculateDomain(areaSeries),
                         zero: false,
                       }}
-                      onPointerMove={(e: EventHandlerParams<DataPoint>) =>
-                        setCurrentFrame(e.datum.x)
-                      }
+                      onPointerMove={handleOnPointerMove}
                     >
                       <AnimatedAxis orientation='left' numTicks={4} />
 

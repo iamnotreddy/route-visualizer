@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import AnimationControl from '@/components/AnimationControl';
 import ChooseMetricBar from '@/components/archived/ChooseMetricBar';
 import { ActivityContext } from '@/components/GlobalMap';
+import { LockIcon, UnlockIcon } from '@/components/icons';
 import MetricChart from '@/components/MetricChart';
 
 import {
@@ -17,6 +18,7 @@ export const ActivityDetail = () => {
     useContext(ActivityContext);
 
   const [areaSeriesMetric, setAreaSeriesMetric] = useState('heartRate');
+  const [lockChartHover, setLockChartHover] = useState(true);
 
   if (currentActivity) {
     const distance =
@@ -77,15 +79,27 @@ export const ActivityDetail = () => {
           </div>
         </div>
 
-        <div className='pt-4'>
+        <div className='flex flex-row justify-between pt-4'>
           <ChooseMetricBar
             setCurrentMetric={setAreaSeriesMetric}
             currentMetric={areaSeriesMetric}
             orientation='horizontal'
           />
+          {lockChartHover ? (
+            <button onClick={() => setLockChartHover(false)}>
+              <LockIcon />
+            </button>
+          ) : (
+            <button onClick={() => setLockChartHover(true)}>
+              <UnlockIcon />
+            </button>
+          )}
         </div>
 
-        <MetricChart areaSeriesMetric={areaSeriesMetric} />
+        <MetricChart
+          areaSeriesMetric={areaSeriesMetric}
+          lockChartHover={lockChartHover}
+        />
 
         <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
           <AnimationControl />
