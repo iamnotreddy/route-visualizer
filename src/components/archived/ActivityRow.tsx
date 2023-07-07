@@ -11,7 +11,7 @@ import {
   convertPaceValueForDisplay,
   generatePacePoint,
 } from '@/helpers/chartHelpers';
-import { defineLineSource, polylineLayerStyle } from '@/helpers/layers';
+import { defineLineSource, singleLineLayerStyle } from '@/helpers/layers';
 import { StravaActivity } from '@/helpers/types';
 
 type ActivityListProps = {
@@ -57,7 +57,7 @@ const MapPolylineRow = ({ coordinates }: MapRowProps) => {
         mapStyle='mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l'
       >
         <Source {...defineLineSource(coordinates)}>
-          <Layer {...polylineLayerStyle} />
+          <Layer {...singleLineLayerStyle} />
         </Source>
       </Map>
     );
