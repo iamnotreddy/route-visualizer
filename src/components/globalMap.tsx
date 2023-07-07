@@ -41,6 +41,7 @@ import {
   defineLineSource,
   definePointSource,
   endPointLayerStyle,
+  getPolylineLayerStyle,
   mapConfig,
   pointLayerStyle,
   singleLineLayerStyle,
@@ -192,17 +193,11 @@ export default function GlobalMap({
         return (
           <Source key={index} type='geojson' data={route.geoJsonObject}>
             <Layer
-              id={`layer${index}`}
-              {...{
-                type: 'line',
-                paint: {
-                  'line-color':
-                    route.routeId === currentActivity?.id ? 'green' : 'purple',
-                  'line-width': route.routeId === currentActivity?.id ? 3 : 0.5,
-                  'line-opacity':
-                    route.routeId === currentActivity?.id ? 1 : 0.5,
-                },
-              }}
+              {...getPolylineLayerStyle(
+                index,
+                route.routeId,
+                currentActivity?.id
+              )}
             />
           </Source>
         );
