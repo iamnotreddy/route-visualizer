@@ -23,9 +23,9 @@ export default function Header() {
       <div className='border- mx-8 flex h-14 items-center justify-between'>
         <UnstyledLink
           href='/'
-          className='rounded-lg border-white bg-green-800 bg-opacity-80 p-2 font-sans text-3xl text-white hover:text-blue-200'
+          className='rounded-lg border-white bg-black bg-opacity-70 p-2 font-sans text-3xl text-white hover:text-blue-200'
         >
-          [name]
+          RouteViz
         </UnstyledLink>
 
         <nav>

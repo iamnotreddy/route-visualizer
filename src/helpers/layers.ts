@@ -88,30 +88,14 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
-export const getPolylineLayerStyle = (
-  index: number,
-  routeId: string,
-  currentActivityId: string | undefined
-): LayerProps => {
-  if (currentActivityId && routeId === currentActivityId) {
-    return {
-      id: `layer${index}`,
-      type: 'line',
-      paint: {
-        'line-color': 'red',
-        'line-width': 8,
-        'line-opacity': 1,
-      },
-    };
-  }
-
+export const getPolylineLayerStyle = (index: number): LayerProps => {
   return {
     id: `layer${index}`,
     type: 'line',
     paint: {
-      'line-color': 'red',
-      'line-width': 10,
-      'line-opacity': 0.7,
+      'line-color': '#ea5f94',
+      'line-width': 2,
+      'line-opacity': 0.5,
     },
   };
 };
