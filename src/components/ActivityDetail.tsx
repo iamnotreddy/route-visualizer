@@ -51,8 +51,12 @@ export const ActivityDetail = () => {
 
   const heartRate =
     stravaPath && currentFrame > 20
-      ? stravaPath.heartRate[currentFrame]
-      : currentActivity.average_heartrate;
+      ? Number.isInteger(stravaPath.heartRate[0])
+        ? stravaPath.heartRate[currentFrame]
+        : 0
+      : Number.isInteger(currentActivity.average_heartrate)
+      ? currentActivity.average_heartrate
+      : 0;
 
   return (
     <div className='flex flex-col space-y-2'>
