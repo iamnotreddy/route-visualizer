@@ -4,6 +4,7 @@ import { Position } from 'geojson';
 import { RefObject } from 'react';
 import { MapRef } from 'react-map-gl';
 
+import { getNextPitch } from '@/helpers/camera';
 import {
   ActivityStream,
   DataPoint,
@@ -216,11 +217,13 @@ export const findGlobalMapViewState = (
   const zoom = Math.min(zoomLng, zoomLat, 14); // Adjust the maximum zoom as needed
 
   if (mapRef.current) {
+    const currentPitch = mapRef.current.getPitch();
+
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       duration: 5000,
       zoom: zoom,
-      pitch: 60,
+      pitch: getNextPitch(currentPitch),
     });
   }
 };
