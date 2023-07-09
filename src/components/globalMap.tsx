@@ -192,17 +192,11 @@ export default function GlobalMap({
       return routeLineStrings.map((route, index) => {
         return (
           <Source key={index} type='geojson' data={route.geoJsonObject}>
-            <Layer
-              {...getPolylineLayerStyle(
-                index,
-                route.routeId,
-                currentActivity?.id
-              )}
-            />
+            <Layer {...getPolylineLayerStyle(index)} />
           </Source>
         );
       });
-  }, [currentActivity?.id, routeLineStrings, showActivityDetail]);
+  }, [routeLineStrings, showActivityDetail]);
 
   // set first activity on map
   useEffect(() => {

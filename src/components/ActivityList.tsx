@@ -66,7 +66,7 @@ export default function ActivityList() {
         </button>
       </div>
       {isSidebarVisible && !showActivityDetail && !showSettings && (
-        <div className='flex flex-col space-y-2 overflow-auto'>
+        <div className='flex flex-col space-y-2 overflow-auto pt-2'>
           {activities.map((activity) => (
             <div
               className='hover:rounded-lg hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'

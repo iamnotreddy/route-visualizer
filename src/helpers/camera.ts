@@ -35,3 +35,11 @@ export const placeCameraAlongRoute = (
     }
   });
 };
+
+export const getNextPitch = (currentPitch: number) => {
+  if (currentPitch > 65) {
+    return currentPitch - 10;
+  } else {
+    return currentPitch + 15;
+  }
+};
