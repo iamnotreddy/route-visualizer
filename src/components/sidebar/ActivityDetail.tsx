@@ -2,10 +2,10 @@ import { format, parseISO } from 'date-fns';
 import { useContext, useState } from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
-import ChooseMetricBar from '@/components/ChooseMetricBar';
 import { ActivityContext } from '@/components/globalMap';
-import { LockIcon, UnlockIcon } from '@/components/icons';
+import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 import MetricChart from '@/components/MetricChart';
+import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
 
 import {
   convertPaceValueForDisplay,

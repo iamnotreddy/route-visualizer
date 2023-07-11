@@ -1,11 +1,8 @@
 import { Position } from 'geojson';
 import { useSession } from 'next-auth/react';
 import {
-  ChangeEvent,
   createContext,
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -21,10 +18,9 @@ import Map, {
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import MapActivityList from '@/components/ActivityList';
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
-import Header from '@/components/layout/Header';
+import ActivityList from '@/components/sidebar/ActivityList';
 import SignInPage from '@/components/SignInPage';
 
 import {
@@ -50,46 +46,19 @@ import {
   startPointLayerStyle,
 } from '@/helpers/layers';
 import {
+  ActivityContextType,
   PolylineObj,
   StravaActivity,
-  StravaRouteStream,
 } from '@/helpers/types';
+import { FetchingContext } from '@/pages';
 
-type GlobalMapHomePageProps = {
-  activities: StravaActivity[];
-  fetchNextPage: () => void;
-  isFetchingNextPage: boolean;
-};
-
-type ActivityContext = {
-  activities: StravaActivity[];
-  showActivityDetail: boolean;
-  setShowActivityDetail: Dispatch<SetStateAction<boolean>>;
-  currentActivity: StravaActivity | undefined;
-  setCurrentActivity: Dispatch<SetStateAction<StravaActivity | undefined>>;
-  fetchNextPage: () => void;
-  isFetchingNextPage: boolean;
-  // animation props
-  animationState: string;
-  currentFrame: number;
-  sliderRef: MutableRefObject<null>;
-  setAnimationState: (animationState: 'paused' | 'playing') => void;
-  setViewState: Dispatch<SetStateAction<ViewState | undefined>>;
-  setCurrentPoint: (currentPoint: Position) => void;
-  setCurrentFrame: (currentFrame: number) => void;
-  handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
-  stravaPath: StravaRouteStream | undefined;
-};
-
-export const ActivityContext = createContext<ActivityContext>(
-  {} as ActivityContext
+export const ActivityContext = createContext<ActivityContextType>(
+  {} as ActivityContextType
 );
 
-export default function GlobalMap({
-  activities,
-  fetchNextPage,
-  isFetchingNextPage,
-}: GlobalMapHomePageProps) {
+export default function GlobalMap() {
+  const { allActivities: activities } = useContext(FetchingContext);
+
   const { status } = useSession();
   const [hasMapLoaded, setHasMapLoaded] = useState(false);
   const [showActivityDetail, setShowActivityDetail] = useState(false);
@@ -144,11 +113,8 @@ export default function GlobalMap({
   } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
 
   const contextValues = {
-    activities,
     currentActivity,
     setCurrentActivity,
-    fetchNextPage,
-    isFetchingNextPage,
     stravaPath,
     animationState,
     setAnimationState,
@@ -170,7 +136,7 @@ export default function GlobalMap({
 
   // decode polylines and construct route geoJSONs
   useEffect(() => {
-    if (activities.length > 0) {
+    if (activities && activities.length > 0) {
       const polyLines: Array<Position[]> = activities.map((activity) =>
         getPolyLineCoordinates(activity.map.summary_polyline)
       );
@@ -211,15 +177,12 @@ export default function GlobalMap({
   }, [currentActivity]);
 
   if (status === 'loading') {
-    return <div>Loading...</div>;
+    return <div className='flex items-center justify-center'>Loading...</div>;
   }
 
   return (
     <ActivityContext.Provider value={contextValues}>
       <div className='relative flex max-h-screen w-full'>
-        <div className='absolute top-0 left-0 z-20 w-full'>
-          <Header />
-        </div>
         {status === 'unauthenticated' && hasMapLoaded && (
           <SignInPage
             sliderRef={sliderRef}
@@ -228,7 +191,7 @@ export default function GlobalMap({
             splashHandleRouteControl={splashHandleRouteControl}
           />
         )}
-        {activities && status === 'authenticated' && <MapActivityList />}
+        {activities && status === 'authenticated' && <ActivityList />}
         <div className='flex-grow-0'>
           <Map
             {...viewState}
