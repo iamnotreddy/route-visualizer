@@ -31,13 +31,9 @@ export const findInitialViewState = (coordinates: Position[]) => {
     longitude: initialPoint[0],
     zoom: 14,
     bearing: 80,
-    pitch: 80,
+    pitch: 65,
   } as ViewState;
 };
-
-// export const followViewState = () => {
-
-// }
 
 export const findInitialMetricPoint = (path: StravaRouteStream) => {
   return {

@@ -1,7 +1,3 @@
-import { useContext } from 'react';
-
-import { ActivityContext } from '@/components/globalMap';
-
 export const ChevronIcon = () => {
   return (
     <svg
@@ -116,34 +112,21 @@ export const GearIcon = () => {
   );
 };
 
-export const ActivityNumberCircle = (props: { number: number }) => {
-  const { number } = props;
-
-  const { isFetchingNextPage, fetchNextPage } = useContext(ActivityContext);
-
+export const UserProfileIcon = () => {
   return (
     <svg
-      className={`hover:text-orange-700  ${
-        isFetchingNextPage ? 'animate-ping' : ''
-      }`}
-      viewBox='0 0 40 40'
-      onClick={() => fetchNextPage()}
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
+      strokeWidth={1.5}
+      stroke='currentColor'
+      className='h-10 w-10'
     >
-      <circle
-        className='text-black-500 fill-transparent stroke-current stroke-2 '
-        cx='20'
-        cy='20'
-        r='18'
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z'
       />
-      <text
-        className='text-center text-xs font-semibold '
-        x='50%'
-        y='50%'
-        dominant-baseline='middle'
-        text-anchor='middle'
-      >
-        {number}
-      </text>
     </svg>
   );
 };

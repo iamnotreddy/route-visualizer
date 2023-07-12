@@ -127,6 +127,19 @@ export const animatedLineLayerStyle: LayerProps = {
   },
 };
 
+export const defineLineLayerStyle = (
+  animationState: 'paused' | 'playing'
+): LayerProps => {
+  return {
+    type: 'line',
+    paint: {
+      'line-color': '#6c5dd2',
+      'line-width': 3,
+      'line-opacity': animationState === 'playing' ? 0.55 : 1,
+    },
+  };
+};
+
 export const singleLineLayerStyle: LayerProps = {
   type: 'line',
   paint: {

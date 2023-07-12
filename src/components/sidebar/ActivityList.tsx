@@ -1,24 +1,28 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
-import { ActivityDetail } from '@/components/ActivityDetail';
-import MapActivityRow from '@/components/ActivityRow';
 import { ActivityContext } from '@/components/globalMap';
 import {
-  ActivityNumberCircle,
   ChevronIcon,
   EyeClosedIcon,
   EyeOpenIcon,
   GearIcon,
-} from '@/components/icons';
+} from '@/components/layout/icons';
+import { ActivityDetail } from '@/components/sidebar/ActivityDetail';
+import { ActivityLoader } from '@/components/sidebar/ActivityLoader';
+import MapActivityRow from '@/components/sidebar/ActivityRow';
 
 import { getNavStyle } from '@/helpers/helpers';
+import { FetchingContext } from '@/pages';
 
 export default function ActivityList() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { allActivities: activities } = useContext(FetchingContext);
+
   const {
-    activities,
     currentActivity,
     setCurrentActivity,
     showActivityDetail,
@@ -34,6 +38,12 @@ export default function ActivityList() {
       return !prev;
     });
   };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentActivity]);
 
   return (
     <div
@@ -64,47 +74,42 @@ export default function ActivityList() {
             <GearIcon />
           </div>
         </button>
+        {activities && (
+          <div className='flex flex-row items-center justify-center space-x-2'>
+            <div className='w-8 rounded-full border-2 border-slate-400 py-1 text-center text-xs font-semibold'>
+              {activities?.length}
+            </div>
+            <p className='text-xs'>activities loaded</p>
+          </div>
+        )}
       </div>
       {isSidebarVisible && !showActivityDetail && !showSettings && (
         <div className='flex flex-col space-y-2 overflow-auto pt-2'>
-          {activities.map((activity) => (
-            <div
-              className='hover:rounded-lg hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'
-              key={activity.id}
-              onClick={() => {
-                setShowActivityDetail(true);
-                setCurrentActivity(activity);
-              }}
-            >
-              <MapActivityRow
-                activity={activity}
-                currentActivityId={currentActivity?.id}
-              />
-            </div>
-          ))}
+          {activities &&
+            activities.length > 0 &&
+            activities.map((activity) => (
+              <div
+                className='hover:rounded-lg hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'
+                key={activity.id}
+                onClick={() => {
+                  setShowActivityDetail(true);
+                  setCurrentActivity(activity);
+                }}
+                ref={activity.id === currentActivity?.id ? scrollRef : null}
+              >
+                <MapActivityRow
+                  activity={activity}
+                  currentActivityId={currentActivity?.id}
+                />
+              </div>
+            ))}
         </div>
       )}
       {isSidebarVisible &&
         showActivityDetail &&
         currentActivity &&
         !showSettings && <ActivityDetail />}
-      {isSidebarVisible && showSettings && (
-        <div className='flex flex-col space-y-2 py-4'>
-          <p className='text-center text-xl'>
-            Load More Activities From Strava
-          </p>
-
-          <ActivityNumberCircle number={activities.length} />
-
-          <ul className='ml-2 flex flex-col space-y-1'>
-            <li className='text-xs'>20 activities are loaded at a time</li>
-            <li className='text-xs'>
-              please note app performance will dip once ~100 activities are
-              loaded
-            </li>
-          </ul>
-        </div>
-      )}
+      {isSidebarVisible && showSettings && <ActivityLoader />}
     </div>
   );
 }

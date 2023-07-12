@@ -10,7 +10,7 @@ import Layout from '@/components/layout/Layout';
 function MyApp({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps<{ session: Session }>) {
+}: AppProps<{ session: Session | null }>) {
   const queryClient = new QueryClient();
 
   return (

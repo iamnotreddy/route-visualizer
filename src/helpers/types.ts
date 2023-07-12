@@ -4,22 +4,20 @@ import {
   Geometry,
   Position,
 } from 'geojson';
-import { ChangeEvent, MutableRefObject } from 'react';
+import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ViewState } from 'react-map-gl';
 
-export type ActivityContext = {
-  activities: StravaActivity[];
+export type ActivityContextType = {
   showActivityDetail: boolean;
-  setShowActivityDetail: (showActivityDetail: boolean) => void;
+  setShowActivityDetail: Dispatch<SetStateAction<boolean>>;
   currentActivity: StravaActivity | undefined;
-  setCurrentActivity: (activity: StravaActivity) => void;
-  fetchNextPage: () => void;
+  setCurrentActivity: Dispatch<SetStateAction<StravaActivity | undefined>>;
   // animation props
   animationState: string;
   currentFrame: number;
   sliderRef: MutableRefObject<null>;
   setAnimationState: (animationState: 'paused' | 'playing') => void;
-  setViewState: (viewState: ViewState) => void;
+  setViewState: Dispatch<SetStateAction<ViewState | undefined>>;
   setCurrentPoint: (currentPoint: Position) => void;
   setCurrentFrame: (currentFrame: number) => void;
   handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;

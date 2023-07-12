@@ -25,26 +25,26 @@ export default function Header() {
           href='/'
           className='rounded-lg border-white bg-black bg-opacity-70 p-2 font-sans text-3xl text-white hover:text-blue-200'
         >
-          RouteViz
+          re.play
         </UnstyledLink>
 
         <nav>
-          {name && (
-            <div className='flex flex-row items-center justify-center space-x-2 rounded-2xl bg-black bg-opacity-70 px-2 pt-1 text-black'>
-              <UnstyledLink href='/' onClick={() => signOut()}>
-                {session && (
-                  <Image
-                    className='rounded-full'
-                    src={imageLink}
-                    alt='profile picture'
-                    width={45}
-                    height={45}
-                  />
-                )}
-              </UnstyledLink>
-              <p className='text-xs font-light text-white'>{name}</p>
-            </div>
-          )}
+          <div className='flex flex-row items-center justify-center space-x-2 rounded-2xl bg-black bg-opacity-70 px-2 pt-1 text-black'>
+            <UnstyledLink href='/' onClick={() => signOut()}>
+              {session?.user ? (
+                <Image
+                  className='rounded-full'
+                  src={imageLink}
+                  alt='profile picture'
+                  width={45}
+                  height={45}
+                />
+              ) : (
+                <p className='text-white'>.</p>
+              )}
+            </UnstyledLink>
+            <p className='text-xs font-light text-white'>{name}</p>
+          </div>
         </nav>
       </div>
     </header>
