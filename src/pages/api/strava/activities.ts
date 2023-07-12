@@ -5,6 +5,9 @@ import { getToken } from 'next-auth/jwt';
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { page, before, after } = req.query;
 
+  // set page size for strava request, max=200
+  const pageSize = 50;
+
   const token = await getToken({
     req,
     secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
@@ -16,15 +19,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     accessToken = token['accessToken'];
   }
 
-  const defaultUrl = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}&page=${page}&per_page=50`;
-  const dateUrl = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}&page=${page}&per_page=50&before=${before}&after=${after}`;
+  let requestUrl;
 
-  const responseUrl =
-    before && after && typeof before === 'string' && typeof after === 'string'
-      ? dateUrl
-      : defaultUrl;
+  if (before) {
+    requestUrl = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}&page=${page}&per_page=${pageSize}&before=${before}&after=${after}`;
+  } else {
+    requestUrl = `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}&page=${page}&per_page=${pageSize}&after=${after}`;
+  }
 
-  const activities = await fetch(responseUrl).then((res) => res.json());
+  const activities = await fetch(requestUrl).then((res) => res.json());
 
   try {
     return res.status(200).json({

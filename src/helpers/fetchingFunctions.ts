@@ -1,4 +1,4 @@
-import { getTime } from 'date-fns';
+import { getTime, sub } from 'date-fns';
 
 import {
   transformActivityList,
@@ -21,15 +21,20 @@ export const getActivityList = async (
 ) => {
   const { startDate, endDate } = dateRange;
 
+  // convert provided params to timestamps
   const after = getTime(startDate) / 1000;
   const before = getTime(endDate) / 1000;
 
+  // find timestamp for 30 days ago if default
+  const today = new Date();
+  const thirtyDaysAgo = sub(today, { days: 30 });
+  const defaultTimestamp = getTime(thirtyDaysAgo) / 1000;
+
   // don't send parameters to api route if date is unchanged,
   const url = dateRange.isDefault
-    ? `/api/strava/activities?page=${page}`
+    ? `/api/strava/activities?page=${page}&after=${defaultTimestamp}`
     : `/api/strava/activities?page=${page}&before=${before}&after=${after}`;
 
-  // const response = await fetch(`/api/strava/activities?page=${page}`);
   const response = await fetch(url);
 
   if (!response.ok) {
