@@ -26,7 +26,7 @@ export default function Header() {
           href='/'
           className='rounded-lg border-white bg-black bg-opacity-70 p-2 font-sans text-3xl text-white hover:text-blue-200'
         >
-          Re.play
+          re.play
         </UnstyledLink>
 
         <nav>

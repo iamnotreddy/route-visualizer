@@ -35,10 +35,6 @@ export const findInitialViewState = (coordinates: Position[]) => {
   } as ViewState;
 };
 
-// export const followViewState = () => {
-
-// }
-
 export const findInitialMetricPoint = (path: StravaRouteStream) => {
   return {
     heartRate: path.heartRate[0],

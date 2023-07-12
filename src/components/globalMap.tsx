@@ -154,10 +154,17 @@ export default function GlobalMap() {
 
       setRouteLineStrings(lineStringsObject);
 
-      setCurrentActivity((prev) => {
-        // only set current activity to first if undefined
-        if (!prev) {
-          return activities[0];
+      // TO:DO find optimal viewState, for now center of the USA
+      setViewState((prev) => {
+        if (prev) {
+          return {
+            latitude: 39.8,
+            longitude: -98.5,
+            zoom: 3,
+            bearing: 0,
+            pitch: 45,
+            padding: { top: 0, bottom: 0, left: 0, right: 0 },
+          };
         }
       });
     }
