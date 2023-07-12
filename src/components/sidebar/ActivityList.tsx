@@ -74,6 +74,14 @@ export default function ActivityList() {
             <GearIcon />
           </div>
         </button>
+        {activities && (
+          <div className='flex flex-row items-center justify-center space-x-2'>
+            <div className='w-8 rounded-full border-2 border-slate-400 py-1 text-center text-xs font-semibold'>
+              {activities?.length}
+            </div>
+            <p className='text-xs'>activities loaded</p>
+          </div>
+        )}
       </div>
       {isSidebarVisible && !showActivityDetail && !showSettings && (
         <div className='flex flex-col space-y-2 overflow-auto pt-2'>
