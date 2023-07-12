@@ -10,9 +10,8 @@ export const ActivityLoader = () => {
     useContext(FetchingContext);
 
   return (
-    <div className='flex flex-col items-center justify-center space-y-2 border-2 border-dashed border-black py-4'>
+    <div className='flex flex-col items-center justify-center space-y-2  border-black py-4'>
       <p className='text-center text-xl'>Load More Activities From Strava</p>
-      <p>{JSON.stringify(dateRange)}</p>
       <div className='flex flex-row items-center justify-center space-x-2 text-sm font-light'>
         <div className='flex flex-col items-center justify-center space-y-1'>
           <p>Start Date</p>

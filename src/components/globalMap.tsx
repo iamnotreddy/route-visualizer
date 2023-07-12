@@ -11,6 +11,7 @@ import {
 import Map, {
   Layer,
   MapRef,
+  Marker,
   Source,
   ViewState,
   ViewStateChangeEvent,
@@ -23,8 +24,9 @@ import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
 import ActivityList from '@/components/sidebar/ActivityList';
 import SignInPage from '@/components/SignInPage';
 
+import { getNextBearing } from '@/helpers/camera';
 import {
-  findGlobalMapViewState,
+  findActivityViewState,
   getCurrentRouteCoordinates,
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
@@ -135,6 +137,7 @@ export default function GlobalMap() {
   }, [splashRouteCoordinates, status]);
 
   // decode polylines and construct route geoJSONs
+
   useEffect(() => {
     if (activities && activities.length > 0) {
       const polyLines: Array<Position[]> = activities.map((activity) =>
@@ -149,20 +152,47 @@ export default function GlobalMap() {
       });
 
       setRouteLineStrings(lineStringsObject);
-      setCurrentActivity(activities[0]);
+
+      setCurrentActivity((prev) => {
+        // only set current activity to first if undefined
+        if (!prev) {
+          return activities[0];
+        }
+      });
     }
   }, [activities]);
 
   const activityLayers = useMemo(() => {
+    const handleMarkerOnClick = (routeId: string) => {
+      if (activities) {
+        const nextActivity = activities.filter((x) => routeId === x.id)[0];
+
+        setCurrentActivity(nextActivity);
+      }
+    };
+
     if (!showActivityDetail)
       return routeLineStrings.map((route, index) => {
+        const accessor = route.geoJsonObject.features[0].geometry;
         return (
           <Source key={index} type='geojson' data={route.geoJsonObject}>
+            {accessor.type === 'LineString' && accessor.coordinates[0] ? (
+              <Marker
+                latitude={accessor.coordinates[0][1]}
+                longitude={accessor.coordinates[0][0]}
+                scale={0.5}
+                color='black'
+                onClick={() => handleMarkerOnClick(route.routeId)}
+              />
+            ) : (
+              <p></p>
+            )}
+
             <Layer {...getPolylineLayerStyle(index)} />
           </Source>
         );
       });
-  }, [routeLineStrings, showActivityDetail]);
+  }, [activities, routeLineStrings, showActivityDetail]);
 
   // set first activity on map
   useEffect(() => {
@@ -172,9 +202,20 @@ export default function GlobalMap() {
       );
       setStartPoint(polyLine[0]);
       setEndPoint(polyLine[polyLine.length - 1]);
-      findGlobalMapViewState(polyLine, mapRef);
+      findActivityViewState(polyLine, mapRef);
     }
   }, [currentActivity]);
+
+  useEffect(() => {
+    setViewState((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          bearing: getNextBearing(prev.bearing),
+        };
+      }
+    });
+  }, [startPoint]);
 
   if (status === 'loading') {
     return <div className='flex items-center justify-center'>Loading...</div>;

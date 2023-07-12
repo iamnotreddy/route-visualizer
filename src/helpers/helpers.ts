@@ -188,7 +188,7 @@ export const getCurrentRouteCoordinates = (
   return coordinates ?? [];
 };
 
-export const findGlobalMapViewState = (
+export const findActivityViewState = (
   routeCoordinates: number[][],
   mapRef: RefObject<MapRef>
 ) => {
@@ -218,12 +218,14 @@ export const findGlobalMapViewState = (
 
   if (mapRef.current) {
     const currentPitch = mapRef.current.getPitch();
+    // const currentBearing = mapRef.current.getBearing();
 
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       duration: 5000,
       zoom: zoom,
       pitch: getNextPitch(currentPitch),
+      // bearing: getNextBearing(currentBearing),
     });
   }
 };

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import { ActivityContext } from '@/components/globalMap';
 import {
@@ -18,6 +18,8 @@ export default function ActivityList() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const { allActivities: activities } = useContext(FetchingContext);
 
   const {
@@ -36,6 +38,12 @@ export default function ActivityList() {
       return !prev;
     });
   };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentActivity]);
 
   return (
     <div
@@ -79,6 +87,7 @@ export default function ActivityList() {
                   setShowActivityDetail(true);
                   setCurrentActivity(activity);
                 }}
+                ref={activity.id === currentActivity?.id ? scrollRef : null}
               >
                 <MapActivityRow
                   activity={activity}
