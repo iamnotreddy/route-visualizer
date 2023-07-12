@@ -21,6 +21,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
+import Header from '@/components/layout/Header';
 import ActivityList from '@/components/sidebar/ActivityList';
 import SignInPage from '@/components/SignInPage';
 
@@ -224,6 +225,9 @@ export default function GlobalMap() {
   return (
     <ActivityContext.Provider value={contextValues}>
       <div className='relative flex max-h-screen w-full'>
+        <div className='absolute top-0 left-0 z-20 w-full'>
+          <Header />
+        </div>
         {status === 'unauthenticated' && hasMapLoaded && (
           <SignInPage
             sliderRef={sliderRef}
