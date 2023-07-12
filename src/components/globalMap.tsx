@@ -37,13 +37,13 @@ import {
 } from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
+  defineLineLayerStyle,
   defineLineSource,
   definePointSource,
   endPointLayerStyle,
   getPolylineLayerStyle,
   mapConfig,
   pointLayerStyle,
-  singleLineLayerStyle,
   skyLayer,
   skySource,
   startPointLayerStyle,
@@ -172,7 +172,7 @@ export default function GlobalMap() {
       }
     };
 
-    if (!showActivityDetail)
+    if (!currentActivity)
       return routeLineStrings.map((route, index) => {
         const accessor = route.geoJsonObject.features[0].geometry;
         return (
@@ -193,9 +193,9 @@ export default function GlobalMap() {
           </Source>
         );
       });
-  }, [activities, routeLineStrings, showActivityDetail]);
+  }, [activities, currentActivity, routeLineStrings]);
 
-  // set first activity on map
+  // toggle selected activity on map
   useEffect(() => {
     if (currentActivity) {
       const polyLine = getPolyLineCoordinates(
@@ -204,9 +204,11 @@ export default function GlobalMap() {
       setStartPoint(polyLine[0]);
       setEndPoint(polyLine[polyLine.length - 1]);
       findActivityViewState(polyLine, mapRef);
+      setShowActivityDetail(true);
     }
   }, [currentActivity]);
 
+  // rotate camera for visual effect on load of route starting point
   useEffect(() => {
     setViewState((prev) => {
       if (prev) {
@@ -245,22 +247,26 @@ export default function GlobalMap() {
             onMove={handleMoveEvent}
             {...mapConfig}
           >
+            {/* layer to style sky */}
             <Source {...skySource}>
               <Layer {...skyLayer} />
             </Source>
 
+            {/* animated coordinates for the splash route */}
             {splashAnimationedCoordinates && (
               <Source {...defineLineSource(splashAnimationedCoordinates)}>
                 <Layer {...animatedLineLayerStyle} />
               </Source>
             )}
 
+            {/* animated coordinates of current route */}
             {animatedLineCoordinates && currentActivity && (
               <Source {...defineLineSource(animatedLineCoordinates)}>
                 <Layer {...animatedLineLayerStyle} />
               </Source>
             )}
 
+            {/* full coordinates of current route */}
             {currentActivity && (
               <Source
                 {...defineLineSource(
@@ -270,26 +276,32 @@ export default function GlobalMap() {
                   )
                 )}
               >
-                <Layer {...singleLineLayerStyle} />
+                <Layer {...defineLineLayerStyle(animationState)} />
               </Source>
             )}
 
+            {/* start point current route */}
             {startPoint && (
               <Source {...definePointSource(startPoint)}>
                 <Layer {...startPointLayerStyle} />
               </Source>
             )}
+
+            {/* end point current route */}
             {endPoint && (
               <Source {...definePointSource(endPoint)}>
                 <Layer {...endPointLayerStyle} />
               </Source>
             )}
+
+            {/* current point during route animation */}
             {currentPoint && !isActivityStreamFetching && showActivityDetail && (
               <Source {...definePointSource(currentPoint)}>
                 <Layer {...pointLayerStyle} />
               </Source>
             )}
 
+            {/* memoized polylines of current activities loaded on map */}
             {activityLayers}
           </Map>
         </div>
