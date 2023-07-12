@@ -11,7 +11,7 @@ export const ActivityLoader = () => {
 
   return (
     <div className='flex flex-col items-center justify-center space-y-2  border-black py-4'>
-      <p className='text-center text-xl'>Load More Activities From Strava</p>
+      <p className='text-center text-xl'>Load Activities From Strava</p>
       <div className='flex flex-row items-center justify-center space-x-2 text-sm font-light'>
         <div className='flex flex-col items-center justify-center space-y-1'>
           <p>Start Date</p>
@@ -51,13 +51,10 @@ export const ActivityLoader = () => {
       >
         <p>Load</p>
       </Button>
-
-      <ul className='ml-2 flex flex-col space-y-1'>
-        <li className='text-xs'>20 activities are loaded at a time</li>
-        <li className='text-xs'>
-          please note app performance will dip once ~100 activities are loaded
-        </li>
-      </ul>
+      <div className='flex max-w-sm flex-col space-y-1 text-xs font-light'>
+        <p>Currently, only 50 Activities can be loaded at a time</p>
+        <p>Adjust the date range if your activity is not visible</p>
+      </div>
     </div>
   );
 };

@@ -31,7 +31,7 @@ export const findInitialViewState = (coordinates: Position[]) => {
     longitude: initialPoint[0],
     zoom: 14,
     bearing: 80,
-    pitch: 45,
+    pitch: 65,
   } as ViewState;
 };
 
