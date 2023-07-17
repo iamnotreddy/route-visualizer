@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { useContext } from 'react';
 
 import Button from '@/components/buttons/Button';
@@ -9,6 +9,25 @@ export const ActivityLoader = () => {
   const { isRefetching, refetch, dateRange, setDateRange } =
     useContext(FetchingContext);
 
+  const handleDateRange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'start' | 'end'
+  ) => {
+    const date = new Date(e.target.value);
+
+    if (isValid(date)) {
+      if (type === 'start') {
+        setDateRange((prev) => ({
+          ...prev,
+          isDefault: false,
+          startDate: date,
+        }));
+      } else {
+        setDateRange((prev) => ({ ...prev, isDefault: false, endDate: date }));
+      }
+    }
+  };
+
   return (
     <div className='flex flex-col items-center justify-center space-y-2  border-black py-4'>
       <p className='text-center text-xl'>Load Activities From Strava</p>
@@ -18,13 +37,7 @@ export const ActivityLoader = () => {
           <input
             type='date'
             value={format(dateRange.startDate, 'yyyy-MM-dd')}
-            onChange={(e) => {
-              setDateRange((prev) => ({
-                ...prev,
-                isDefault: false,
-                startDate: new Date(e.target.value),
-              }));
-            }}
+            onChange={(e) => handleDateRange(e, 'start')}
           />
         </div>
         <div className='flex flex-col items-center justify-center space-y-1'>
@@ -32,13 +45,7 @@ export const ActivityLoader = () => {
           <input
             type='date'
             value={format(dateRange.endDate, 'yyyy-MM-dd')}
-            onChange={(e) => {
-              setDateRange((prev) => ({
-                ...prev,
-                isDefault: false,
-                endDate: new Date(e.target.value),
-              }));
-            }}
+            onChange={(e) => handleDateRange(e, 'end')}
           />
         </div>
       </div>
