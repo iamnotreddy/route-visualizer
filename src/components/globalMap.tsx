@@ -20,10 +20,8 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
-import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
 import Header from '@/components/layout/Header';
 import ActivityList from '@/components/sidebar/ActivityList';
-import SignInPage from '@/components/SignInPage';
 
 import { getNextBearing } from '@/helpers/camera';
 import {
@@ -31,10 +29,7 @@ import {
   getCurrentRouteCoordinates,
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
-import {
-  findInitialViewState,
-  findRouteLineString,
-} from '@/helpers/initialValues';
+import { findRouteLineString } from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
   defineLineLayerStyle,
@@ -63,7 +58,7 @@ export default function GlobalMap() {
   const { allActivities: activities } = useContext(FetchingContext);
 
   const { status } = useSession();
-  const [hasMapLoaded, setHasMapLoaded] = useState(false);
+
   const [showActivityDetail, setShowActivityDetail] = useState(false);
 
   const [viewState, setViewState] = useState<ViewState>();
@@ -85,23 +80,10 @@ export default function GlobalMap() {
   const mapRef = useRef<MapRef>(null);
   const sliderRef = useRef(null);
 
-  // initialize drawing of route
-  const handleOnMapLoad = () => {
-    setHasMapLoaded(true);
-  };
-
   // record viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
-
-  // hook for splash route animation
-  const {
-    animatedLineCoordinates: splashAnimationedCoordinates,
-    splashRouteCoordinates,
-    handleRouteControl: splashHandleRouteControl,
-    currentFrame: splashCurrentFrame,
-  } = useSplashAnimation(mapRef, 'playing', status);
 
   // hook for current route animation
   const {
@@ -130,12 +112,6 @@ export default function GlobalMap() {
     showActivityDetail,
     setShowActivityDetail,
   };
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      setViewState({ ...findInitialViewState(splashRouteCoordinates) });
-    }
-  }, [splashRouteCoordinates, status]);
 
   // decode polylines and construct route geoJSONs
 
@@ -237,20 +213,11 @@ export default function GlobalMap() {
         <div className='absolute top-0 left-0 z-20 w-full'>
           <Header />
         </div>
-        {status === 'unauthenticated' && hasMapLoaded && (
-          <SignInPage
-            sliderRef={sliderRef}
-            splashRouteCoordinates={splashRouteCoordinates}
-            splashCurrentFrame={splashCurrentFrame}
-            splashHandleRouteControl={splashHandleRouteControl}
-          />
-        )}
-        {activities && status === 'authenticated' && <ActivityList />}
+        <ActivityList />
         <div className='flex-grow-0'>
           <Map
             {...viewState}
             ref={mapRef}
-            onLoad={handleOnMapLoad}
             onMove={handleMoveEvent}
             {...mapConfig}
           >
@@ -258,13 +225,6 @@ export default function GlobalMap() {
             <Source {...skySource}>
               <Layer {...skyLayer} />
             </Source>
-
-            {/* animated coordinates for the splash route */}
-            {splashAnimationedCoordinates && (
-              <Source {...defineLineSource(splashAnimationedCoordinates)}>
-                <Layer {...animatedLineLayerStyle} />
-              </Source>
-            )}
 
             {/* animated coordinates of current route */}
             {animatedLineCoordinates && currentActivity && (

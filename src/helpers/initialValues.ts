@@ -561,3 +561,7 @@ export const splashRouteCoordinates: Position[] = [
   [33.776557, -118.411799],
   [33.776541, -118.411808],
 ].map((pos) => [pos[1], pos[0]]);
+
+export const initialSplashViewState = findInitialViewState(
+  splashRouteCoordinates
+);
