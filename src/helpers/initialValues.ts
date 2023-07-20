@@ -7,14 +7,16 @@ import {
 import { ViewState } from 'react-map-gl';
 
 import { RoutePoint, StravaRouteStream } from '@/helpers/types';
-export const findRouteLineString = (coordinates: Position[]) => {
+export const findRouteLineString = (
+  coordinates: Position[] | Array<Position[]>
+) => {
   return {
     type: 'FeatureCollection',
     features: [
       {
         type: 'Feature',
         geometry: {
-          type: 'LineString',
+          type: 'MultiLineString',
           coordinates: coordinates,
         },
         properties: {},
