@@ -2,6 +2,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
+import { transformActivityStreamResponse } from '@/helpers/helpers';
+import { ActivityStream } from '@/helpers/types';
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken({
     req,
@@ -21,12 +24,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const url = `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=${dataScope}&access_token=${accessToken}`;
 
-  const activities = await fetch(url).then((res) => res.json());
+  const response = (await fetch(url).then((res) =>
+    res.json()
+  )) as ActivityStream[];
+
+  const data = transformActivityStreamResponse(response);
 
   try {
     return res.status(200).json({
       status: 'OK',
-      data: [activities],
+      data: data,
     });
   } catch (err) {
     return res.status(400).json({
