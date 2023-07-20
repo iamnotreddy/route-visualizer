@@ -1,7 +1,13 @@
-import { Position } from 'geojson';
+import {
+  FeatureCollection,
+  GeoJsonProperties,
+  Geometry,
+  Position,
+} from 'geojson';
 import { useSession } from 'next-auth/react';
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -21,12 +27,11 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import Header from '@/components/layout/Header';
-import ActivityList from '@/components/sidebar/ActivityList';
+import { ActivityList } from '@/components/sidebar/ActivityList';
 
 import { getNextBearing } from '@/helpers/camera';
 import {
   findActivityViewState,
-  getCurrentRouteCoordinates,
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
 import { findRouteLineString } from '@/helpers/initialValues';
@@ -43,11 +48,7 @@ import {
   skySource,
   startPointLayerStyle,
 } from '@/helpers/layers';
-import {
-  ActivityContextType,
-  PolylineObj,
-  StravaActivity,
-} from '@/helpers/types';
+import { ActivityContextType, StravaActivity } from '@/helpers/types';
 import { FetchingContext } from '@/pages';
 
 export const ActivityContext = createContext<ActivityContextType>(
@@ -63,10 +64,8 @@ export default function GlobalMap() {
 
   const [viewState, setViewState] = useState<ViewState>();
 
-  // array of all fetched activities' geojson objects
-  const [routeLineStrings, setRouteLineStrings] = useState(
-    [] as Array<PolylineObj>
-  );
+  const [polylineLayer, setPolylineLayer] =
+    useState<FeatureCollection<Geometry, GeoJsonProperties>>();
 
   const [currentActivity, setCurrentActivity] = useState<StravaActivity>();
 
@@ -81,9 +80,9 @@ export default function GlobalMap() {
   const sliderRef = useRef(null);
 
   // record viewState as camera pans around route
-  const handleMoveEvent = (e: ViewStateChangeEvent) => {
+  const handleMoveEvent = useCallback((e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
-  };
+  }, []);
 
   // hook for current route animation
   const {
@@ -117,18 +116,19 @@ export default function GlobalMap() {
 
   useEffect(() => {
     if (activities && activities.length > 0) {
-      const polyLines: Array<Position[]> = activities.map((activity) =>
-        getPolyLineCoordinates(activity.map.summary_polyline)
+      const mergedCoordinates: Array<Position[]> = [];
+
+      const backgroundActivities = activities.filter(
+        (activity) => activity.id != currentActivity?.id
       );
 
-      const lineStringsObject = polyLines.map((polyLine, index) => {
-        return {
-          routeId: activities[index].id,
-          geoJsonObject: findRouteLineString(polyLine),
-        };
-      });
+      backgroundActivities.map((activity) =>
+        mergedCoordinates.push(
+          getPolyLineCoordinates(activity.map.summary_polyline)
+        )
+      );
 
-      setRouteLineStrings(lineStringsObject);
+      setPolylineLayer(findRouteLineString(mergedCoordinates));
 
       // TO:DO find optimal viewState, for now center of the USA
       setViewState((prev) => {
@@ -144,39 +144,93 @@ export default function GlobalMap() {
         }
       });
     }
-  }, [activities]);
+  }, [activities, currentActivity?.id]);
 
-  const activityLayers = useMemo(() => {
-    const handleMarkerOnClick = (routeId: string) => {
-      if (activities) {
-        const nextActivity = activities.filter((x) => routeId === x.id)[0];
+  const memoizedPolylineLayer = useMemo(() => {
+    if (polylineLayer) {
+      return (
+        <Source type='geojson' data={polylineLayer}>
+          <Layer {...getPolylineLayerStyle()} />
+        </Source>
+      );
+    }
+  }, [polylineLayer]);
 
-        setCurrentActivity(nextActivity);
-      }
-    };
+  const memoizedCurrentActivity = useMemo(() => {
+    if (currentActivity && activities && activities.length > 0) {
+      const activity = activities.filter(
+        (activity) => activity.id === currentActivity.id
+      )[0];
 
-    if (!currentActivity)
-      return routeLineStrings.map((route, index) => {
-        const accessor = route.geoJsonObject.features[0].geometry;
+      if (activity && activity.map.summary_polyline) {
+        const coordinates = getPolyLineCoordinates(
+          activity.map.summary_polyline
+        );
+
         return (
-          <Source key={index} type='geojson' data={route.geoJsonObject}>
-            {accessor.type === 'LineString' && accessor.coordinates[0] ? (
-              <Marker
-                latitude={accessor.coordinates[0][1]}
-                longitude={accessor.coordinates[0][0]}
-                scale={0.5}
-                color='black'
-                onClick={() => handleMarkerOnClick(route.routeId)}
-              />
-            ) : (
-              <p></p>
-            )}
-
-            <Layer {...getPolylineLayerStyle(index)} />
+          <Source {...defineLineSource(coordinates)}>
+            <Layer {...defineLineLayerStyle(animationState)} />
           </Source>
         );
-      });
-  }, [activities, currentActivity, routeLineStrings]);
+      }
+    }
+  }, [activities, animationState, currentActivity]);
+
+  const memoizedStartAndEndPoints = useMemo(() => {
+    if (startPoint && endPoint) {
+      return (
+        <>
+          <Source {...definePointSource(startPoint)}>
+            <Layer {...startPointLayerStyle} />
+          </Source>
+          <Source {...definePointSource(endPoint)}>
+            <Layer {...endPointLayerStyle} />
+          </Source>
+        </>
+      );
+    }
+  }, [startPoint, endPoint]);
+
+  const memoizedMarkers = useMemo(
+    () =>
+      activities?.map((activity) => {
+        const handleMarkerOnClick = (routeId: string) => {
+          if (activities) {
+            const nextActivity = activities.filter((x) => routeId === x.id)[0];
+            setCurrentActivity(nextActivity);
+          }
+        };
+
+        const startCoordinate =
+          getPolyLineCoordinates(activity.map.summary_polyline)[0] ?? [];
+
+        if (
+          Number.isFinite(startCoordinate[0]) &&
+          Number.isFinite(startCoordinate[1]) &&
+          animationState != 'playing'
+        ) {
+          return (
+            <Marker
+              key={activity.id}
+              longitude={startCoordinate[0]}
+              latitude={startCoordinate[1]}
+              scale={0.5}
+              color='black'
+              onClick={() => handleMarkerOnClick(activity.id)}
+            />
+          );
+        }
+      }),
+    [activities, animationState]
+  );
+
+  const memoizedAnimation = useMemo(() => {
+    return (
+      <Source {...defineLineSource(animatedLineCoordinates)}>
+        <Layer {...animatedLineLayerStyle} />
+      </Source>
+    );
+  }, [animatedLineCoordinates]);
 
   // toggle selected activity on map
   useEffect(() => {
@@ -226,50 +280,17 @@ export default function GlobalMap() {
               <Layer {...skyLayer} />
             </Source>
 
-            {/* animated coordinates of current route */}
-            {animatedLineCoordinates && currentActivity && (
-              <Source {...defineLineSource(animatedLineCoordinates)}>
-                <Layer {...animatedLineLayerStyle} />
-              </Source>
-            )}
-
-            {/* full coordinates of current route */}
-            {currentActivity && (
-              <Source
-                {...defineLineSource(
-                  getCurrentRouteCoordinates(
-                    routeLineStrings,
-                    currentActivity.id
-                  )
-                )}
-              >
-                <Layer {...defineLineLayerStyle(animationState)} />
-              </Source>
-            )}
-
-            {/* start point current route */}
-            {startPoint && (
-              <Source {...definePointSource(startPoint)}>
-                <Layer {...startPointLayerStyle} />
-              </Source>
-            )}
-
-            {/* end point current route */}
-            {endPoint && (
-              <Source {...definePointSource(endPoint)}>
-                <Layer {...endPointLayerStyle} />
-              </Source>
-            )}
-
             {/* current point during route animation */}
             {currentPoint && !isActivityStreamFetching && showActivityDetail && (
               <Source {...definePointSource(currentPoint)}>
                 <Layer {...pointLayerStyle} />
               </Source>
             )}
-
-            {/* memoized polylines of current activities loaded on map */}
-            {activityLayers}
+            {memoizedPolylineLayer}
+            {memoizedCurrentActivity}
+            {memoizedStartAndEndPoints}
+            {memoizedMarkers}
+            {memoizedAnimation}
           </Map>
         </div>
       </div>

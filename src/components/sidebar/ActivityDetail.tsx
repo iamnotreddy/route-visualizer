@@ -1,62 +1,31 @@
 import { format, parseISO } from 'date-fns';
 import { useContext, useState } from 'react';
+import React from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
 import { ActivityContext } from '@/components/globalMap';
+import { useChartMetric } from '@/components/hooks/useChartMetric';
+import { useCurrentMetricFrame } from '@/components/hooks/useCurrentMetricFrame';
 import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 import MetricChart from '@/components/MetricChart';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
-
-import {
-  convertPaceValueForDisplay,
-  generatePacePoint,
-} from '@/helpers/chartHelpers';
-import { metersToMiles } from '@/helpers/helpers';
 
 export const ActivityDetail = () => {
   const { currentActivity, currentFrame, stravaPath } =
     useContext(ActivityContext);
 
-  const [areaSeriesMetric, setAreaSeriesMetric] = useState('elevation');
   const [lockChartHover, setLockChartHover] = useState(true);
+
+  const { metricName, metricData, setMetricName } = useChartMetric(stravaPath);
+  const { distance, movingTime, heartRate, pace } = useCurrentMetricFrame(
+    currentFrame,
+    stravaPath,
+    currentActivity
+  );
 
   if (!currentActivity) {
     return <div>No Activity Loaded...</div>;
   }
-
-  const distance =
-    stravaPath && currentFrame > 20
-      ? metersToMiles(stravaPath?.distance[currentFrame])
-      : metersToMiles(currentActivity.distance);
-
-  const movingTime =
-    stravaPath && currentFrame > 20
-      ? convertPaceValueForDisplay(stravaPath.time[currentFrame] / 60)
-      : convertPaceValueForDisplay(currentActivity.moving_time / 60);
-
-  const pace =
-    stravaPath && currentFrame > 20
-      ? convertPaceValueForDisplay(
-          generatePacePoint(
-            stravaPath.time[currentFrame],
-            stravaPath.distance[currentFrame]
-          )
-        )
-      : convertPaceValueForDisplay(
-          generatePacePoint(
-            currentActivity.moving_time,
-            currentActivity.distance
-          )
-        );
-
-  const heartRate =
-    stravaPath && currentFrame > 20
-      ? Number.isInteger(stravaPath.heartRate[0])
-        ? stravaPath.heartRate[currentFrame]
-        : 0
-      : Number.isInteger(currentActivity.average_heartrate)
-      ? currentActivity.average_heartrate
-      : 0;
 
   return (
     <div className='flex flex-col space-y-2'>
@@ -92,7 +61,7 @@ export const ActivityDetail = () => {
           <p className='text-sm  text-slate-800'>heart rate</p>
           <div className='flex flex-row items-center space-x-1'>
             <p className='text-xl font-light'>{`${
-              Math.floor(heartRate) ?? 0
+              heartRate ? Math.floor(heartRate) : 0
             }`}</p>
             <p className='text-xs'>bpm</p>
           </div>
@@ -101,8 +70,8 @@ export const ActivityDetail = () => {
 
       <div className='flex flex-row justify-between pt-4'>
         <ChooseMetricBar
-          setCurrentMetric={setAreaSeriesMetric}
-          currentMetric={areaSeriesMetric}
+          metricName={metricName}
+          setMetricName={setMetricName}
           orientation='horizontal'
         />
         {lockChartHover ? (
@@ -116,10 +85,13 @@ export const ActivityDetail = () => {
         )}
       </div>
 
-      <MetricChart
-        areaSeriesMetric={areaSeriesMetric}
-        lockChartHover={lockChartHover}
-      />
+      {metricData && (
+        <MetricChart
+          metricName={metricName}
+          metricData={metricData}
+          lockChartHover={lockChartHover}
+        />
+      )}
 
       <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
         <AnimationControl />
