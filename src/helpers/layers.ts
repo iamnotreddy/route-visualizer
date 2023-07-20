@@ -88,9 +88,21 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
-export const getPolylineLayerStyle = (index: number): LayerProps => {
+export const getPolylineLayerStyle = (index?: number): LayerProps => {
+  if (index) {
+    return {
+      id: `polyline-layer${index}`,
+      type: 'line',
+      paint: {
+        'line-color': '#ea5f94',
+        'line-width': 2,
+        'line-opacity': 0.5,
+      },
+    };
+  }
+
   return {
-    id: `layer${index}`,
+    id: `polyline-layer`,
     type: 'line',
     paint: {
       'line-color': '#ea5f94',

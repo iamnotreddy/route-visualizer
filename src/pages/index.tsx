@@ -11,6 +11,7 @@ import {
 
 import GlobalMap from '@/components/globalMap';
 import { DateRangeInput } from '@/components/hooks/useActivityList';
+import SignInPage from '@/components/SignInPage';
 
 import { getActivityList } from '@/helpers/fetchingFunctions';
 import { StravaActivity } from '@/helpers/types';
@@ -80,9 +81,13 @@ export default function HomePage() {
     setDateRange,
   };
 
-  return (
-    <FetchingContext.Provider value={fetchingContextValues}>
-      <GlobalMap />
-    </FetchingContext.Provider>
-  );
+  if (status === 'authenticated') {
+    return (
+      <FetchingContext.Provider value={fetchingContextValues}>
+        <GlobalMap />
+      </FetchingContext.Provider>
+    );
+  }
+
+  return <SignInPage />;
 }

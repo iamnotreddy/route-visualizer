@@ -6,8 +6,7 @@ import { splashRouteCoordinates } from '@/helpers/initialValues';
 
 export function useSplashAnimation(
   mapRef: React.RefObject<MapRef>,
-  animationState: 'playing' | 'paused',
-  status: 'authenticated' | 'loading' | 'unauthenticated'
+  animationState: 'playing' | 'paused'
 ) {
   const [currentFrame, setCurrentFrame] = useState(0);
 
@@ -42,10 +41,6 @@ export function useSplashAnimation(
   };
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      return;
-    }
-
     const routeCoordinates = splashRouteCoordinates;
     const routeLength = routeCoordinates?.length;
 
@@ -69,13 +64,9 @@ export function useSplashAnimation(
 
       return () => clearInterval(interval);
     }
-  }, [animationState, status]);
+  }, [animationState]);
 
   useEffect(() => {
-    if (status === 'authenticated' || !mapRef.current) {
-      return;
-    }
-
     if (mapRef.current) {
       const routeCoordinates = splashRouteCoordinates;
 
@@ -85,7 +76,7 @@ export function useSplashAnimation(
       ]);
       setAnimatedLineCoordinates(routeCoordinates.slice(0, currentFrame + 1));
     }
-  }, [currentFrame, mapRef, status]);
+  }, [currentFrame, mapRef]);
 
   return {
     animatedLineCoordinates,

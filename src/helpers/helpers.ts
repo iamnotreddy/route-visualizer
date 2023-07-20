@@ -21,11 +21,24 @@ export const reverseLatLng = (coordinates: Position[]) => {
   });
 };
 
+export const sampleMetricArray = (
+  data: Position[] | number[],
+  stepSize: number
+) => {
+  const sampledData = [];
+
+  for (let i = 0; i < data.length; i += stepSize) {
+    sampledData.push(data[i]);
+  }
+
+  return sampledData;
+};
+
 export const transformActivityStreamResponse = (
-  data: Array<ActivityStream>
+  response: ActivityStream[]
 ): StravaRouteStream => {
   const transformed: StravaRouteStream = {
-    latlng: [],
+    latlng: [[]],
     heartRate: [],
     distance: [],
     time: [],
@@ -35,30 +48,52 @@ export const transformActivityStreamResponse = (
     cadence: [],
   };
 
-  data.map((activity) => {
-    if (activity.type === 'latlng') {
-      transformed.latlng = reverseLatLng(activity.data);
+  // set max number of data points
+  const maxSize = 1000;
+  const originalSize = response[0].original_size;
+  const stepSize = Math.ceil(originalSize / maxSize);
+
+  response.forEach((metric) => {
+    if (metric.type === 'latlng') {
+      transformed.latlng = [
+        ...sampleMetricArray(reverseLatLng(metric.data), stepSize),
+      ] as Position[];
     }
-    if (activity.type === 'heartrate') {
-      transformed.heartRate = activity.data;
+
+    if (metric.type === 'distance') {
+      transformed.distance = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'distance') {
-      transformed.distance = activity.data;
+    if (metric.type === 'heartRate') {
+      transformed.heartRate = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'time') {
-      transformed.time = activity.data;
+    if (metric.type === 'time') {
+      transformed.time = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'velocity_smooth') {
-      transformed.velocity_smooth = activity.data;
+    if (metric.type === 'velocity_smooth') {
+      transformed.velocity_smooth = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'grade_smooth') {
-      transformed.grade_smooth = activity.data;
+    if (metric.type === 'grade_smooth') {
+      transformed.grade_smooth = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'altitude') {
-      transformed.altitude = activity.data;
+    if (metric.type === 'altitude') {
+      transformed.altitude = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
-    if (activity.type === 'cadence') {
-      transformed.cadence = activity.data;
+    if (metric.type === 'cadence') {
+      transformed.cadence = [
+        ...sampleMetricArray(metric.data, stepSize),
+      ] as number[];
     }
   });
 
@@ -121,9 +156,11 @@ export const formatTime = (time: number) => {
 };
 
 export const calculateDomain = (series: DataPoint[]) => {
-  const seriesPoints = series.map((point) => point.y);
-  const [minY, maxY] = [Math.min(...seriesPoints), Math.max(...seriesPoints)];
+  const seriesPoints = series
+    .map((point) => point.y)
+    .filter((point) => !Number.isNaN(point));
 
+  const [minY, maxY] = [Math.min(...seriesPoints), Math.max(...seriesPoints)];
   const padding = 0.02;
 
   return [minY * (1 - padding), maxY * (1 + padding)];
@@ -214,7 +251,7 @@ export const findActivityViewState = (
   const zoomLng = Math.log2((512 - padding * 512) / width);
   const zoomLat = Math.log2((512 - padding * 512) / height);
 
-  const zoom = Math.min(zoomLng, zoomLat, 14); // Adjust the maximum zoom as needed
+  const zoom = Math.min(zoomLng, zoomLat, 13); // Adjust the maximum zoom as needed
 
   if (mapRef.current) {
     const currentPitch = mapRef.current.getPitch();
@@ -222,10 +259,9 @@ export const findActivityViewState = (
 
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
-      duration: 5000,
       zoom: zoom,
       pitch: getNextPitch(currentPitch),
-      // bearing: getNextBearing(currentBearing),
+      duration: 5000,
     });
   }
 };

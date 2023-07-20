@@ -4,24 +4,25 @@ import {
   AnimatedAreaSeries,
   AnimatedAxis,
   AnnotationCircleSubject,
+  AnnotationLineSubject,
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 
 import { ActivityContext } from '@/components/globalMap';
 
-import { generatePace } from '@/helpers/chartHelpers';
-import { calculateDomain, transformMetricToDataPoint } from '@/helpers/helpers';
+import { calculateDomain } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
 
 export default function MetricChart(props: {
-  areaSeriesMetric: string;
+  metricName: string;
   lockChartHover: boolean;
+  metricData: DataPoint[];
 }) {
-  const { areaSeriesMetric, lockChartHover } = props;
+  const { metricName, metricData, lockChartHover } = props;
 
-  const { currentFrame, setCurrentFrame, stravaPath, animationState } =
+  const { currentFrame, setCurrentFrame, animationState } =
     useContext(ActivityContext);
 
   const accessors = {
@@ -39,9 +40,7 @@ export default function MetricChart(props: {
 
   type FillStylesKeys = keyof typeof fillStyles;
 
-  const [areaSeries, setAreaSeries] = useState<DataPoint[]>();
-
-  const currentFillColor = fillStyles[areaSeriesMetric as FillStylesKeys];
+  const currentFillColor = fillStyles[metricName as FillStylesKeys];
 
   const handleOnPointerMove = (e: EventHandlerParams<DataPoint>) => {
     if (!lockChartHover && animationState != 'playing') {
@@ -49,96 +48,67 @@ export default function MetricChart(props: {
     }
   };
 
-  useEffect(() => {
-    if (stravaPath) {
-      const paceArray = generatePace(
-        transformMetricToDataPoint(stravaPath.time),
-        transformMetricToDataPoint(stravaPath.distance)
-      );
+  const xDomain = [0, metricData.length - 1];
+  const yDomain = calculateDomain(metricData);
 
-      if (areaSeriesMetric === 'heartRate') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.heartRate));
-      }
-      if (areaSeriesMetric === 'cadence') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.cadence));
-      }
-      if (areaSeriesMetric === 'pace') {
-        setAreaSeries(paceArray);
-      }
-      if (areaSeriesMetric === 'grade') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.grade_smooth));
-      }
-      if (areaSeriesMetric === 'elevation') {
-        setAreaSeries(transformMetricToDataPoint(stravaPath.altitude));
-      }
-    }
-  }, [areaSeriesMetric, stravaPath]);
+  return (
+    <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
+      <div style={{ width: '25vw', height: '15vh' }}>
+        <ParentSize>
+          {(parent) => {
+            return (
+              <div>
+                <p className='text-center text-xs font-semibold text-slate-800'>
+                  {metricName === 'heartRate' ? 'heart rate' : metricName}
+                </p>
+                <XYChart
+                  captureEvents={true}
+                  width={parent.width}
+                  height={parent.height}
+                  margin={{ top: 10, bottom: 15, left: 30, right: 0 }}
+                  xScale={{
+                    type: 'linear',
+                    domain: xDomain,
+                    zero: false,
+                  }}
+                  yScale={{
+                    type: 'linear',
+                    domain: yDomain,
+                    zero: false,
+                  }}
+                  onPointerMove={handleOnPointerMove}
+                >
+                  <AnimatedAxis orientation='left' numTicks={4} />
 
-  if (areaSeries) {
-    return (
-      <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
-        {areaSeries[0] ? (
-          <div style={{ width: '25vw', height: '15vh' }}>
-            <ParentSize>
-              {(parent) => {
-                return (
-                  <div>
-                    <p className='text-center text-xs font-semibold text-slate-800'>
-                      {areaSeriesMetric}
-                    </p>
-                    <XYChart
-                      captureEvents={true}
-                      width={parent.width}
-                      height={parent.height}
-                      margin={{ top: 10, bottom: 15, left: 30, right: 0 }}
-                      xScale={{
-                        type: 'linear',
-                        domain: [0, areaSeries.length - 1],
-                        zero: false,
-                      }}
-                      yScale={{
-                        type: 'linear',
-                        domain: calculateDomain(areaSeries),
-                        zero: false,
-                      }}
-                      onPointerMove={handleOnPointerMove}
-                    >
-                      <AnimatedAxis orientation='left' numTicks={4} />
+                  <AnimatedAreaSeries
+                    dataKey='area'
+                    data={metricData}
+                    {...accessors}
+                    fillOpacity={0.6}
+                    fill={currentFillColor}
+                    lineProps={{
+                      stroke: 'slate',
+                      strokeWidth: 1.5,
+                    }}
+                  />
 
-                      <AnimatedAreaSeries
-                        dataKey='area'
-                        data={areaSeries}
-                        {...accessors}
-                        fillOpacity={0.6}
-                        fill={currentFillColor}
-                        lineProps={{
-                          stroke: 'slate',
-                          strokeWidth: 1.5,
-                        }}
-                      />
-
-                      <AnimatedAnnotation
-                        dataKey='area'
-                        datum={areaSeries[currentFrame]}
-                      >
-                        <AnnotationCircleSubject
-                          className=''
-                          radius={3}
-                          stroke='black'
-                        />
-                      </AnimatedAnnotation>
-                    </XYChart>
-                  </div>
-                );
-              }}
-            </ParentSize>
-          </div>
-        ) : (
-          <div className='flex items-center justify-center text-xs'>{`no ${areaSeriesMetric} data recorded`}</div>
-        )}
+                  <AnimatedAnnotation
+                    dataKey='area'
+                    datum={metricData[currentFrame]}
+                  >
+                    <AnnotationCircleSubject
+                      className=''
+                      radius={3}
+                      stroke='black'
+                    />
+                    <AnnotationLineSubject stroke='gray' strokeWidth={0.5} />
+                  </AnimatedAnnotation>
+                </XYChart>
+              </div>
+            );
+          }}
+        </ParentSize>
       </div>
-    );
-  }
-
-  return <div></div>;
+    </div>
+  );
 }

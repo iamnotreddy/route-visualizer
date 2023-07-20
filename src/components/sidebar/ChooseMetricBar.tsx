@@ -1,13 +1,15 @@
 import { Dispatch, SetStateAction } from 'react';
 
+import { Metrics } from '@/components/hooks/useChartMetric';
+
 type ChooseMetricBarProps = {
-  currentMetric: string;
-  setCurrentMetric: Dispatch<SetStateAction<string>>;
+  metricName: Metrics;
+  setMetricName: Dispatch<SetStateAction<Metrics>>;
   orientation: 'horizontal' | 'vertical';
 };
 
 type Icon = {
-  name: string;
+  name: Metrics;
   displayName?: string;
   path: string;
   baseClass: string;
@@ -15,8 +17,8 @@ type Icon = {
 };
 
 export default function ChooseMetricBar({
-  currentMetric,
-  setCurrentMetric,
+  metricName,
+  setMetricName,
   orientation,
 }: ChooseMetricBarProps) {
   const tailwindStyle =
@@ -80,14 +82,14 @@ export default function ChooseMetricBar({
   };
 
   const returnIconStyle = (icon: Icon) => {
-    if (icon.name == currentMetric) {
+    if (icon.name === metricName) {
       return icon.selectedClass;
     }
     return icon.baseClass;
   };
 
-  const handleMetricSelection = (metricName: string) => {
-    setCurrentMetric(metricName);
+  const handleMetricSelection = (name: Metrics) => {
+    setMetricName(name);
   };
 
   return (

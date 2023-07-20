@@ -80,7 +80,7 @@ export type ActivityStream =
       resolution: string;
     }
   | {
-      type: 'heartrate';
+      type: 'heartRate';
       data: number[];
       series_type: string;
       original_size: number;

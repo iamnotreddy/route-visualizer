@@ -1,13 +1,9 @@
 import { getTime, sub } from 'date-fns';
 
-import {
-  transformActivityList,
-  transformActivityStreamResponse,
-} from '@/helpers/helpers';
+import { transformActivityList } from '@/helpers/helpers';
 import {
   ActivityListResponse,
   ActivitySplitsResponse,
-  ActivityStreamResponse,
   StravaRouteStream,
 } from '@/helpers/types';
 
@@ -58,11 +54,11 @@ export const getActivityStream = async (
     throw new Error(`HTTP error: ${response.status}`);
   }
 
-  const responseData = (await response.json()) as ActivityStreamResponse;
+  const responseJson = await response.json();
 
-  const transformed = transformActivityStreamResponse(responseData.data[0]);
+  const data = responseJson.data as StravaRouteStream;
 
-  return transformed;
+  return data;
 };
 
 export const getActivitySplits = async (

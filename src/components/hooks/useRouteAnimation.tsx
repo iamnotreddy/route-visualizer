@@ -74,8 +74,8 @@ export function useRouteAnimation(
       const interval = setInterval(() => {
         setCurrentFrame((prevValue) => {
           let nextValue;
-          if (routeCoordinates[prevValue++]) {
-            nextValue = prevValue++;
+          if (routeCoordinates[prevValue + 1]) {
+            nextValue = prevValue + 1;
           } else {
             nextValue = prevValue;
           }

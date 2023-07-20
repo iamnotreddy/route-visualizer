@@ -1,4 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 import { ActivityContext } from '@/components/globalMap';
 import {
@@ -14,7 +15,7 @@ import MapActivityRow from '@/components/sidebar/ActivityRow';
 import { getNavStyle } from '@/helpers/helpers';
 import { FetchingContext } from '@/pages';
 
-export default function ActivityList() {
+export const ActivityList = React.memo(() => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -112,4 +113,4 @@ export default function ActivityList() {
       {isSidebarVisible && showSettings && <ActivityLoader />}
     </div>
   );
-}
+});

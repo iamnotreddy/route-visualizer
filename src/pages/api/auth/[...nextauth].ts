@@ -54,6 +54,7 @@ export default NextAuth({
             NEXT_PUBLIC_STRAVA_CLIENT_SECRET,
             account.refresh_token
           );
+
           return {
             ...token,
             accessToken: newToken.access_token,

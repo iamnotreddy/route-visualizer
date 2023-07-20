@@ -7,14 +7,16 @@ import {
 import { ViewState } from 'react-map-gl';
 
 import { RoutePoint, StravaRouteStream } from '@/helpers/types';
-export const findRouteLineString = (coordinates: Position[]) => {
+export const findRouteLineString = (
+  coordinates: Position[] | Array<Position[]>
+) => {
   return {
     type: 'FeatureCollection',
     features: [
       {
         type: 'Feature',
         geometry: {
-          type: 'LineString',
+          type: 'MultiLineString',
           coordinates: coordinates,
         },
         properties: {},
@@ -561,3 +563,7 @@ export const splashRouteCoordinates: Position[] = [
   [33.776557, -118.411799],
   [33.776541, -118.411808],
 ].map((pos) => [pos[1], pos[0]]);
+
+export const initialSplashViewState = findInitialViewState(
+  splashRouteCoordinates
+);

@@ -35,7 +35,7 @@ export const generatePace = (
   const paceArray = timeStream.map((point, i) => {
     const minutes = point.y / 60;
     const miles = distanceStream[i].y * 0.00062137;
-    const pace = minutes / miles;
+    const pace = minutes / miles ?? 0;
 
     return {
       x: i,
