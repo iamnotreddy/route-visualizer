@@ -9,13 +9,7 @@ const {
   NEXT_PUBLIC_STRAVA_CLIENT_SECRET = '',
 } = process.env;
 
-const scopes = [
-  'activity:read',
-  'activity:write',
-  'profile:read_all',
-  'read_all',
-];
-
+const scopes = ['activity:read'];
 export interface Token {
   accessToken: string;
   accountExpiresAt: number;
