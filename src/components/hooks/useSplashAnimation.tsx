@@ -2,11 +2,10 @@ import { Position } from 'geojson';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { MapRef } from 'react-map-gl';
 
-import { splashRouteCoordinates } from '@/helpers/initialValues';
-
 export function useSplashAnimation(
   mapRef: React.RefObject<MapRef>,
-  animationState: 'playing' | 'paused'
+  animationState: 'playing' | 'paused',
+  splashRouteCoordinates: Position[]
 ) {
   const [currentFrame, setCurrentFrame] = useState(0);
 
@@ -64,7 +63,7 @@ export function useSplashAnimation(
 
       return () => clearInterval(interval);
     }
-  }, [animationState]);
+  }, [animationState, splashRouteCoordinates]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -76,7 +75,7 @@ export function useSplashAnimation(
       ]);
       setAnimatedLineCoordinates(routeCoordinates.slice(0, currentFrame + 1));
     }
-  }, [currentFrame, mapRef]);
+  }, [currentFrame, mapRef, splashRouteCoordinates]);
 
   return {
     animatedLineCoordinates,

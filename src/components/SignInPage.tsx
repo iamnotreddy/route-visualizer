@@ -15,7 +15,10 @@ import Button from '@/components/buttons/Button';
 import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
 import Header from '@/components/layout/Header';
 
-import { findInitialViewState } from '@/helpers/initialValues';
+import {
+  findInitialViewState,
+  splashRouteCoordinates,
+} from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
   defineLineSource,
@@ -30,10 +33,9 @@ export default function SignInPage() {
 
   const {
     animatedLineCoordinates: splashAnimationedCoordinates,
-    splashRouteCoordinates,
     handleRouteControl: splashHandleRouteControl,
     currentFrame: splashCurrentFrame,
-  } = useSplashAnimation(mapRef, 'playing');
+  } = useSplashAnimation(mapRef, 'playing', splashRouteCoordinates);
 
   const [viewState, setViewState] = useState<ViewState>(
     findInitialViewState(splashRouteCoordinates)
@@ -120,4 +122,13 @@ export default function SignInPage() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  // Pass the static splashRouteCoordinates to the component as a prop.
+  return {
+    props: {
+      splashRouteCoordinates,
+    },
+  };
 }
