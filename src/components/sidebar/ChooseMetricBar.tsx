@@ -14,6 +14,7 @@ type Icon = {
   path: string;
   baseClass: string;
   selectedClass: string;
+  tooltip?: string;
 };
 
 export default function ChooseMetricBar({
@@ -35,6 +36,7 @@ export default function ChooseMetricBar({
         'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-pink-300',
       selectedClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-pink-300 stroke-zinc-700 stroke-2 hover:scale-150',
+      tooltip: 'heart rate',
     },
 
     {
@@ -44,6 +46,7 @@ export default function ChooseMetricBar({
         'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-emerald-600',
       selectedClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-emerald-600 stroke-zinc-700 stroke-2 hover:scale-150',
+      tooltip: 'pace',
     },
 
     {
@@ -53,6 +56,7 @@ export default function ChooseMetricBar({
         'h-3 w-3 sm:h-5 sm:w-5 fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-purple-300',
       selectedClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-purple-300 stroke-zinc-700 stroke-2 hover:scale-150',
+      tooltip: 'elevation',
     },
     {
       name: 'grade',
@@ -61,6 +65,7 @@ export default function ChooseMetricBar({
         'h-3 w-3 sm:h-5 sm:w-5  fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-amber-500',
       selectedClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-amber-500 stroke-zinc-700 stroke-2 hover:scale-150',
+      tooltip: 'grade',
     },
 
     {
@@ -70,6 +75,7 @@ export default function ChooseMetricBar({
         'h-3 w-3 sm:h-5 sm:w-5  fill-slate-300 stroke-zinc-700 stroke-2 hover:scale-150 hover:fill-amber-500',
       selectedClass:
         'h-3 w-3 sm:h-5 sm:w-5 fill-amber-500 stroke-zinc-700 stroke-2 hover:scale-150',
+      tooltip: 'cadence',
     },
   ];
 
@@ -99,6 +105,7 @@ export default function ChooseMetricBar({
           <button
             key={icon.path}
             onClick={() => handleMetricSelection(icon.name)}
+            title={icon.tooltip}
           >
             <div>
               <svg
