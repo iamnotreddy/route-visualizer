@@ -1,9 +1,4 @@
-import {
-  FeatureCollection,
-  GeoJsonProperties,
-  Geometry,
-  Position,
-} from 'geojson';
+import { Position } from 'geojson';
 import { useSession } from 'next-auth/react';
 import {
   createContext,
@@ -25,6 +20,7 @@ import Map, {
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import useActivityPolylines from '@/components/hooks/useActivityPolylines';
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import Header from '@/components/layout/Header';
 import { ActivityList } from '@/components/sidebar/ActivityList';
@@ -34,7 +30,6 @@ import {
   findActivityViewState,
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
-import { findRouteLineString } from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
   currentPointStyle,
@@ -64,8 +59,8 @@ export default function GlobalMap() {
 
   const [viewState, setViewState] = useState<ViewState>();
 
-  const [polylineLayer, setPolylineLayer] =
-    useState<FeatureCollection<Geometry, GeoJsonProperties>>();
+  // const [polylineLayer, setPolylineLayer] =
+  //   useState<FeatureCollection<Geometry, GeoJsonProperties>>();
 
   const [currentActivity, setCurrentActivity] = useState<StravaActivity>();
 
@@ -97,6 +92,8 @@ export default function GlobalMap() {
     isActivityStreamFetching,
   } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
 
+  const { polylineLayer } = useActivityPolylines(activities, currentActivity);
+
   const contextValues = {
     refetchActivityStream,
     isActivityStreamFetching,
@@ -114,40 +111,6 @@ export default function GlobalMap() {
     showActivityDetail,
     setShowActivityDetail,
   };
-
-  // decode polylines and construct route geoJSONs
-
-  useEffect(() => {
-    if (activities && activities.length > 0) {
-      const mergedCoordinates: Array<Position[]> = [];
-
-      const backgroundActivities = activities.filter(
-        (activity) => activity.id != currentActivity?.id
-      );
-
-      backgroundActivities.map((activity) =>
-        mergedCoordinates.push(
-          getPolyLineCoordinates(activity.map.summary_polyline)
-        )
-      );
-
-      setPolylineLayer(findRouteLineString(mergedCoordinates));
-
-      // TO:DO find optimal viewState, for now center of the USA
-      setViewState((prev) => {
-        if (prev) {
-          return {
-            latitude: 39.8,
-            longitude: -98.5,
-            zoom: 3,
-            bearing: 0,
-            pitch: 45,
-            padding: { top: 0, bottom: 0, left: 0, right: 0 },
-          };
-        }
-      });
-    }
-  }, [activities, currentActivity?.id]);
 
   const memoizedPolylineLayer = useMemo(() => {
     if (polylineLayer) {
@@ -210,7 +173,7 @@ export default function GlobalMap() {
         if (
           Number.isFinite(startCoordinate[0]) &&
           Number.isFinite(startCoordinate[1]) &&
-          animationState != 'playing'
+          !currentActivity
         ) {
           return (
             <Marker
@@ -224,7 +187,7 @@ export default function GlobalMap() {
           );
         }
       }),
-    [activities, animationState]
+    [activities, currentActivity]
   );
 
   const memoizedAnimation = useMemo(() => {
@@ -263,6 +226,20 @@ export default function GlobalMap() {
   if (status === 'loading') {
     return <div className='flex items-center justify-center'>Loading...</div>;
   }
+
+  // // TO:DO find optimal viewState, for now center of the USA
+  // setViewState((prev) => {
+  //   if (prev) {
+  //     return {
+  //       latitude: 39.8,
+  //       longitude: -98.5,
+  //       zoom: 3,
+  //       bearing: 0,
+  //       pitch: 45,
+  //       padding: { top: 0, bottom: 0, left: 0, right: 0 },
+  //     };
+  //   }
+  // });
 
   return (
     <ActivityContext.Provider value={contextValues}>
