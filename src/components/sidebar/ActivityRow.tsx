@@ -30,6 +30,7 @@ export default function MapActivityRow({
           ? 'border-2 border-green-800 bg-green-500 bg-opacity-5'
           : 'border-t-2 border-slate-400'
       }
+      title='select activity'
     >
       <div className='flex flex-row space-x-4'>
         <div className='flex flex-col p-2'>

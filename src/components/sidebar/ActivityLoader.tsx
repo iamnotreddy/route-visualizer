@@ -59,8 +59,8 @@ export const ActivityLoader = () => {
         <p>Load</p>
       </Button>
       <div className='flex max-w-sm flex-col space-y-1 text-xs font-light'>
-        <p>Currently, only 50 Activities can be loaded at a time</p>
-        <p>Adjust the date range if your activity is not visible</p>
+        <p>Only 50 Activities can be loaded at a time</p>
+        <p>Adjust the date range if an activity is not visible</p>
       </div>
     </div>
   );

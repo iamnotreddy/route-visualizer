@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import React from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
+import Button from '@/components/buttons/Button';
 import { ActivityContext } from '@/components/globalMap';
 import { useChartMetric } from '@/components/hooks/useChartMetric';
 import { useCurrentMetricFrame } from '@/components/hooks/useCurrentMetricFrame';
@@ -11,8 +12,13 @@ import MetricChart from '@/components/MetricChart';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
 
 export const ActivityDetail = () => {
-  const { currentActivity, currentFrame, stravaPath } =
-    useContext(ActivityContext);
+  const {
+    currentActivity,
+    currentFrame,
+    stravaPath,
+    isActivityStreamFetching,
+    refetchActivityStream,
+  } = useContext(ActivityContext);
 
   const [lockChartHover, setLockChartHover] = useState(true);
 
@@ -45,22 +51,22 @@ export const ActivityDetail = () => {
         <div className='flex flex-col items-center space-y-1 rounded-lg border-2 border-slate-400 py-2'>
           <p className='text-sm  font-light text-slate-800'>distance</p>
           <div className='flex flex-row items-center space-x-1'>
-            <p className='text-xl font-light'>{`${distance}`}</p>
+            <p className='text-xl font-semibold'>{`${distance}`}</p>
             <p className='text-xs'>mi</p>
           </div>
         </div>
         <div className='flex flex-col items-center space-y-1 rounded-lg border-2 border-slate-400 py-2'>
           <p className='text-sm  text-slate-800'>moving time</p>
-          <p className='text-xl font-light'>{`${movingTime}`}</p>
+          <p className='text-xl font-semibold'>{`${movingTime}`}</p>
         </div>
         <div className='flex flex-col items-center space-y-1 rounded-lg border-2 border-slate-400 py-2'>
           <p className='text-sm  text-slate-800'>pace</p>
-          <p className='text-xl font-light'>{pace}</p>
+          <p className='text-xl font-semibold'>{pace}</p>
         </div>
         <div className='flex flex-col items-center space-y-1 rounded-lg border-2 border-slate-400 py-2'>
           <p className='text-sm  text-slate-800'>heart rate</p>
           <div className='flex flex-row items-center space-x-1'>
-            <p className='text-xl font-light'>{`${
+            <p className='text-xl font-semibold'>{`${
               heartRate ? Math.floor(heartRate) : 0
             }`}</p>
             <p className='text-xs'>bpm</p>
@@ -85,12 +91,23 @@ export const ActivityDetail = () => {
         )}
       </div>
 
-      {metricData && (
+      {metricData ? (
         <MetricChart
           metricName={metricName}
           metricData={metricData}
           lockChartHover={lockChartHover}
         />
+      ) : (
+        <div className='flex items-center justify-center py-8'>
+          <Button
+            variant='dark'
+            isLoading={!isActivityStreamFetching}
+            onClick={() => refetchActivityStream()}
+            className=''
+          >
+            Load Chart
+          </Button>
+        </div>
       )}
 
       <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>

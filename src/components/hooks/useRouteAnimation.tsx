@@ -20,13 +20,13 @@ export function useRouteAnimation(
     Position[]
   >([]);
 
-  const { data: stravaPath, isLoading: isActivityStreamFetching } = useQuery(
-    ['activityStream', routeId],
-    () => getActivityStream(routeId),
-    {
-      enabled: animationState === 'playing',
-    }
-  );
+  const {
+    data: stravaPath,
+    isLoading: isActivityStreamFetching,
+    refetch: refetchActivityStream,
+  } = useQuery(['activityStream', routeId], () => getActivityStream(routeId), {
+    enabled: animationState === 'playing',
+  });
 
   //  handles route animation according to radio slider position
   const handleRouteControl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -119,5 +119,6 @@ export function useRouteAnimation(
     setCurrentPoint,
     stravaPath,
     isActivityStreamFetching,
+    refetchActivityStream,
   };
 }

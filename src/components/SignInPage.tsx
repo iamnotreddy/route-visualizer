@@ -15,12 +15,15 @@ import Button from '@/components/buttons/Button';
 import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
 import Header from '@/components/layout/Header';
 
-import { findInitialViewState } from '@/helpers/initialValues';
+import {
+  findInitialViewState,
+  splashRouteCoordinates,
+} from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
   defineLineSource,
   mapConfig,
-  skyLayer,
+  skyLayerStyle,
   skySource,
 } from '@/helpers/layers';
 
@@ -30,19 +33,19 @@ export default function SignInPage() {
 
   const {
     animatedLineCoordinates: splashAnimationedCoordinates,
-    splashRouteCoordinates,
     handleRouteControl: splashHandleRouteControl,
     currentFrame: splashCurrentFrame,
-  } = useSplashAnimation(mapRef, 'playing');
+  } = useSplashAnimation(mapRef, 'playing', splashRouteCoordinates);
 
   const [viewState, setViewState] = useState<ViewState>(
     findInitialViewState(splashRouteCoordinates)
   );
 
-  // record viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
+
+  // record viewState as camera pans around route
 
   return (
     <div className='relative flex max-h-screen w-full'>
@@ -53,12 +56,12 @@ export default function SignInPage() {
         <Map
           {...viewState}
           ref={mapRef}
-          onMove={handleMoveEvent}
           {...mapConfig}
+          onMove={handleMoveEvent}
         >
           {/* layer to style sky */}
           <Source {...skySource}>
-            <Layer {...skyLayer} />
+            <Layer {...skyLayerStyle} />
           </Source>
 
           {/* animated coordinates for the splash route */}
@@ -70,13 +73,16 @@ export default function SignInPage() {
         </Map>
       </div>
       <div className='absolute inset-0 flex h-1/2 sm:inset-x-0 sm:items-center sm:justify-center sm:pt-4'>
-        <div className='z-50 rounded-2xl border-2 border-slate-300 bg-slate-200 bg-opacity-40 p-10 shadow-lg'>
+        <div className='z-50 rounded-2xl border-2 border-slate-300 bg-slate-200 bg-opacity-80 p-10 shadow-lg'>
           <div className='flex max-w-xl flex-col items-center justify-center space-y-2'>
-            <p className='text-center text-3xl font-light'>
-              A utility for exploring the areas you work out in.
+            <p className='text-center text-3xl font-semibold'>
+              Replay your adventures
             </p>
             <p className='text-center text-base'>
-              Sign in with Strava to visualize your workouts
+              Understand how your surroundings impact your performance.
+            </p>
+            <p className='text-center text-base'>
+              Sign in with Strava to visualize your activities
             </p>
 
             <div className='py-4'>
@@ -116,4 +122,13 @@ export default function SignInPage() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  // Pass the static splashRouteCoordinates to the component as a prop.
+  return {
+    props: {
+      splashRouteCoordinates,
+    },
+  };
 }

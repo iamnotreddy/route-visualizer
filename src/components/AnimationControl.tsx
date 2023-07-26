@@ -26,6 +26,7 @@ export default function AnimationControl() {
           onClick={() => {
             setAnimationState('playing');
           }}
+          title='play route animation'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -48,6 +49,7 @@ export default function AnimationControl() {
             setAnimationState('paused');
           }}
           disabled={animationState == 'paused'}
+          title='pause route animation'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -71,6 +73,7 @@ export default function AnimationControl() {
             }
           }}
           disabled={animationState == 'playing'}
+          title='restart route animation'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'

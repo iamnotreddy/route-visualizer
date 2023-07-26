@@ -7,39 +7,39 @@ export const mapConfig = {
   mapStyle: 'mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l',
   terrain: { source: 'mapbox-dem', exaggeration: 4 },
   mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
-  maxPitch: 85,
+  maxPitch: 80,
   style: { width: '100vw', height: '100vh' },
 };
 
 // layer styles
 
-export const pointLayerStyle: LayerProps = {
+export const currentPointStyle: LayerProps = {
   id: 'point',
   type: 'circle',
   paint: {
-    'circle-radius': 8,
-    'circle-color': '#C75E00',
+    'circle-radius': 4,
+    'circle-color': '#3770E0',
     'circle-stroke-width': 1,
     'circle-stroke-color': 'white',
   },
 };
 
-export const startPointLayerStyle: LayerProps = {
+export const startPointStyle: LayerProps = {
   id: 'startPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 6,
+    'circle-radius': 4,
     'circle-color': '#097200',
     'circle-stroke-width': 2,
     'circle-stroke-color': 'white',
   },
 };
 
-export const endPointLayerStyle: LayerProps = {
+export const endPointStyle: LayerProps = {
   id: 'endPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 6,
+    'circle-radius': 4,
     'circle-color': '#6F1400',
     'circle-stroke-width': 2,
     'circle-stroke-color': 'white',
@@ -65,7 +65,7 @@ export const definePointSource = (coordinates: Position): SourceProps => {
   };
 };
 
-export const skyLayer: SkyLayer = {
+export const skyLayerStyle: SkyLayer = {
   id: 'sky',
   type: 'sky',
   paint: {
@@ -88,19 +88,7 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
-export const getPolylineLayerStyle = (index?: number): LayerProps => {
-  if (index) {
-    return {
-      id: `polyline-layer${index}`,
-      type: 'line',
-      paint: {
-        'line-color': '#ea5f94',
-        'line-width': 2,
-        'line-opacity': 0.5,
-      },
-    };
-  }
-
+export const getPolylineLayerStyle = (): LayerProps => {
   return {
     id: `polyline-layer`,
     type: 'line',
@@ -140,14 +128,18 @@ export const animatedLineLayerStyle: LayerProps = {
 };
 
 export const defineLineLayerStyle = (
-  animationState: 'paused' | 'playing'
+  animationState: 'paused' | 'playing',
+  currentFrame?: number
 ): LayerProps => {
   return {
     type: 'line',
     paint: {
       'line-color': '#6c5dd2',
       'line-width': 3,
-      'line-opacity': animationState === 'playing' ? 0.55 : 1,
+      'line-opacity':
+        animationState === 'playing' || (currentFrame && currentFrame > 0)
+          ? 0.25
+          : 1,
     },
   };
 };

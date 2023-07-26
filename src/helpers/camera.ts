@@ -39,11 +39,17 @@ export const placeCameraAlongRoute = (
 };
 
 export const getNextPitch = (pitch: number) => {
-  if (pitch > 65) {
-    return pitch - 10;
-  } else {
-    return pitch + 15;
+  const minPitch = 50;
+  const maxPitch = 80;
+  const pitchInterval = 10;
+
+  const nextPitch = pitch + pitchInterval;
+
+  if (nextPitch > maxPitch) {
+    return minPitch + (nextPitch % maxPitch);
   }
+
+  return nextPitch;
 };
 
 export const getNextBearing = (bearing: number) => {

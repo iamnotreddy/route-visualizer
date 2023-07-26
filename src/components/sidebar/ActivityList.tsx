@@ -51,46 +51,49 @@ export const ActivityList = React.memo(() => {
       className='absolute top-20 left-0 z-20 ml-4 flex max-h-screen flex-col overflow-y-auto rounded-xl border-2 border-black bg-slate-200 bg-opacity-90 p-4'
       style={{ maxHeight: '80vh' }}
     >
-      <div className={getNavStyle(isSidebarVisible)}>
-        {/* chevron to link back to list */}
-        {showActivityDetail && (
-          <button onClick={handleShowActivityDetail}>
-            <ChevronIcon />
-          </button>
-        )}
+      <div className='flex flex-col'>
+        <div className={getNavStyle(isSidebarVisible)}>
+          {/* chevron to link back to list */}
+          {showActivityDetail && (
+            <button onClick={handleShowActivityDetail}>
+              <ChevronIcon />
+            </button>
+          )}
 
-        {/* eye icon to hide sidebar */}
-        {isSidebarVisible ? (
-          <button onClick={() => setIsSidebarVisible((prev) => !prev)}>
-            <EyeOpenIcon />
-          </button>
-        ) : (
-          <button onClick={() => setIsSidebarVisible((prev) => !prev)}>
-            <EyeClosedIcon />
-          </button>
-        )}
+          {/* eye icon to hide sidebar */}
+          {isSidebarVisible ? (
+            <button onClick={() => setIsSidebarVisible((prev) => !prev)}>
+              <EyeOpenIcon />
+            </button>
+          ) : (
+            <button onClick={() => setIsSidebarVisible((prev) => !prev)}>
+              <EyeClosedIcon />
+            </button>
+          )}
 
-        <button onClick={() => setShowSettings((prev) => !prev)}>
-          <div className={showSettings ? 'text-orange-500' : ''}>
-            <GearIcon />
-          </div>
-        </button>
-        {activities && (
-          <div className='flex flex-row items-center justify-center space-x-2'>
-            <div className='w-8 rounded-full border-2 border-slate-400 py-1 text-center text-xs font-semibold'>
-              {activities?.length}
+          <button onClick={() => setShowSettings((prev) => !prev)}>
+            <div className={showSettings ? 'text-orange-500' : ''}>
+              <GearIcon />
             </div>
-            <p className='text-xs'>activities loaded</p>
-          </div>
-        )}
+          </button>
+          {activities && (
+            <div className='flex flex-row items-center justify-center space-x-2'>
+              <div className='w-8 rounded-full border-2 border-slate-400 py-1 text-center text-xs font-semibold'>
+                {activities?.length}
+              </div>
+              <p className='text-xs'>activities loaded</p>
+            </div>
+          )}
+        </div>
+        {showSettings && <ActivityLoader />}
       </div>
-      {isSidebarVisible && !showActivityDetail && !showSettings && (
+      {isSidebarVisible && !showActivityDetail && (
         <div className='flex flex-col space-y-2 overflow-auto pt-2'>
           {activities &&
             activities.length > 0 &&
             activities.map((activity) => (
               <div
-                className='hover:rounded-lg hover:border-2 hover:border-green-800 hover:bg-green-500 hover:bg-opacity-5'
+                className='hover:cursor-pointer hover:rounded-lg hover:border-2 hover:border-black hover:bg-slate-700 hover:bg-opacity-5'
                 key={activity.id}
                 onClick={() => {
                   setShowActivityDetail(true);
@@ -110,7 +113,6 @@ export const ActivityList = React.memo(() => {
         showActivityDetail &&
         currentActivity &&
         !showSettings && <ActivityDetail />}
-      {isSidebarVisible && showSettings && <ActivityLoader />}
     </div>
   );
 });
