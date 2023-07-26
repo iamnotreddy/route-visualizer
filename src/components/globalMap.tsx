@@ -115,12 +115,12 @@ export default function GlobalMap() {
 
         return (
           <Source {...defineLineSource(coordinates)}>
-            <Layer {...defineLineLayerStyle(animationState)} />
+            <Layer {...defineLineLayerStyle(animationState, currentFrame)} />
           </Source>
         );
       }
     }
-  }, [activities, animationState, currentActivity]);
+  }, [activities, animationState, currentActivity, currentFrame]);
 
   const memoizedStartAndEndPoints = useMemo(() => {
     if (startPoint && endPoint) {

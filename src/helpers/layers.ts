@@ -128,14 +128,18 @@ export const animatedLineLayerStyle: LayerProps = {
 };
 
 export const defineLineLayerStyle = (
-  animationState: 'paused' | 'playing'
+  animationState: 'paused' | 'playing',
+  currentFrame?: number
 ): LayerProps => {
   return {
     type: 'line',
     paint: {
       'line-color': '#6c5dd2',
       'line-width': 3,
-      'line-opacity': animationState === 'playing' ? 0.25 : 1,
+      'line-opacity':
+        animationState === 'playing' || (currentFrame && currentFrame > 0)
+          ? 0.25
+          : 1,
     },
   };
 };
