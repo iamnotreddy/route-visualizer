@@ -41,8 +41,11 @@ export const getActivityList = async (
 
   // flip lat / lng points
   const cleaned = data.data[0] ? transformActivityList(data.data[0]) : [];
+  const sorted = cleaned.sort(
+    (a, b) => getTime(new Date(b.start_date)) - getTime(new Date(a.start_date))
+  );
 
-  return cleaned;
+  return sorted;
 };
 
 export const getActivityStream = async (
