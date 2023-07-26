@@ -7,7 +7,7 @@ export const mapConfig = {
   mapStyle: 'mapbox://styles/iamnotreddy/cl8mi1thc003914qikp84oo8l',
   terrain: { source: 'mapbox-dem', exaggeration: 4 },
   mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
-  maxPitch: 85,
+  maxPitch: 80,
   style: { width: '100vw', height: '100vh' },
 };
 
@@ -88,19 +88,7 @@ export const lineLayerStyle: LayerProps = {
   paint: { 'line-color': '#004225', 'line-width': 10 },
 };
 
-export const getPolylineLayerStyle = (index?: number): LayerProps => {
-  if (index) {
-    return {
-      id: `polyline-layer${index}`,
-      type: 'line',
-      paint: {
-        'line-color': '#ea5f94',
-        'line-width': 2,
-        'line-opacity': 0.5,
-      },
-    };
-  }
-
+export const getPolylineLayerStyle = (): LayerProps => {
   return {
     id: `polyline-layer`,
     type: 'line',
@@ -147,7 +135,7 @@ export const defineLineLayerStyle = (
     paint: {
       'line-color': '#6c5dd2',
       'line-width': 3,
-      'line-opacity': animationState === 'playing' ? 0.55 : 1,
+      'line-opacity': animationState === 'playing' ? 0.25 : 1,
     },
   };
 };

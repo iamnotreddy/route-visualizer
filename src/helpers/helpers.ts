@@ -255,12 +255,13 @@ export const findActivityViewState = (
 
   if (mapRef.current) {
     const currentPitch = mapRef.current.getPitch();
-    // const currentBearing = mapRef.current.getBearing();
+    const currentBearing = mapRef.current.getBearing();
 
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       zoom: zoom,
-      pitch: getNextPitch(currentPitch),
+      pitch: currentPitch === 0 ? 50 : getNextPitch(currentPitch),
+      bearing: (currentBearing + 25) % 360,
       duration: 5000,
     });
   }

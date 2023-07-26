@@ -2,21 +2,13 @@ import { Position } from 'geojson';
 import { useSession } from 'next-auth/react';
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import Map, {
-  Layer,
-  MapRef,
-  Marker,
-  Source,
-  ViewState,
-  ViewStateChangeEvent,
-} from 'react-map-gl';
+import Map, { Layer, MapRef, Marker, Source, ViewState } from 'react-map-gl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -25,7 +17,6 @@ import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import Header from '@/components/layout/Header';
 import { ActivityList } from '@/components/sidebar/ActivityList';
 
-import { getNextBearing } from '@/helpers/camera';
 import {
   findActivityViewState,
   getPolyLineCoordinates,
@@ -56,28 +47,17 @@ export default function GlobalMap() {
   const { status } = useSession();
 
   const [showActivityDetail, setShowActivityDetail] = useState(false);
-
   const [viewState, setViewState] = useState<ViewState>();
 
-  // const [polylineLayer, setPolylineLayer] =
-  //   useState<FeatureCollection<Geometry, GeoJsonProperties>>();
-
   const [currentActivity, setCurrentActivity] = useState<StravaActivity>();
-
   const [startPoint, setStartPoint] = useState<Position>();
   const [endPoint, setEndPoint] = useState<Position>();
-
   const [animationState, setAnimationState] = useState<'playing' | 'paused'>(
     'paused'
   );
 
   const mapRef = useRef<MapRef>(null);
   const sliderRef = useRef(null);
-
-  // record viewState as camera pans around route
-  const handleMoveEvent = useCallback((e: ViewStateChangeEvent) => {
-    setViewState(e.viewState);
-  }, []);
 
   // hook for current route animation
   const {
@@ -113,14 +93,14 @@ export default function GlobalMap() {
   };
 
   const memoizedPolylineLayer = useMemo(() => {
-    if (polylineLayer) {
+    if (polylineLayer && currentFrame === 0) {
       return (
         <Source type='geojson' data={polylineLayer}>
           <Layer {...getPolylineLayerStyle()} />
         </Source>
       );
     }
-  }, [polylineLayer]);
+  }, [polylineLayer, currentFrame]);
 
   const memoizedCurrentActivity = useMemo(() => {
     if (currentActivity && activities && activities.length > 0) {
@@ -211,35 +191,22 @@ export default function GlobalMap() {
     }
   }, [currentActivity]);
 
-  // rotate camera for visual effect on load of route starting point
   useEffect(() => {
-    setViewState((prev) => {
-      if (prev) {
-        return {
-          ...prev,
-          bearing: getNextBearing(prev.bearing),
-        };
+    // center map on first activity with valid lat lng coordinates
+    if (activities) {
+      const validActivity = activities.find(
+        (activity) => activity.start_latlng
+      );
+
+      if (validActivity) {
+        findActivityViewState([activities[0].start_latlng], mapRef);
       }
-    });
-  }, [startPoint]);
+    }
+  }, [activities]);
 
   if (status === 'loading') {
     return <div className='flex items-center justify-center'>Loading...</div>;
   }
-
-  // // TO:DO find optimal viewState, for now center of the USA
-  // setViewState((prev) => {
-  //   if (prev) {
-  //     return {
-  //       latitude: 39.8,
-  //       longitude: -98.5,
-  //       zoom: 3,
-  //       bearing: 0,
-  //       pitch: 45,
-  //       padding: { top: 0, bottom: 0, left: 0, right: 0 },
-  //     };
-  //   }
-  // });
 
   return (
     <ActivityContext.Provider value={contextValues}>
@@ -249,12 +216,7 @@ export default function GlobalMap() {
         </div>
         <ActivityList />
         <div className='flex-grow-0'>
-          <Map
-            {...viewState}
-            ref={mapRef}
-            onMove={handleMoveEvent}
-            {...mapConfig}
-          >
+          <Map {...viewState} ref={mapRef} {...mapConfig}>
             {/* layer to style sky */}
             <Source {...skySource}>
               <Layer {...skyLayerStyle} />

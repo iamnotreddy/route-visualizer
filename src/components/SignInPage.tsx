@@ -39,10 +39,11 @@ export default function SignInPage() {
     findInitialViewState(splashRouteCoordinates)
   );
 
-  // record viewState as camera pans around route
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
+
+  // record viewState as camera pans around route
 
   return (
     <div className='relative flex max-h-screen w-full'>
@@ -53,8 +54,8 @@ export default function SignInPage() {
         <Map
           {...viewState}
           ref={mapRef}
-          onMove={handleMoveEvent}
           {...mapConfig}
+          onMove={handleMoveEvent}
         >
           {/* layer to style sky */}
           <Source {...skySource}>
