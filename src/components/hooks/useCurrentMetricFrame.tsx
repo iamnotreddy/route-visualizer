@@ -31,7 +31,7 @@ export function useCurrentMetricFrame(
           )
         )
       );
-      setHeartRate(stravaPath.heartRate[currentFrame]);
+      setHeartRate(stravaPath.heartrate[currentFrame]);
     } else if (currentActivity) {
       setDistance(metersToMiles(currentActivity.distance));
       setMovingTime(

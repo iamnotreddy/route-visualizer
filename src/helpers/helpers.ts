@@ -39,7 +39,7 @@ export const transformActivityStreamResponse = (
 ): StravaRouteStream => {
   const transformed: StravaRouteStream = {
     latlng: [[]],
-    heartRate: [],
+    heartrate: [],
     distance: [],
     time: [],
     velocity_smooth: [],
@@ -65,8 +65,8 @@ export const transformActivityStreamResponse = (
         ...sampleMetricArray(metric.data, stepSize),
       ] as number[];
     }
-    if (metric.type === 'heartRate') {
-      transformed.heartRate = [
+    if (metric.type === 'heartrate') {
+      transformed.heartrate = [
         ...sampleMetricArray(metric.data, stepSize),
       ] as number[];
     }

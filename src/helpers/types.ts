@@ -8,6 +8,8 @@ import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ViewState } from 'react-map-gl';
 
 export type ActivityContextType = {
+  refetchActivityStream: () => void;
+  isActivityStreamFetching: boolean;
   showActivityDetail: boolean;
   setShowActivityDetail: Dispatch<SetStateAction<boolean>>;
   currentActivity: StravaActivity | undefined;
@@ -80,7 +82,7 @@ export type ActivityStream =
       resolution: string;
     }
   | {
-      type: 'heartRate';
+      type: 'heartrate';
       data: number[];
       series_type: string;
       original_size: number;
@@ -144,7 +146,7 @@ export type LatLngStream = {
 
 export type StravaRouteStream = {
   latlng: Position[];
-  heartRate: number[];
+  heartrate: number[];
   distance: number[];
   time: number[];
   velocity_smooth: number[];

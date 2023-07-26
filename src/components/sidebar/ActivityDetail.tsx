@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import React from 'react';
 
 import AnimationControl from '@/components/AnimationControl';
+import Button from '@/components/buttons/Button';
 import { ActivityContext } from '@/components/globalMap';
 import { useChartMetric } from '@/components/hooks/useChartMetric';
 import { useCurrentMetricFrame } from '@/components/hooks/useCurrentMetricFrame';
@@ -11,8 +12,13 @@ import MetricChart from '@/components/MetricChart';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
 
 export const ActivityDetail = () => {
-  const { currentActivity, currentFrame, stravaPath } =
-    useContext(ActivityContext);
+  const {
+    currentActivity,
+    currentFrame,
+    stravaPath,
+    isActivityStreamFetching,
+    refetchActivityStream,
+  } = useContext(ActivityContext);
 
   const [lockChartHover, setLockChartHover] = useState(true);
 
@@ -85,12 +91,23 @@ export const ActivityDetail = () => {
         )}
       </div>
 
-      {metricData && (
+      {metricData ? (
         <MetricChart
           metricName={metricName}
           metricData={metricData}
           lockChartHover={lockChartHover}
         />
+      ) : (
+        <div className='flex items-center justify-center py-8'>
+          <Button
+            variant='dark'
+            isLoading={!isActivityStreamFetching}
+            onClick={() => refetchActivityStream()}
+            className=''
+          >
+            Load Chart
+          </Button>
+        </div>
       )}
 
       <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>

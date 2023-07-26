@@ -37,16 +37,16 @@ import {
 import { findRouteLineString } from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
+  currentPointStyle,
   defineLineLayerStyle,
   defineLineSource,
   definePointSource,
-  endPointLayerStyle,
+  endPointStyle,
   getPolylineLayerStyle,
   mapConfig,
-  pointLayerStyle,
-  skyLayer,
+  skyLayerStyle,
   skySource,
-  startPointLayerStyle,
+  startPointStyle,
 } from '@/helpers/layers';
 import { ActivityContextType, StravaActivity } from '@/helpers/types';
 import { FetchingContext } from '@/pages';
@@ -86,6 +86,7 @@ export default function GlobalMap() {
 
   // hook for current route animation
   const {
+    refetchActivityStream,
     animatedLineCoordinates,
     currentPoint,
     setCurrentPoint,
@@ -97,6 +98,8 @@ export default function GlobalMap() {
   } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
 
   const contextValues = {
+    refetchActivityStream,
+    isActivityStreamFetching,
     currentActivity,
     setCurrentActivity,
     stravaPath,
@@ -181,10 +184,10 @@ export default function GlobalMap() {
       return (
         <>
           <Source {...definePointSource(startPoint)}>
-            <Layer {...startPointLayerStyle} />
+            <Layer {...startPointStyle} />
           </Source>
           <Source {...definePointSource(endPoint)}>
-            <Layer {...endPointLayerStyle} />
+            <Layer {...endPointStyle} />
           </Source>
         </>
       );
@@ -277,13 +280,13 @@ export default function GlobalMap() {
           >
             {/* layer to style sky */}
             <Source {...skySource}>
-              <Layer {...skyLayer} />
+              <Layer {...skyLayerStyle} />
             </Source>
 
             {/* current point during route animation */}
             {currentPoint && !isActivityStreamFetching && showActivityDetail && (
               <Source {...definePointSource(currentPoint)}>
-                <Layer {...pointLayerStyle} />
+                <Layer {...currentPointStyle} />
               </Source>
             )}
             {memoizedPolylineLayer}

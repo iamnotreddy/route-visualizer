@@ -13,33 +13,33 @@ export const mapConfig = {
 
 // layer styles
 
-export const pointLayerStyle: LayerProps = {
+export const currentPointStyle: LayerProps = {
   id: 'point',
   type: 'circle',
   paint: {
-    'circle-radius': 8,
-    'circle-color': '#C75E00',
+    'circle-radius': 4,
+    'circle-color': '#3770E0',
     'circle-stroke-width': 1,
     'circle-stroke-color': 'white',
   },
 };
 
-export const startPointLayerStyle: LayerProps = {
+export const startPointStyle: LayerProps = {
   id: 'startPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 6,
+    'circle-radius': 4,
     'circle-color': '#097200',
     'circle-stroke-width': 2,
     'circle-stroke-color': 'white',
   },
 };
 
-export const endPointLayerStyle: LayerProps = {
+export const endPointStyle: LayerProps = {
   id: 'endPoint',
   type: 'circle',
   paint: {
-    'circle-radius': 6,
+    'circle-radius': 4,
     'circle-color': '#6F1400',
     'circle-stroke-width': 2,
     'circle-stroke-color': 'white',
@@ -65,7 +65,7 @@ export const definePointSource = (coordinates: Position): SourceProps => {
   };
 };
 
-export const skyLayer: SkyLayer = {
+export const skyLayerStyle: SkyLayer = {
   id: 'sky',
   type: 'sky',
   paint: {

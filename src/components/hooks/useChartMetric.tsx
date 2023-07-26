@@ -19,7 +19,7 @@ export function useChartMetric(stravaPath: StravaRouteStream | undefined) {
   useEffect(() => {
     if (stravaPath) {
       if (metricName === 'heartRate') {
-        setMetricData(transformMetricToDataPoint(stravaPath.heartRate));
+        setMetricData(transformMetricToDataPoint(stravaPath.heartrate));
       }
 
       if (metricName === 'grade') {

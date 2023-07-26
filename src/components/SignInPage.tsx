@@ -20,7 +20,7 @@ import {
   animatedLineLayerStyle,
   defineLineSource,
   mapConfig,
-  skyLayer,
+  skyLayerStyle,
   skySource,
 } from '@/helpers/layers';
 
@@ -58,7 +58,7 @@ export default function SignInPage() {
         >
           {/* layer to style sky */}
           <Source {...skySource}>
-            <Layer {...skyLayer} />
+            <Layer {...skyLayerStyle} />
           </Source>
 
           {/* animated coordinates for the splash route */}
