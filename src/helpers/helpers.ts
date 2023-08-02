@@ -251,7 +251,7 @@ export const findActivityViewState = (
   const zoomLng = Math.log2((512 - padding * 512) / width);
   const zoomLat = Math.log2((512 - padding * 512) / height);
 
-  const zoom = Math.min(zoomLng, zoomLat, 13); // Adjust the maximum zoom as needed
+  const zoom = Math.min(zoomLng, zoomLat, 14); // Adjust the maximum zoom as needed
 
   if (mapRef.current) {
     const currentPitch = mapRef.current.getPitch();
@@ -260,7 +260,7 @@ export const findActivityViewState = (
     mapRef.current.flyTo({
       center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
       zoom: zoom,
-      pitch: currentPitch === 0 ? 50 : getNextPitch(currentPitch),
+      pitch: currentPitch === 0 ? 65 : getNextPitch(currentPitch),
       bearing: (currentBearing + 25) % 360,
       duration: 5000,
     });
