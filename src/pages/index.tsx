@@ -35,7 +35,7 @@ export default function HomePage() {
   const { status } = useSession();
 
   const currentDate = new Date();
-  const priorDate = subDays(currentDate, 30);
+  const priorDate = subDays(currentDate, 90);
 
   const [dateRange, setDateRange] = useState({
     startDate: currentDate,
@@ -89,5 +89,6 @@ export default function HomePage() {
     );
   }
 
+  // return signin page if not authenticated
   return <SignInPage />;
 }

@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/react';
 import { AppProps } from 'next/app';
 import type { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -18,6 +19,7 @@ function MyApp({
       <SessionProvider session={session}>
         <Layout>
           <Component {...pageProps} />
+          <Analytics />
         </Layout>
       </SessionProvider>
     </QueryClientProvider>
