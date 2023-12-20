@@ -6,6 +6,9 @@ import {
   ActivitySplitsResponse,
   StravaRouteStream,
 } from '@/helpers/types';
+import { GlobalMapRoute } from '@/pages/api/globalMap';
+
+// Strava API fetchers
 
 export const getActivityList = async (
   page: number,
@@ -106,4 +109,34 @@ export const refreshAccessToken = async (
   const data: TokenResponse = await response.json();
 
   return data;
+};
+
+// global map fetchers
+
+export const saveRouteOnGlobalMap = async (routeData: GlobalMapRoute) => {
+  const response = await fetch('/api/globalMap', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(routeData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save route');
+  }
+
+  return response.json();
+};
+
+export const getRoutesOnGlobalMap = async (): Promise<GlobalMapRoute[]> => {
+  const response = await fetch('/api/globalMap');
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch routes');
+  }
+
+  const responseData = await response.json();
+
+  return responseData.data;
 };

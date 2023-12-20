@@ -11,6 +11,8 @@ import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 import MetricChart from '@/components/MetricChart';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
 
+import { saveRouteOnGlobalMap } from '@/helpers/fetchingFunctions';
+
 export const ActivityDetail = () => {
   const {
     currentActivity,
@@ -112,6 +114,27 @@ export const ActivityDetail = () => {
 
       <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
         <AnimationControl />
+      </div>
+      <div className='flex items-center justify-center'>
+        <Button
+          variant='dark'
+          onClick={() =>
+            saveRouteOnGlobalMap({
+              strava_activity_id: parseInt(currentActivity.id),
+              strava_athlete_id: parseInt(currentActivity.athlete.id),
+              anonymous: false,
+              date_added: format(new Date(), 'EEEE, MMMM d yyyy'),
+              activity_date: currentActivity.start_date,
+              route_polyline: currentActivity.map.summary_polyline,
+              elevation: [],
+              route_name: 'PV Suburbs to Lunada Bay Out and Back',
+              route_description:
+                'Super steep descent down to Lunada Bay and back up to PV Suburbs. Really beautiful view of the Ocean. This run is a super fast downhill sprint for the first 2 miles (be careful with those hammys) followed by a serious 500ft ascent over two miles ',
+            })
+          }
+        >
+          Save Activity
+        </Button>
       </div>
     </div>
   );

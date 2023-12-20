@@ -46,8 +46,6 @@ export default function SignInPage() {
     setViewState(e.viewState);
   };
 
-  // record viewState as camera pans around route
-
   return (
     <div className='relative flex max-h-screen w-full'>
       <div className='absolute top-0 left-0 z-20 w-full'>
@@ -136,7 +134,6 @@ export default function SignInPage() {
 }
 
 export async function getServerSideProps() {
-  // Pass the static splashRouteCoordinates to the component as a prop.
   return {
     props: {
       splashRouteCoordinates,

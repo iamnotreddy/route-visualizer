@@ -100,6 +100,18 @@ export const getPolylineLayerStyle = (): LayerProps => {
   };
 };
 
+export const getGlobalMapPolylineLayerStyle = (): LayerProps => {
+  return {
+    id: `polyline-layer`,
+    type: 'line',
+    paint: {
+      'line-color': 'red',
+      'line-width': 4,
+      'line-opacity': 0.5,
+    },
+  };
+};
+
 export const defineLineSource = (coordinates: Position[]): SourceProps => {
   return {
     type: 'geojson',
@@ -140,6 +152,17 @@ export const defineLineLayerStyle = (
         animationState === 'playing' || (currentFrame && currentFrame > 0)
           ? 0.25
           : 1,
+    },
+  };
+};
+
+export const defineGlobalMapLineLayerStyle = (): LayerProps => {
+  return {
+    type: 'line',
+    paint: {
+      'line-color': '#6c5dd2',
+      'line-width': 3,
+      'line-opacity': 1,
     },
   };
 };
