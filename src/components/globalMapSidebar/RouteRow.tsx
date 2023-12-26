@@ -2,7 +2,6 @@ import { format } from 'date-fns';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { convertPaceValueForDisplay } from '@/helpers/chartHelpers';
 import { GlobalMapRoute } from '@/pages/api/globalMap';
 
 type MapActivityRowProps = {
@@ -22,6 +21,9 @@ export default function MapActivityRow({
   );
 
   const elevationGain = 500;
+
+  const metersToMiles = 0.000621371;
+  const distanceFormatted = (metersToMiles * route.total_distance).toFixed(1);
 
   return (
     <div
@@ -46,16 +48,8 @@ export default function MapActivityRow({
         <div className='flex flex-col items-center justify-center'>
           <p className='text-base font-light text-slate-500'>distance</p>
           <div className='flex flex-row items-center space-x-1'>
-            <p className='text-xl font-light'>5.3</p>
+            <p className='text-xl font-light'>{distanceFormatted}</p>
             <p className='text-xs'>mi</p>
-          </div>
-        </div>
-        <div className='flex flex-col items-center justify-center'>
-          <p className='text-base font-light text-slate-500'>time</p>
-          <div className='flex flex-row space-x-2'>
-            <p className='text-xl font-light'>
-              {convertPaceValueForDisplay(421412 / 60)}
-            </p>
           </div>
         </div>
 

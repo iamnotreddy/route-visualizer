@@ -13,6 +13,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { RouteList } from '@/components/globalMapSidebar/RouteList';
 import useGlobalMapPolylines from '@/components/hooks/useGlobalMapPolylines';
+import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import Header from '@/components/layout/Header';
 
 import {
@@ -20,7 +21,9 @@ import {
   getPolyLineCoordinates,
 } from '@/helpers/helpers';
 import {
-  defineGlobalMapLineLayerStyle,
+  animatedLineLayerStyle,
+  currentPointStyle,
+  defineLineLayerStyle,
   defineLineSource,
   definePointSource,
   endPointStyle,
@@ -43,6 +46,13 @@ export default function NewSignInPage(props: {
   const [viewState, setViewState] = useState<ViewState>();
   const [startPoint, setStartPoint] = useState<Position>();
   const [endPoint, setEndPoint] = useState<Position>();
+  const [showRouteDetail, setShowRouteDetail] = useState(false);
+
+  const [animationState, setAnimationState] = useState<'playing' | 'paused'>(
+    'paused'
+  );
+
+  const sliderRef = useRef(null);
 
   const mapRef = useRef<MapRef>(null);
 
@@ -55,6 +65,19 @@ export default function NewSignInPage(props: {
     currentGlobalMapRoute
   );
 
+  const {
+    animatedLineCoordinates,
+    setAnimatedLineCoordinates,
+    currentPoint,
+    handleRouteControl,
+    currentFrame,
+    setCurrentFrame,
+  } = useRouteAnimation(
+    mapRef,
+    animationState,
+    currentGlobalMapRoute?.coordinates
+  );
+
   const memoizedPolylineLayer = useMemo(() => {
     if (polylineLayer) {
       return (
@@ -65,27 +88,26 @@ export default function NewSignInPage(props: {
     }
   }, [polylineLayer]);
 
-  const memoizedCurrentActivity = useMemo(() => {
+  const memoizedCurrentRoute = useMemo(() => {
     if (
       currentGlobalMapRoute &&
       globalMapUserRoutes &&
       globalMapUserRoutes.length > 0
     ) {
       const route = globalMapUserRoutes.filter(
-        (route) => route.strava_activity_id === route.strava_activity_id
+        (route) =>
+          route.strava_activity_id === currentGlobalMapRoute.strava_activity_id
       )[0];
 
-      if (route && route.route_polyline) {
-        const coordinates = getPolyLineCoordinates(route.route_polyline);
-
-        return (
-          <Source {...defineLineSource(coordinates)}>
-            <Layer {...defineGlobalMapLineLayerStyle()} />
-          </Source>
-        );
-      }
+      return (
+        <Source {...defineLineSource(route.coordinates)}>
+          <Layer
+            {...defineLineLayerStyle(route.coordinates.length, currentFrame)}
+          />
+        </Source>
+      );
     }
-  }, [currentGlobalMapRoute, globalMapUserRoutes]);
+  }, [currentFrame, currentGlobalMapRoute, globalMapUserRoutes]);
 
   const memoizedMarkers = useMemo(
     () =>
@@ -96,6 +118,8 @@ export default function NewSignInPage(props: {
               (x) => routeId === x.strava_activity_id
             )[0];
             setCurrentGlobalMapRoute(nextActivity);
+            setAnimatedLineCoordinates([]);
+            setShowRouteDetail(true);
           }
         };
 
@@ -119,8 +143,16 @@ export default function NewSignInPage(props: {
           );
         }
       }),
-    [globalMapUserRoutes, currentGlobalMapRoute]
+    [globalMapUserRoutes, currentGlobalMapRoute, setAnimatedLineCoordinates]
   );
+
+  const memoizedAnimation = useMemo(() => {
+    return (
+      <Source {...defineLineSource(animatedLineCoordinates)}>
+        <Layer {...animatedLineLayerStyle} />
+      </Source>
+    );
+  }, [animatedLineCoordinates]);
 
   const memoizedStartAndEndPoints = useMemo(() => {
     if (startPoint && endPoint) {
@@ -140,24 +172,32 @@ export default function NewSignInPage(props: {
   // toggle selected activity on map
   useEffect(() => {
     if (currentGlobalMapRoute) {
-      const polyLine = getPolyLineCoordinates(
-        currentGlobalMapRoute.route_polyline
-      );
-      setStartPoint(polyLine[0]);
-      setEndPoint(polyLine[polyLine.length - 1]);
-      findActivityViewState(polyLine, mapRef);
+      const coordinates = currentGlobalMapRoute.coordinates;
+      setAnimatedLineCoordinates([]);
+      setStartPoint(coordinates[0]);
+      setEndPoint(coordinates[coordinates.length - 1]);
+      findActivityViewState(coordinates, mapRef);
     }
-  }, [currentGlobalMapRoute]);
+  }, [currentGlobalMapRoute, setAnimatedLineCoordinates]);
 
   return (
     <div className='relative flex max-h-screen w-full'>
       <div className='absolute top-0 left-0 z-20 w-full'>
         <Header />
       </div>
+
       <RouteList
         globalMapUserRoutes={globalMapUserRoutes}
         currentGlobalMapRoute={currentGlobalMapRoute}
         setCurrentGlobalMapRoute={setCurrentGlobalMapRoute}
+        currentFrame={currentFrame}
+        handleRouteControl={handleRouteControl}
+        animationState={animationState}
+        sliderRef={sliderRef}
+        setAnimationState={setAnimationState}
+        setCurrentFrame={setCurrentFrame}
+        showRouteDetail={showRouteDetail}
+        setShowRouteDetail={setShowRouteDetail}
       />
 
       <div className='flex-grow-0'>
@@ -170,10 +210,16 @@ export default function NewSignInPage(props: {
           <Source {...skySource}>
             <Layer {...skyLayerStyle} />
           </Source>
+          {currentPoint && (
+            <Source {...definePointSource(currentPoint)}>
+              <Layer {...currentPointStyle} />
+            </Source>
+          )}
           {memoizedPolylineLayer}
           {memoizedMarkers}
           {memoizedStartAndEndPoints}
-          {memoizedCurrentActivity}
+          {memoizedCurrentRoute}
+          {memoizedAnimation}
         </Map>
       </div>
     </div>

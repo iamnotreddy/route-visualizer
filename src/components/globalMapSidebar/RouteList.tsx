@@ -1,4 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import React from 'react';
 
 import { RouteDetail } from '@/components/globalMapSidebar/RouteDetail';
@@ -19,14 +27,28 @@ export const RouteList = React.memo(
     setCurrentGlobalMapRoute: Dispatch<
       SetStateAction<GlobalMapRoute | undefined>
     >;
+    currentFrame: number;
+    handleRouteControl: (e: ChangeEvent<HTMLInputElement>) => void;
+    animationState: string;
+    sliderRef: MutableRefObject<null>;
+    setAnimationState: (animationState: 'paused' | 'playing') => void;
+    setCurrentFrame: (currentFrame: number) => void;
+    showRouteDetail: boolean;
+    setShowRouteDetail: Dispatch<SetStateAction<boolean>>;
   }) => {
     const {
       globalMapUserRoutes,
       currentGlobalMapRoute,
       setCurrentGlobalMapRoute,
+      currentFrame,
+      handleRouteControl,
+      animationState,
+      sliderRef,
+      setAnimationState,
+      setCurrentFrame,
+      showRouteDetail,
+      setShowRouteDetail,
     } = props;
-
-    const [showRouteDetail, setShowRouteDetail] = useState(false);
 
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -72,15 +94,6 @@ export const RouteList = React.memo(
                 <EyeClosedIcon />
               </button>
             )}
-
-            {globalMapUserRoutes && (
-              <div className='flex flex-row items-center justify-center space-x-2'>
-                <div className='w-8 rounded-full border-2 border-slate-400 py-1 text-center text-xs font-semibold'>
-                  {globalMapUserRoutes?.length}
-                </div>
-                <p className='text-xs'>routes loaded</p>
-              </div>
-            )}
           </div>
         </div>
         {isSidebarVisible && !showRouteDetail && (
@@ -111,7 +124,15 @@ export const RouteList = React.memo(
           </div>
         )}
         {isSidebarVisible && showRouteDetail && currentGlobalMapRoute && (
-          <RouteDetail userRoute={currentGlobalMapRoute} />
+          <RouteDetail
+            userRoute={currentGlobalMapRoute}
+            currentFrame={currentFrame}
+            handleRouteControl={handleRouteControl}
+            animationState={animationState}
+            sliderRef={sliderRef}
+            setAnimationState={setAnimationState}
+            setCurrentFrame={setCurrentFrame}
+          />
         )}
       </div>
     );
