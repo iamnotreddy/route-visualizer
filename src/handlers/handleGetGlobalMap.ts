@@ -8,9 +8,12 @@ export default async function handleGetGlobalMap(
 ) {
   try {
     // Adjust the URL as needed
-    const response = await fetch('http://3.136.158.250:3002/api/routes/', {
-      method: 'GET',
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_GLOBAL_MAP_URL}/api/routes/`,
+      {
+        method: 'GET',
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);

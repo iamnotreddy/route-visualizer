@@ -9,13 +9,16 @@ export default async function handlePostGlobalMap(
   try {
     const data: GlobalMapRoute = req.body;
 
-    const response = await fetch('http://3.136.158.250:3002/api/routes/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_GLOBAL_MAP_URL}/api/routes/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);

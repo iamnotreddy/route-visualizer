@@ -1,3 +1,4 @@
+import { Position } from 'geojson';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import handleGetGlobalMap from '@/handlers/handleGetGlobalMap';
@@ -16,8 +17,14 @@ export interface GlobalMapRoute {
   activity_date: string;
   route_polyline: string;
   elevation: number[];
+  distance: number[];
+  total_distance: number;
+  total_moving_time: number;
+  total_elevation_gain: number;
+  start_latlng: Position;
   route_name: string;
   route_description: string;
+  coordinates: Position[];
 }
 
 export default async function handler(
