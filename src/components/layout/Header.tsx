@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { signOut, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import * as React from 'react';
 
 import UnstyledLink from '@/components/links/UnstyledLink';
@@ -30,8 +30,8 @@ export default function Header() {
 
         <nav>
           <div className='flex flex-row items-center justify-center space-x-2 rounded-2xl bg-black bg-opacity-70 px-2 pt-1 text-black'>
-            <UnstyledLink href='/' onClick={() => signOut()}>
-              {session?.user ? (
+            {session && session.user ? (
+              <UnstyledLink href='/' onClick={() => signOut()}>
                 <Image
                   className='rounded-full'
                   src={imageLink}
@@ -39,10 +39,17 @@ export default function Header() {
                   width={45}
                   height={45}
                 />
-              ) : (
-                <p className='text-white'>.</p>
-              )}
-            </UnstyledLink>
+              </UnstyledLink>
+            ) : (
+              <UnstyledLink
+                className='p-2 text-white'
+                href='/'
+                onClick={() => signIn()}
+              >
+                Sign In
+              </UnstyledLink>
+            )}
+
             <p className='text-xs font-light text-white'>{name}</p>
           </div>
         </nav>

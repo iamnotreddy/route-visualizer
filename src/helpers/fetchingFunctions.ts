@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import { getTime, sub } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 import { transformActivityList } from '@/helpers/helpers';
 import {
@@ -6,46 +8,52 @@ import {
   ActivitySplitsResponse,
   StravaRouteStream,
 } from '@/helpers/types';
+import { GlobalMapRoute } from '@/pages/api/globalMap';
+
+// Strava API fetchers
 
 export const getActivityList = async (
   page: number,
-  dateRange: {
-    startDate: Date;
-    endDate: Date;
-    isDefault: boolean;
-  }
+  dateRange: DateRange | undefined
 ) => {
-  const { startDate, endDate } = dateRange;
+  let after, before;
 
-  // convert provided params to timestamps
-  const after = getTime(startDate) / 1000;
-  const before = getTime(endDate) / 1000;
+  try {
+    if (dateRange && dateRange.from && dateRange.to) {
+      const { from, to } = dateRange;
+      // convert provided params to timestamps
+      after = getTime(from) / 1000;
+      before = getTime(to) / 1000;
+    } else {
+      // Handle the undefined case here, e.g., by assigning default values
+      const today = new Date();
+      const defaultStart = sub(today, { days: 30 });
+      after = getTime(defaultStart) / 1000;
+      before = getTime(today) / 1000;
+    }
 
-  // find timestamp for 30 days ago if default
-  const today = new Date();
-  const thirtyDaysAgo = sub(today, { days: 30 });
-  const defaultTimestamp = getTime(thirtyDaysAgo) / 1000;
+    const url = `/api/strava/activities?page=${page}&before=${before}&after=${after}`;
 
-  // don't send parameters to api route if date is unchanged,
-  const url = dateRange.isDefault
-    ? `/api/strava/activities?page=${page}&after=${defaultTimestamp}`
-    : `/api/strava/activities?page=${page}&before=${before}&after=${after}`;
+    const response = await fetch(url);
 
-  const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
+    const data = (await response.json()) as ActivityListResponse;
+
+    // flip lat / lng points
+    const cleaned = data.data[0] ? transformActivityList(data.data[0]) : [];
+    const sorted = cleaned.sort(
+      (a, b) =>
+        getTime(new Date(b.start_date)) - getTime(new Date(a.start_date))
+    );
+
+    return sorted;
+  } catch (error) {
+    console.error('Error fetching activity list:', error);
+    throw error;
   }
-
-  const data = (await response.json()) as ActivityListResponse;
-
-  // flip lat / lng points
-  const cleaned = data.data[0] ? transformActivityList(data.data[0]) : [];
-  const sorted = cleaned.sort(
-    (a, b) => getTime(new Date(b.start_date)) - getTime(new Date(a.start_date))
-  );
-
-  return sorted;
 };
 
 export const getActivityStream = async (
@@ -106,4 +114,34 @@ export const refreshAccessToken = async (
   const data: TokenResponse = await response.json();
 
   return data;
+};
+
+// global map fetchers
+
+export const saveRouteOnGlobalMap = async (routeData: GlobalMapRoute) => {
+  const response = await fetch('/api/globalMap', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(routeData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save route');
+  }
+
+  return response.json();
+};
+
+export const getRoutesOnGlobalMap = async (): Promise<GlobalMapRoute[]> => {
+  const response = await fetch('/api/globalMap');
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch routes');
+  }
+
+  const responseData = await response.json();
+
+  return responseData.data;
 };

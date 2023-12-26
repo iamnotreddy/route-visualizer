@@ -12,8 +12,8 @@ import Map, { Layer, MapRef, Marker, Source, ViewState } from 'react-map-gl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import { useActivityAnimation } from '@/components/hooks/useActivityAnimation';
 import useActivityPolylines from '@/components/hooks/useActivityPolylines';
-import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
 import Header from '@/components/layout/Header';
 import { ActivityList } from '@/components/sidebar/ActivityList';
 
@@ -70,7 +70,7 @@ export default function GlobalMap() {
     setCurrentFrame,
     stravaPath,
     isActivityStreamFetching,
-  } = useRouteAnimation(currentActivity?.id, mapRef, animationState);
+  } = useActivityAnimation(currentActivity?.id, mapRef, animationState);
 
   const { polylineLayer } = useActivityPolylines(activities, currentActivity);
 
@@ -115,12 +115,14 @@ export default function GlobalMap() {
 
         return (
           <Source {...defineLineSource(coordinates)}>
-            <Layer {...defineLineLayerStyle(animationState, currentFrame)} />
+            <Layer
+              {...defineLineLayerStyle(coordinates.length, currentFrame)}
+            />
           </Source>
         );
       }
     }
-  }, [activities, animationState, currentActivity, currentFrame]);
+  }, [activities, currentActivity, currentFrame]);
 
   const memoizedStartAndEndPoints = useMemo(() => {
     if (startPoint && endPoint) {

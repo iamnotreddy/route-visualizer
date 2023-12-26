@@ -2,14 +2,15 @@ import { format, parseISO } from 'date-fns';
 import { useContext, useState } from 'react';
 import React from 'react';
 
-import AnimationControl from '@/components/AnimationControl';
 import Button from '@/components/buttons/Button';
 import { ActivityContext } from '@/components/globalMap';
 import { useChartMetric } from '@/components/hooks/useChartMetric';
 import { useCurrentMetricFrame } from '@/components/hooks/useCurrentMetricFrame';
 import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 import MetricChart from '@/components/MetricChart';
+import AnimationControl from '@/components/sidebar/AnimationControl';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
+import SaveActivityDialog from '@/components/sidebar/SaveActivityDialog';
 
 export const ActivityDetail = () => {
   const {
@@ -112,6 +113,17 @@ export const ActivityDetail = () => {
 
       <div className='rounded-xl border-2 border-slate-400 bg-slate-300 bg-opacity-50'>
         <AnimationControl />
+      </div>
+      <div className='flex items-center justify-center'>
+        {/* must load chart metrics for add activity to appear */}
+        {stravaPath && (
+          <SaveActivityDialog
+            currentActivity={currentActivity}
+            elevation={stravaPath.altitude}
+            distance={stravaPath.distance}
+            coordinates={stravaPath.latlng}
+          />
+        )}
       </div>
     </div>
   );

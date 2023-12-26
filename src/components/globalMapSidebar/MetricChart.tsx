@@ -8,9 +8,9 @@ import {
   EventHandlerParams,
   XYChart,
 } from '@visx/xychart';
-import React, { useContext } from 'react';
+import React, { Dispatch } from 'react';
 
-import { ActivityContext } from '@/components/globalMap';
+import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 
 import { calculateDomain } from '@/helpers/helpers';
 import { DataPoint } from '@/helpers/types';
@@ -18,12 +18,21 @@ import { DataPoint } from '@/helpers/types';
 export default function MetricChart(props: {
   metricName: string;
   lockChartHover: boolean;
+  setLockChartHover: Dispatch<React.SetStateAction<boolean>>;
   metricData: DataPoint[];
+  currentFrame: number;
+  setCurrentFrame: (currentFrame: number) => void;
+  animationState: string;
 }) {
-  const { metricName, metricData, lockChartHover } = props;
-
-  const { currentFrame, setCurrentFrame, animationState } =
-    useContext(ActivityContext);
+  const {
+    metricName,
+    metricData,
+    lockChartHover,
+    currentFrame,
+    setCurrentFrame,
+    animationState,
+    setLockChartHover,
+  } = props;
 
   const accessors = {
     xAccessor: (d: DataPoint) => (d ? d.x : 0),
@@ -53,14 +62,26 @@ export default function MetricChart(props: {
 
   return (
     <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
-      <div style={{ width: '20vw', height: '15vh' }}>
+      <div style={{ width: '16rem', height: '15vh' }}>
         <ParentSize>
           {(parent) => {
             return (
               <div>
-                <p className='text-center text-xs font-semibold text-slate-800'>
-                  {metricName === 'heartRate' ? 'heart rate' : metricName}
-                </p>
+                <div className='flex flex-row justify-between'>
+                  <p className='text-center text-xs font-semibold text-slate-800'>
+                    {metricName === 'heartRate' ? 'heart rate' : metricName}
+                  </p>
+                  {lockChartHover ? (
+                    <button onClick={() => setLockChartHover(false)}>
+                      <LockIcon />
+                    </button>
+                  ) : (
+                    <button onClick={() => setLockChartHover(true)}>
+                      <UnlockIcon />
+                    </button>
+                  )}
+                </div>
+
                 <XYChart
                   captureEvents={true}
                   width={parent.width}

@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import {
@@ -8,13 +8,17 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { DateRange } from 'react-day-picker';
 
 import GlobalMap from '@/components/globalMap';
-import { DateRangeInput } from '@/components/hooks/useActivityList';
-import SignInPage from '@/components/SignInPage';
+import NewSignInPage from '@/components/NewSignInPage';
 
-import { getActivityList } from '@/helpers/fetchingFunctions';
+import {
+  getActivityList,
+  getRoutesOnGlobalMap,
+} from '@/helpers/fetchingFunctions';
 import { StravaActivity } from '@/helpers/types';
+import { GlobalMapRoute } from '@/pages/api/globalMap';
 
 type FetchingContext = {
   allActivities: StravaActivity[] | undefined;
@@ -23,8 +27,9 @@ type FetchingContext = {
   isLoading: boolean;
   fetchNextPage: () => void;
   refetch: () => void;
-  dateRange: DateRangeInput;
-  setDateRange: Dispatch<SetStateAction<DateRangeInput>>;
+  dateRange: DateRange | undefined;
+  setDateRange: Dispatch<SetStateAction<DateRange | undefined>>;
+  globalMapUserRoutes: GlobalMapRoute[] | undefined;
 };
 
 export const FetchingContext = createContext<FetchingContext>(
@@ -37,10 +42,9 @@ export default function HomePage() {
   const currentDate = new Date();
   const priorDate = subDays(currentDate, 90);
 
-  const [dateRange, setDateRange] = useState({
-    startDate: currentDate,
-    endDate: priorDate,
-    isDefault: true,
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: priorDate,
+    to: currentDate,
   });
 
   const [allActivities, setAllActivities] = useState<StravaActivity[]>();
@@ -63,6 +67,14 @@ export default function HomePage() {
     }
   );
 
+  const { data: globalMapUserRoutes } = useQuery(
+    ['globalMapUserRoutes'],
+    () => getRoutesOnGlobalMap(),
+    {
+      enabled: status === 'unauthenticated',
+    }
+  );
+
   useEffect(() => {
     if (status === 'authenticated' && activities) {
       const newActivities = activities.pages.flatMap((page) => page);
@@ -79,6 +91,7 @@ export default function HomePage() {
     refetch,
     dateRange,
     setDateRange,
+    globalMapUserRoutes,
   };
 
   if (status === 'authenticated') {
@@ -89,6 +102,10 @@ export default function HomePage() {
     );
   }
 
+  if (globalMapUserRoutes) {
+    return <NewSignInPage globalMapUserRoutes={globalMapUserRoutes} />;
+  }
+
   // return signin page if not authenticated
-  return <SignInPage />;
+  return <div className='flex items-center justify-center'>Loading...</div>;
 }
