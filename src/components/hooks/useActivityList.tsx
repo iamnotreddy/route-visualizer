@@ -1,17 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { DateRange } from 'react-day-picker';
 
 import { getActivityList } from '@/helpers/fetchingFunctions';
 import { StravaActivity } from '@/helpers/types';
 
-export type DateRangeInput = {
-  startDate: Date;
-  endDate: Date;
-  isDefault: boolean;
-};
-
-const useActivityList = (dateRange: DateRangeInput) => {
+const useActivityList = (dateRange: DateRange) => {
   const [allActivities, setAllActivities] = useState<StravaActivity[]>();
 
   const { status } = useSession();

@@ -1,11 +1,14 @@
+import { useQuery } from '@tanstack/react-query';
 import { Position } from 'geojson';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { MapRef } from 'react-map-gl';
 
-export function useRouteAnimation(
+import { getActivityStream } from '@/helpers/fetchingFunctions';
+
+export function useActivityAnimation(
+  routeId: string | undefined,
   mapRef: React.RefObject<MapRef>,
-  animationState: 'playing' | 'paused',
-  routeCoordinates: Position[] | undefined
+  animationState: 'playing' | 'paused'
 ) {
   const [currentFrame, setCurrentFrame] = useState(0);
 
@@ -17,9 +20,18 @@ export function useRouteAnimation(
     Position[]
   >([]);
 
+  const {
+    data: stravaPath,
+    isLoading: isActivityStreamFetching,
+    refetch: refetchActivityStream,
+  } = useQuery(['activityStream', routeId], () => getActivityStream(routeId), {
+    enabled: animationState === 'playing',
+  });
+
   //  handles route animation according to radio slider position
   const handleRouteControl = (e: ChangeEvent<HTMLInputElement>) => {
     const inputFrame = parseInt(e.target.value);
+    const routeCoordinates = stravaPath?.latlng;
 
     if (mapRef.current && routeCoordinates) {
       // pan camera towards next frame
@@ -48,13 +60,14 @@ export function useRouteAnimation(
   };
 
   useEffect(() => {
-    if (routeCoordinates) {
-      setCurrentFrame(0);
-      setCurrentPoint(routeCoordinates[0]);
+    setCurrentFrame(0);
+    if (stravaPath && stravaPath.latlng) {
+      setCurrentPoint(stravaPath?.latlng[0]);
     }
-  }, [routeCoordinates]);
+  }, [routeId, stravaPath]);
 
   useEffect(() => {
+    const routeCoordinates = stravaPath?.latlng;
     const routeLength = routeCoordinates?.length;
 
     if (animationState === 'playing' && routeLength) {
@@ -77,11 +90,13 @@ export function useRouteAnimation(
 
       return () => clearInterval(interval);
     }
-  }, [animationState, routeCoordinates]);
+  }, [animationState, stravaPath]);
 
   useEffect(() => {
     try {
-      if (mapRef.current && routeCoordinates) {
+      if (mapRef.current && stravaPath) {
+        const routeCoordinates = stravaPath.latlng;
+
         mapRef.current.panTo([
           routeCoordinates[currentFrame][0],
           routeCoordinates[currentFrame][1],
@@ -92,7 +107,7 @@ export function useRouteAnimation(
     } catch {
       alert('activity has invalid lat/lng coordinates');
     }
-  }, [currentFrame, mapRef, routeCoordinates]);
+  }, [currentFrame, mapRef, stravaPath]);
 
   return {
     animatedLineCoordinates,
@@ -102,5 +117,8 @@ export function useRouteAnimation(
     currentFrame,
     setCurrentFrame,
     setCurrentPoint,
+    stravaPath,
+    isActivityStreamFetching,
+    refetchActivityStream,
   };
 }

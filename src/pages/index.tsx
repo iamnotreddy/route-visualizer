@@ -8,9 +8,9 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { DateRange } from 'react-day-picker';
 
 import GlobalMap from '@/components/globalMap';
-import { DateRangeInput } from '@/components/hooks/useActivityList';
 import NewSignInPage from '@/components/NewSignInPage';
 
 import {
@@ -27,8 +27,8 @@ type FetchingContext = {
   isLoading: boolean;
   fetchNextPage: () => void;
   refetch: () => void;
-  dateRange: DateRangeInput;
-  setDateRange: Dispatch<SetStateAction<DateRangeInput>>;
+  dateRange: DateRange | undefined;
+  setDateRange: Dispatch<SetStateAction<DateRange | undefined>>;
   globalMapUserRoutes: GlobalMapRoute[] | undefined;
 };
 
@@ -42,10 +42,9 @@ export default function HomePage() {
   const currentDate = new Date();
   const priorDate = subDays(currentDate, 90);
 
-  const [dateRange, setDateRange] = useState({
-    startDate: currentDate,
-    endDate: priorDate,
-    isDefault: true,
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: priorDate,
+    to: currentDate,
   });
 
   const [allActivities, setAllActivities] = useState<StravaActivity[]>();
@@ -68,8 +67,12 @@ export default function HomePage() {
     }
   );
 
-  const { data: globalMapUserRoutes } = useQuery(['globalMapUserRoutes'], () =>
-    getRoutesOnGlobalMap()
+  const { data: globalMapUserRoutes } = useQuery(
+    ['globalMapUserRoutes'],
+    () => getRoutesOnGlobalMap(),
+    {
+      enabled: status === 'unauthenticated',
+    }
   );
 
   useEffect(() => {

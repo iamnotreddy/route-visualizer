@@ -53,7 +53,7 @@ export default function MetricChart(props: {
 
   return (
     <div className='flex flex-col space-y-2 rounded-xl border-2 border-slate-400 p-2'>
-      <div style={{ width: '25vw', height: '15vh' }}>
+      <div style={{ width: '20vw', height: '15vh' }}>
         <ParentSize>
           {(parent) => {
             return (

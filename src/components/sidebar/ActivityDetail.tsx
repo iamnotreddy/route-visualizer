@@ -2,16 +2,15 @@ import { format, parseISO } from 'date-fns';
 import { useContext, useState } from 'react';
 import React from 'react';
 
-import AnimationControl from '@/components/AnimationControl';
 import Button from '@/components/buttons/Button';
 import { ActivityContext } from '@/components/globalMap';
 import { useChartMetric } from '@/components/hooks/useChartMetric';
 import { useCurrentMetricFrame } from '@/components/hooks/useCurrentMetricFrame';
 import { LockIcon, UnlockIcon } from '@/components/layout/icons';
 import MetricChart from '@/components/MetricChart';
+import AnimationControl from '@/components/sidebar/AnimationControl';
 import ChooseMetricBar from '@/components/sidebar/ChooseMetricBar';
-
-import { saveRouteOnGlobalMap } from '@/helpers/fetchingFunctions';
+import SaveActivityDialog from '@/components/sidebar/SaveActivityDialog';
 
 export const ActivityDetail = () => {
   const {
@@ -116,25 +115,15 @@ export const ActivityDetail = () => {
         <AnimationControl />
       </div>
       <div className='flex items-center justify-center'>
-        <Button
-          variant='dark'
-          onClick={() =>
-            saveRouteOnGlobalMap({
-              strava_activity_id: parseInt(currentActivity.id),
-              strava_athlete_id: parseInt(currentActivity.athlete.id),
-              anonymous: false,
-              date_added: format(new Date(), 'EEEE, MMMM d yyyy'),
-              activity_date: currentActivity.start_date,
-              route_polyline: currentActivity.map.summary_polyline,
-              elevation: [],
-              route_name: 'PV Suburbs to Lunada Bay Out and Back',
-              route_description:
-                'Super steep descent down to Lunada Bay and back up to PV Suburbs. Really beautiful view of the Ocean. This run is a super fast downhill sprint for the first 2 miles (be careful with those hammys) followed by a serious 500ft ascent over two miles ',
-            })
-          }
-        >
-          Save Activity
-        </Button>
+        {/* must load chart metrics for add activity to appear */}
+        {stravaPath && (
+          <SaveActivityDialog
+            currentActivity={currentActivity}
+            elevation={stravaPath.altitude}
+            distance={stravaPath.distance}
+            coordinates={stravaPath.latlng}
+          />
+        )}
       </div>
     </div>
   );

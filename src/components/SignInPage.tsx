@@ -12,7 +12,6 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import Button from '@/components/buttons/Button';
-import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
 import Header from '@/components/layout/Header';
 import { InfoCircle } from '@/components/layout/icons';
 
@@ -20,23 +19,16 @@ import {
   findInitialViewState,
   splashRouteCoordinates,
 } from '@/helpers/initialValues';
-import {
-  animatedLineLayerStyle,
-  defineLineSource,
-  mapConfig,
-  skyLayerStyle,
-  skySource,
-} from '@/helpers/layers';
+import { mapConfig, skyLayerStyle, skySource } from '@/helpers/layers';
 
 export default function SignInPage() {
   const mapRef = useRef<MapRef>(null);
-  const sliderRef = useRef(null);
 
-  const {
-    animatedLineCoordinates: splashAnimationedCoordinates,
-    handleRouteControl: splashHandleRouteControl,
-    currentFrame: splashCurrentFrame,
-  } = useSplashAnimation(mapRef, 'playing', splashRouteCoordinates);
+  // const {
+  //   animatedLineCoordinates: splashAnimationedCoordinates,
+  //   handleRouteControl: splashHandleRouteControl,
+  //   currentFrame: splashCurrentFrame,
+  // } = useSplashAnimation(mapRef, 'playing', splashRouteCoordinates);
 
   const [viewState, setViewState] = useState<ViewState>(
     findInitialViewState(splashRouteCoordinates)
@@ -63,12 +55,12 @@ export default function SignInPage() {
             <Layer {...skyLayerStyle} />
           </Source>
 
-          {/* animated coordinates for the splash route */}
+          {/* animated coordinates for the splash route
           {splashAnimationedCoordinates && (
             <Source {...defineLineSource(splashAnimationedCoordinates)}>
               <Layer {...animatedLineLayerStyle} />
             </Source>
-          )}
+          )} */}
         </Map>
       </div>
       <div className='absolute inset-0 flex h-1/2 sm:inset-x-0 sm:items-center sm:justify-center sm:pt-4'>
@@ -118,15 +110,6 @@ export default function SignInPage() {
               </div>
             </div>
           </div>
-          <input
-            className='hidden w-1/2 rounded-xl border-2 border-black bg-slate-100 py-2 px-4 hover:scale-y-125'
-            ref={sliderRef}
-            type='range'
-            min={0}
-            max={splashRouteCoordinates ? splashRouteCoordinates.length - 1 : 0}
-            value={splashCurrentFrame}
-            onChange={splashHandleRouteControl}
-          />
         </div>
       </div>
     </div>
