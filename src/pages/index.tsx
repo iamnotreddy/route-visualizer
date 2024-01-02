@@ -107,5 +107,14 @@ export default function HomePage() {
   }
 
   // return signin page if not authenticated
-  return <div className='flex items-center justify-center'>Loading...</div>;
+  return (
+    <div className='flex max-h-screen w-full items-center justify-center'>
+      <div className='relative'>
+        <div className='h-32 w-32 animate-spin rounded-full border-b-2 border-gray-900'></div>
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
+          Loading...
+        </div>
+      </div>
+    </div>
+  );
 }
