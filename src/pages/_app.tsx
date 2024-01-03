@@ -17,7 +17,7 @@ function MyApp({
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
-        <Layout session={session}>
+        <Layout {...pageProps}>
           <Component {...pageProps} />
           <Analytics />
         </Layout>
