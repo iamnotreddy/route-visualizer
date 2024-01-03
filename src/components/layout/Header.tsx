@@ -7,7 +7,7 @@ import { InfoCircle } from '@/components/layout/icons';
 import UnstyledLink from '@/components/links/UnstyledLink';
 import { DialogTrigger } from '@/components/primitives/Dialog';
 
-export default function Header(props: { session: Session | null }) {
+export default function Header(props: { session: Session | null | undefined }) {
   const { session } = props;
 
   let imageLink = '';

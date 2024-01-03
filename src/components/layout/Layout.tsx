@@ -18,7 +18,7 @@ export default function Layout({
   session,
 }: {
   children: React.ReactNode;
-  session: Session | null;
+  session?: Session | null;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
