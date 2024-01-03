@@ -1,3 +1,4 @@
+import { Session } from 'next-auth';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -12,7 +13,13 @@ import {
   DialogTitle,
 } from '@/components/primitives/Dialog';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({
+  children,
+  session,
+}: {
+  children: React.ReactNode;
+  session: Session | null;
+}) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -26,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className='flex min-h-screen flex-col items-center'>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <div className='absolute top-0 left-0 z-20 w-full'>
-          <Header />
+          <Header session={session} />
         </div>
         <DialogContent>
           <DialogHeader>

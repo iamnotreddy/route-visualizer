@@ -1,13 +1,14 @@
 import Image from 'next/image';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
+import { signIn, signOut } from 'next-auth/react';
 import * as React from 'react';
 
 import { InfoCircle } from '@/components/layout/icons';
 import UnstyledLink from '@/components/links/UnstyledLink';
 import { DialogTrigger } from '@/components/primitives/Dialog';
 
-export default function Header() {
-  const { data: session } = useSession();
+export default function Header(props: { session: Session | null }) {
+  const { session } = props;
 
   let imageLink = '';
   let name = '';
