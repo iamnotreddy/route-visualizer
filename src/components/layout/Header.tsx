@@ -1,11 +1,14 @@
 import Image from 'next/image';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
+import { signIn, signOut } from 'next-auth/react';
 import * as React from 'react';
 
+import { InfoCircle } from '@/components/layout/icons';
 import UnstyledLink from '@/components/links/UnstyledLink';
+import { DialogTrigger } from '@/components/primitives/Dialog';
 
-export default function Header() {
-  const { data: session } = useSession();
+export default function Header(props: { session: Session | null | undefined }) {
+  const { session } = props;
 
   let imageLink = '';
   let name = '';
@@ -20,16 +23,21 @@ export default function Header() {
 
   return (
     <header className='sticky top-0 z-50 rounded-lg bg-transparent pt-2'>
-      <div className='border- mx-8 flex h-14 items-center justify-between'>
-        <UnstyledLink
-          href='/'
-          className='rounded-lg border-white bg-black bg-opacity-70 p-2 font-sans text-3xl text-white hover:text-blue-200'
-        >
-          re.play
-        </UnstyledLink>
+      <div className='mx-8 flex h-14 items-center justify-between'>
+        <div className='flex flex-row items-center justify-center space-x-2'>
+          <UnstyledLink
+            href='/'
+            className='rounded-lg border-white bg-black bg-opacity-70 p-2 font-sans text-3xl text-white hover:text-blue-200'
+          >
+            re.play
+          </UnstyledLink>
+          <DialogTrigger>
+            <InfoCircle />
+          </DialogTrigger>
+        </div>
 
         <nav>
-          <div className='flex flex-row items-center justify-center space-x-2 rounded-2xl bg-black bg-opacity-70 px-2 pt-1 text-black'>
+          <div className='flex flex-row items-center justify-center space-x-2 rounded-2xl bg-black bg-opacity-70 px-2 pt-1 text-white hover:bg-slate-500'>
             {session && session.user ? (
               <UnstyledLink href='/' onClick={() => signOut()}>
                 <Image
@@ -41,12 +49,8 @@ export default function Header() {
                 />
               </UnstyledLink>
             ) : (
-              <UnstyledLink
-                className='p-2 text-white'
-                href='/'
-                onClick={() => signIn()}
-              >
-                Sign In
+              <UnstyledLink href='/' onClick={() => signIn('strava')}>
+                <p className='m-2 px-2 pb-1'>Sign In</p>
               </UnstyledLink>
             )}
 

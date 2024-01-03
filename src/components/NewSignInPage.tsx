@@ -14,7 +14,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { RouteList } from '@/components/globalMapSidebar/RouteList';
 import useGlobalMapPolylines from '@/components/hooks/useGlobalMapPolylines';
 import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
-import Header from '@/components/layout/Header';
 
 import {
   findActivityViewState,
@@ -182,10 +181,6 @@ export default function NewSignInPage(props: {
 
   return (
     <div className='relative flex max-h-screen w-full'>
-      <div className='absolute top-0 left-0 z-20 w-full'>
-        <Header />
-      </div>
-
       <RouteList
         globalMapUserRoutes={globalMapUserRoutes}
         currentGlobalMapRoute={currentGlobalMapRoute}

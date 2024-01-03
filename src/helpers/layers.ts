@@ -147,7 +147,7 @@ export const defineLineLayerStyle = (
     currentFrame &&
     frameLength &&
     currentFrame > 0 &&
-    currentFrame < frameLength;
+    currentFrame < frameLength - 1;
 
   return {
     type: 'line',

@@ -14,7 +14,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { useActivityAnimation } from '@/components/hooks/useActivityAnimation';
 import useActivityPolylines from '@/components/hooks/useActivityPolylines';
-import Header from '@/components/layout/Header';
 import { ActivityList } from '@/components/sidebar/ActivityList';
 
 import {
@@ -213,9 +212,6 @@ export default function GlobalMap() {
   return (
     <ActivityContext.Provider value={contextValues}>
       <div className='relative flex max-h-screen w-full'>
-        <div className='absolute top-0 left-0 z-20 w-full'>
-          <Header />
-        </div>
         <ActivityList />
         <div className='flex-grow-0'>
           <Map {...viewState} ref={mapRef} {...mapConfig}>
