@@ -14,7 +14,9 @@ export default function Header(props: { session: Session | null | undefined }) {
   let name = '';
 
   if (
-    typeof session?.user?.image == 'string' &&
+    session &&
+    session.user &&
+    typeof session.user.image == 'string' &&
     typeof session.user.name == 'string'
   ) {
     imageLink = session.user?.image;

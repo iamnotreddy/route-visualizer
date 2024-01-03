@@ -1,4 +1,4 @@
-import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -13,13 +13,7 @@ import {
   DialogTitle,
 } from '@/components/primitives/Dialog';
 
-export default function Layout({
-  children,
-  session,
-}: {
-  children: React.ReactNode;
-  session?: Session | null;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -28,6 +22,8 @@ export default function Layout({
     }, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  const { data: session } = useSession();
 
   return (
     <div className='flex min-h-screen flex-col items-center'>
