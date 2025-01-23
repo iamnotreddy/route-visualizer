@@ -40,7 +40,7 @@ module.exports = {
     //#region  //*=========== Import Sort ===========
     'simple-import-sort/exports': 'warn',
     'simple-import-sort/imports': [
-      'warn',
+      'off',
       {
         groups: [
           // ext library & side effect imports

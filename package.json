@@ -70,7 +70,7 @@
     "use-resize-observer": "^9.1.0"
   },
   "peerDependencies": {
-    "react-spring/web": "^8.x"
+    "@react-spring/web": "^8.x"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",
