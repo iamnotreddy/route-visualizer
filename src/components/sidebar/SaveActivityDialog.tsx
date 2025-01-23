@@ -66,7 +66,7 @@ export default function SaveActivityDialog(props: {
             <Label htmlFor='routeName' className='sr-only'>
               Route Name
             </Label>
-            <p>Route Name</p>
+            <div>Route Name</div>
             <Input
               id='routeName'
               value={title}
@@ -75,7 +75,7 @@ export default function SaveActivityDialog(props: {
             <Label htmlFor='routeDescription' className='sr-only'>
               Route Description
             </Label>
-            <p>Route Description</p>
+            <div>Route Description</div>
             <Textarea
               id='routeDescription'
               value={description}

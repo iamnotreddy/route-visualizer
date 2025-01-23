@@ -37,10 +37,10 @@ export const RouteDetail = (props: {
           {userRoute.route_name}
         </div>
         <div className='mb-2 flex flex-row space-x-1 text-sm font-light text-slate-600'>
-          <p>
+          <div>
             {`Added `}
             {format(new Date(userRoute.date_added), 'EEEE, MMMM d yyyy')}
-          </p>
+          </div>
         </div>
       </div>
 

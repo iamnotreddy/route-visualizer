@@ -67,7 +67,7 @@ export function DatePickerWithRange({
               onClick={() => refetch()}
               className='w-1/4 justify-center'
             >
-              <p>Load</p>
+              <div>Load</div>
             </Button>
           </div>
         </PopoverContent>

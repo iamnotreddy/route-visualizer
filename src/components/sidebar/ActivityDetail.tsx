@@ -41,10 +41,10 @@ export const ActivityDetail = () => {
           {currentActivity.name}
         </div>
         <div className='mb-2 flex flex-row space-x-1 text-sm font-light text-slate-600'>
-          <p>
+          <div>
             {format(new Date(currentActivity.start_date), 'EEEE, MMMM d yyyy')}
-          </p>
-          <p>{format(parseISO(currentActivity.start_date), 'hh:mm a')}</p>
+          </div>
+          <div>{format(parseISO(currentActivity.start_date), 'hh:mm a')}</div>
         </div>
       </div>
 

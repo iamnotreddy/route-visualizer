@@ -1,9 +1,7 @@
-import { Position } from 'geojson';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Map, {
   Layer,
   MapRef,
-  Marker,
   Source,
   ViewState,
   ViewStateChangeEvent,
@@ -11,190 +9,55 @@ import Map, {
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { RouteList } from '@/components/globalMapSidebar/RouteList';
-import useGlobalMapPolylines from '@/components/hooks/useGlobalMapPolylines';
-import { useRouteAnimation } from '@/components/hooks/useRouteAnimation';
-
 import {
-  findActivityViewState,
-  getPolyLineCoordinates,
-} from '@/helpers/helpers';
+  findInitialViewState,
+  splashRouteCoordinates,
+} from '@/helpers/initialValues';
 import {
   animatedLineLayerStyle,
-  currentPointStyle,
-  defineLineLayerStyle,
   defineLineSource,
-  definePointSource,
-  endPointStyle,
-  getGlobalMapPolylineLayerStyle,
   mapConfig,
   skyLayerStyle,
   skySource,
-  startPointStyle,
 } from '@/helpers/layers';
-import { GlobalMapRoute } from '@/pages/api/globalMap';
+import { useSplashAnimation } from '@/components/hooks/useSplashAnimation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/primitives/Dialog';
 
-export default function NewSignInPage(props: {
-  globalMapUserRoutes: GlobalMapRoute[];
-}) {
-  const { globalMapUserRoutes } = props;
+import { InfoModal } from '@/components/InfoModal';
 
-  const [currentGlobalMapRoute, setCurrentGlobalMapRoute] =
-    useState<GlobalMapRoute>();
-
-  const [viewState, setViewState] = useState<ViewState>();
-  const [startPoint, setStartPoint] = useState<Position>();
-  const [endPoint, setEndPoint] = useState<Position>();
-  const [showRouteDetail, setShowRouteDetail] = useState(false);
-
-  const [animationState, setAnimationState] = useState<'playing' | 'paused'>(
-    'paused'
-  );
-
-  const sliderRef = useRef(null);
-
+export default function SignInPage() {
   const mapRef = useRef<MapRef>(null);
+  const sliderRef = useRef(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const {
+    animatedLineCoordinates: splashAnimationedCoordinates,
+    handleRouteControl: splashHandleRouteControl,
+    currentFrame: splashCurrentFrame,
+  } = useSplashAnimation(mapRef, 'playing', splashRouteCoordinates);
+
+  const [viewState, setViewState] = useState<ViewState>(
+    findInitialViewState(splashRouteCoordinates)
+  );
 
   const handleMoveEvent = (e: ViewStateChangeEvent) => {
     setViewState(e.viewState);
   };
 
-  const { polylineLayer } = useGlobalMapPolylines(
-    globalMapUserRoutes,
-    currentGlobalMapRoute
-  );
-
-  const {
-    animatedLineCoordinates,
-    setAnimatedLineCoordinates,
-    currentPoint,
-    handleRouteControl,
-    currentFrame,
-    setCurrentFrame,
-  } = useRouteAnimation(
-    mapRef,
-    animationState,
-    currentGlobalMapRoute?.coordinates
-  );
-
-  const memoizedPolylineLayer = useMemo(() => {
-    if (polylineLayer) {
-      return (
-        <Source type='geojson' data={polylineLayer}>
-          <Layer {...getGlobalMapPolylineLayerStyle()} />
-        </Source>
-      );
-    }
-  }, [polylineLayer]);
-
-  const memoizedCurrentRoute = useMemo(() => {
-    if (
-      currentGlobalMapRoute &&
-      globalMapUserRoutes &&
-      globalMapUserRoutes.length > 0
-    ) {
-      const route = globalMapUserRoutes.filter(
-        (route) =>
-          route.strava_activity_id === currentGlobalMapRoute.strava_activity_id
-      )[0];
-
-      return (
-        <Source {...defineLineSource(route.coordinates)}>
-          <Layer
-            {...defineLineLayerStyle(route.coordinates.length, currentFrame)}
-          />
-        </Source>
-      );
-    }
-  }, [currentFrame, currentGlobalMapRoute, globalMapUserRoutes]);
-
-  const memoizedMarkers = useMemo(
-    () =>
-      globalMapUserRoutes?.map((userRoute) => {
-        const handleMarkerOnClick = (routeId: number) => {
-          if (globalMapUserRoutes) {
-            const nextActivity = globalMapUserRoutes.filter(
-              (x) => routeId === x.strava_activity_id
-            )[0];
-            setCurrentGlobalMapRoute(nextActivity);
-            setAnimatedLineCoordinates([]);
-            setShowRouteDetail(true);
-          }
-        };
-
-        const startCoordinate =
-          getPolyLineCoordinates(userRoute.route_polyline)[0] ?? [];
-
-        if (
-          Number.isFinite(startCoordinate[0]) &&
-          Number.isFinite(startCoordinate[1]) &&
-          !currentGlobalMapRoute
-        ) {
-          return (
-            <Marker
-              key={userRoute.strava_activity_id}
-              longitude={startCoordinate[0]}
-              latitude={startCoordinate[1]}
-              scale={0.5}
-              color='black'
-              onClick={() => handleMarkerOnClick(userRoute.strava_activity_id)}
-            />
-          );
-        }
-      }),
-    [globalMapUserRoutes, currentGlobalMapRoute, setAnimatedLineCoordinates]
-  );
-
-  const memoizedAnimation = useMemo(() => {
-    return (
-      <Source {...defineLineSource(animatedLineCoordinates)}>
-        <Layer {...animatedLineLayerStyle} />
-      </Source>
-    );
-  }, [animatedLineCoordinates]);
-
-  const memoizedStartAndEndPoints = useMemo(() => {
-    if (startPoint && endPoint) {
-      return (
-        <>
-          <Source {...definePointSource(startPoint)}>
-            <Layer {...startPointStyle} />
-          </Source>
-          <Source {...definePointSource(endPoint)}>
-            <Layer {...endPointStyle} />
-          </Source>
-        </>
-      );
-    }
-  }, [startPoint, endPoint]);
-
-  // toggle selected activity on map
   useEffect(() => {
-    if (currentGlobalMapRoute) {
-      const coordinates = currentGlobalMapRoute.coordinates;
-      setAnimatedLineCoordinates([]);
-      setStartPoint(coordinates[0]);
-      setEndPoint(coordinates[coordinates.length - 1]);
-      findActivityViewState(coordinates, mapRef);
-    }
-  }, [currentGlobalMapRoute, setAnimatedLineCoordinates]);
+    setDialogOpen(true);
+  }, []);
+
+  // record viewState as camera pans around route
 
   return (
     <div className='relative flex max-h-screen w-full'>
-      <RouteList
-        globalMapUserRoutes={globalMapUserRoutes}
-        currentGlobalMapRoute={currentGlobalMapRoute}
-        setCurrentGlobalMapRoute={setCurrentGlobalMapRoute}
-        currentFrame={currentFrame}
-        handleRouteControl={handleRouteControl}
-        animationState={animationState}
-        sliderRef={sliderRef}
-        setAnimationState={setAnimationState}
-        setCurrentFrame={setCurrentFrame}
-        showRouteDetail={showRouteDetail}
-        setShowRouteDetail={setShowRouteDetail}
-      />
-
       <div className='flex-grow-0'>
         <Map
           {...viewState}
@@ -202,21 +65,50 @@ export default function NewSignInPage(props: {
           {...mapConfig}
           onMove={handleMoveEvent}
         >
+          {/* layer to style sky */}
           <Source {...skySource}>
             <Layer {...skyLayerStyle} />
           </Source>
-          {currentPoint && (
-            <Source {...definePointSource(currentPoint)}>
-              <Layer {...currentPointStyle} />
+
+          {/* animated coordinates for the splash route */}
+          {splashAnimationedCoordinates && (
+            <Source {...defineLineSource(splashAnimationedCoordinates)}>
+              <Layer {...animatedLineLayerStyle} />
             </Source>
           )}
-          {memoizedPolylineLayer}
-          {memoizedMarkers}
-          {memoizedStartAndEndPoints}
-          {memoizedCurrentRoute}
-          {memoizedAnimation}
         </Map>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Explore the adventures the world has to offer.
+            </DialogTitle>
+            <DialogDescription>
+              <InfoModal />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      <input
+        className='hidden w-1/2 rounded-xl border-2 border-black bg-slate-100 py-2 px-4 hover:scale-y-125'
+        ref={sliderRef}
+        type='range'
+        min={0}
+        max={splashRouteCoordinates ? splashRouteCoordinates.length - 1 : 0}
+        value={splashCurrentFrame}
+        onChange={splashHandleRouteControl}
+      />
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  // Pass the static splashRouteCoordinates to the component as a prop.
+  return {
+    props: {
+      splashRouteCoordinates,
+    },
+  };
 }
