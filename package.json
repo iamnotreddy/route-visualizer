@@ -32,7 +32,7 @@
     "@types/geojson": "^7946.0.10",
     "@types/leaflet": "^1.9.3",
     "@types/resize-observer-browser": "^0.1.7",
-    "@vercel/analytics": "^1.0.1",
+    "@vercel/analytics": "^1.1.0",
     "@visx/group": "^2.10.0",
     "@visx/responsive": "^3.0.0",
     "@visx/scale": "^2.2.2",
@@ -52,8 +52,8 @@
     "leaflet": "^1.9.3",
     "mapbox": "^1.0.0-beta10",
     "mapbox-gl": "^2.10.0",
-    "next": "^12.3.1",
-    "next-auth": "^4.22.1",
+    "next": "^14.0.0",
+    "next-auth": "^4.24.0",
     "polyline": "^0.2.0",
     "polyline-encoded": "^0.0.9",
     "react": "^18.2.0",
@@ -68,9 +68,6 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "use-resize-observer": "^9.1.0"
-  },
-  "peerDependencies": {
-    "react-spring/web": "^8.x"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",
@@ -93,7 +90,7 @@
     "jest": "^27.5.1",
     "lint-staged": "^12.5.0",
     "next-router-mock": "^0.7.4",
-    "next-sitemap": "^2.5.28",
+    "next-sitemap": "^4.2.0",
     "postcss": "^8.4.16",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
